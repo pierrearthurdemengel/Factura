@@ -1,6 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getInvoice, sendInvoice, cancelInvoice, payInvoice, type Invoice } from '../api/factura';
+import { getInvoice, sendInvoice, cancelInvoice, payInvoice, downloadFacturX, downloadUbl, type Invoice } from '../api/factura';
+
+// Telecharge un blob en fichier
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 // Page detail d'une facture avec timeline PAF et actions.
 export default function InvoiceDetail() {
@@ -34,6 +46,18 @@ export default function InvoiceDetail() {
     }
   };
 
+  const handleDownload = async (format: 'facturx' | 'ubl') => {
+    if (!id || !invoice) return;
+    try {
+      const fn = format === 'facturx' ? downloadFacturX : downloadUbl;
+      const res = await fn(id);
+      const filename = `${invoice.number || 'brouillon'}-${format}.xml`;
+      downloadBlob(new Blob([res.data]), filename);
+    } catch {
+      alert('Erreur lors du telechargement.');
+    }
+  };
+
   if (loading || !invoice) return <p>Chargement...</p>;
 
   const statusLabels: Record<string, string> = {
@@ -45,11 +69,27 @@ export default function InvoiceDetail() {
     CANCELLED: 'Annulee',
   };
 
+  const statusColors: Record<string, string> = {
+    DRAFT: '#6b7280',
+    SENT: '#3b82f6',
+    ACKNOWLEDGED: '#22c55e',
+    REJECTED: '#ef4444',
+    PAID: '#10b981',
+    CANCELLED: '#9ca3af',
+  };
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>Facture {invoice.number || 'Brouillon'}</h1>
-        <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
+        <span style={{
+          fontSize: '14px',
+          fontWeight: 'bold',
+          backgroundColor: statusColors[invoice.status] || '#6b7280',
+          color: 'white',
+          padding: '4px 12px',
+          borderRadius: '4px',
+        }}>
           {statusLabels[invoice.status] || invoice.status}
         </span>
       </div>
@@ -113,7 +153,7 @@ export default function InvoiceDetail() {
         <p style={{ marginTop: '20px', fontStyle: 'italic' }}>{invoice.legalMention}</p>
       )}
 
-      <div style={{ marginTop: '30px', display: 'flex', gap: '10px' }}>
+      <div style={{ marginTop: '30px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
         {invoice.status === 'DRAFT' && (
           <button onClick={() => handleAction(sendInvoice)} disabled={actionLoading}>
             Envoyer
@@ -129,6 +169,15 @@ export default function InvoiceDetail() {
             Marquer payee
           </button>
         )}
+
+        <span style={{ borderLeft: '1px solid #e5e7eb', margin: '0 4px' }} />
+
+        <button onClick={() => handleDownload('facturx')} style={{ cursor: 'pointer' }}>
+          Telecharger Factur-X
+        </button>
+        <button onClick={() => handleDownload('ubl')} style={{ cursor: 'pointer' }}>
+          Telecharger UBL
+        </button>
       </div>
     </div>
   );

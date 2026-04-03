@@ -147,4 +147,24 @@ export const getCompany = async () => {
   return api.get<Company>('/companies/me');
 };
 
+export const updateCompany = async (id: string, data: Partial<Company>) => {
+  return api.put<Company>(`/companies/${id}`, data);
+};
+
+// Telecharge le XML Factur-X (CII D16B) d'une facture
+export const downloadFacturX = async (id: string) => {
+  return api.get(`/invoices/${id}/download/facturx`, {
+    responseType: 'blob',
+    headers: { Accept: 'application/xml' },
+  });
+};
+
+// Telecharge le XML UBL 2.1 d'une facture
+export const downloadUbl = async (id: string) => {
+  return api.get(`/invoices/${id}/download/ubl`, {
+    responseType: 'blob',
+    headers: { Accept: 'application/xml' },
+  });
+};
+
 export default api;

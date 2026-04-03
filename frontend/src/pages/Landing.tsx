@@ -261,7 +261,7 @@ export default function Landing() {
           <a href="#conformite" style={styles.headerLink}>Conformite</a>
           <a href="#tarifs" style={styles.headerLink}>Tarifs</a>
           <Link to="/login" style={styles.headerLink}>Connexion</Link>
-          <Link to="/login" style={styles.ctaButton}>Essai gratuit</Link>
+          <Link to="/register" style={styles.ctaButton}>Essai gratuit</Link>
         </div>
       </header>
 
@@ -278,7 +278,7 @@ export default function Landing() {
           conforme aux exigences DGFiP.
         </p>
         <div style={styles.heroCtas}>
-          <Link to="/login" style={styles.ctaButton}>Commencer gratuitement</Link>
+          <Link to="/register" style={styles.ctaButton}>Commencer gratuitement</Link>
           <a href="#fonctionnalites" style={styles.ctaButtonOutline}>Decouvrir</a>
         </div>
       </section>
@@ -387,7 +387,7 @@ export default function Landing() {
               <li style={styles.pricingFeature}>Emission via Chorus Pro</li>
               <li style={styles.pricingFeature}>Archivage 10 ans</li>
             </ul>
-            <Link to="/login" style={styles.ctaButtonOutline}>Commencer</Link>
+            <Link to="/register" style={styles.ctaButtonOutline}>Commencer</Link>
           </div>
           <div style={styles.pricingCardFeatured}>
             <h3 style={styles.pricingName}>Pro</h3>
@@ -401,7 +401,7 @@ export default function Landing() {
               <li style={styles.pricingFeature}>Archivage 10 ans</li>
               <li style={styles.pricingFeature}>Support prioritaire</li>
             </ul>
-            <Link to="/login" style={styles.ctaButton}>Essai gratuit 30 jours</Link>
+            <Link to="/register" style={styles.ctaButton}>Essai gratuit 30 jours</Link>
           </div>
           <div style={styles.pricingCard}>
             <h3 style={styles.pricingName}>Equipe</h3>
@@ -415,7 +415,7 @@ export default function Landing() {
               <li style={styles.pricingFeature}>Export FEC comptable</li>
               <li style={styles.pricingFeature}>Support dedie</li>
             </ul>
-            <Link to="/login" style={styles.ctaButtonOutline}>Nous contacter</Link>
+            <Link to="/register" style={styles.ctaButtonOutline}>Nous contacter</Link>
           </div>
         </div>
       </section>
@@ -427,7 +427,7 @@ export default function Landing() {
           La reforme entre en vigueur le 1er septembre 2026.
           Anticipez des maintenant avec Factura.
         </p>
-        <Link to="/login" style={styles.ctaButton}>Creer mon compte gratuitement</Link>
+        <Link to="/register" style={styles.ctaButton}>Creer mon compte gratuitement</Link>
       </section>
 
       {/* Footer */}

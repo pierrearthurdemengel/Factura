@@ -8,6 +8,7 @@ import InvoiceDetail from './pages/InvoiceDetail';
 import ClientList from './pages/ClientList';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
+import Register from './pages/Register';
 
 // Route protegee : redirige vers /login si non authentifie
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -46,6 +47,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/invoices" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceList /></div></ProtectedRoute>} />
           <Route path="/invoices/new" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceCreate /></div></ProtectedRoute>} />
           <Route path="/invoices/:id" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceDetail /></div></ProtectedRoute>} />
