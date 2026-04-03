@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rsm:CrossIndustryInvoice xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"
+    xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
+    xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
+    xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100">
+
+    <rsm:ExchangedDocumentContext>
+        <ram:GuidelineSpecifiedDocumentContextParameter>
+            <ram:ID>urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:en16931</ram:ID>
+        </ram:GuidelineSpecifiedDocumentContextParameter>
+    </rsm:ExchangedDocumentContext>
+
+    <rsm:ExchangedDocument>
+        <ram:ID>FA-2026-0003</ram:ID>
+        <ram:TypeCode>380</ram:TypeCode>
+        <ram:IssueDateTime>
+            <udt:DateTimeString format="102">20260401</udt:DateTimeString>
+        </ram:IssueDateTime>
+        <ram:IncludedNote>
+            <ram:Content>TVA non applicable — art. 293 B du CGI</ram:Content>
+            <ram:SubjectCode>AAK</ram:SubjectCode>
+        </ram:IncludedNote>
+    </rsm:ExchangedDocument>
+
+    <rsm:SupplyChainTradeTransaction>
+
+        <ram:IncludedSupplyChainTradeLineItem>
+            <ram:AssociatedDocumentLineDocument>
+                <ram:LineID>1</ram:LineID>
+            </ram:AssociatedDocumentLineDocument>
+            <ram:SpecifiedTradeProduct>
+                <ram:Name>Redaction de contenu editorial — mars 2026</ram:Name>
+            </ram:SpecifiedTradeProduct>
+            <ram:SpecifiedLineTradeAgreement>
+                <ram:NetPriceProductTradePrice>
+                    <ram:ChargeAmount>1500.00</ram:ChargeAmount>
+                </ram:NetPriceProductTradePrice>
+            </ram:SpecifiedLineTradeAgreement>
+            <ram:SpecifiedLineTradeDelivery>
+                <ram:BilledQuantity unitCode="EA">1</ram:BilledQuantity>
+            </ram:SpecifiedLineTradeDelivery>
+            <ram:SpecifiedLineTradeSettlement>
+                <ram:ApplicableTradeTax>
+                    <ram:TypeCode>VAT</ram:TypeCode>
+                    <ram:CategoryCode>E</ram:CategoryCode>
+                    <ram:RateApplicablePercent>0.00</ram:RateApplicablePercent>
+                    <ram:ExemptionReason>TVA non applicable — art. 293 B du CGI</ram:ExemptionReason>
+                </ram:ApplicableTradeTax>
+                <ram:SpecifiedTradeSettlementLineMonetarySummation>
+                    <ram:LineTotalAmount>1500.00</ram:LineTotalAmount>
+                </ram:SpecifiedTradeSettlementLineMonetarySummation>
+            </ram:SpecifiedLineTradeSettlement>
+        </ram:IncludedSupplyChainTradeLineItem>
+
+        <ram:ApplicableHeaderTradeAgreement>
+            <ram:SellerTradeParty>
+                <ram:Name>Marie Martin</ram:Name>
+                <ram:SpecifiedLegalOrganization>
+                    <ram:ID schemeID="0002">893456789</ram:ID>
+                    <ram:TradingBusinessName>Marie Martin — Redaction</ram:TradingBusinessName>
+                </ram:SpecifiedLegalOrganization>
+                <ram:PostalTradeAddress>
+                    <ram:LineOne>42 rue Victor Hugo</ram:LineOne>
+                    <ram:PostcodeCode>69002</ram:PostcodeCode>
+                    <ram:CityName>Lyon</ram:CityName>
+                    <ram:CountryID>FR</ram:CountryID>
+                </ram:PostalTradeAddress>
+            </ram:SellerTradeParty>
+            <ram:BuyerTradeParty>
+                <ram:Name>Agence Digitale SA</ram:Name>
+                <ram:SpecifiedLegalOrganization>
+                    <ram:ID schemeID="0002">512345678</ram:ID>
+                </ram:SpecifiedLegalOrganization>
+                <ram:PostalTradeAddress>
+                    <ram:LineOne>5 place Bellecour</ram:LineOne>
+                    <ram:PostcodeCode>69002</ram:PostcodeCode>
+                    <ram:CityName>Lyon</ram:CityName>
+                    <ram:CountryID>FR</ram:CountryID>
+                </ram:PostalTradeAddress>
+                <ram:SpecifiedTaxRegistration>
+                    <ram:ID schemeID="VA">FR29512345678</ram:ID>
+                </ram:SpecifiedTaxRegistration>
+            </ram:BuyerTradeParty>
+        </ram:ApplicableHeaderTradeAgreement>
+
+        <ram:ApplicableHeaderTradeDelivery>
+            <ram:ActualDeliverySupplyChainEvent>
+                <ram:OccurrenceDateTime>
+                    <udt:DateTimeString format="102">20260331</udt:DateTimeString>
+                </ram:OccurrenceDateTime>
+            </ram:ActualDeliverySupplyChainEvent>
+        </ram:ApplicableHeaderTradeDelivery>
+
+        <ram:ApplicableHeaderTradeSettlement>
+            <ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode>
+            <ram:SpecifiedTradePaymentTerms>
+                <ram:Description>Paiement a reception</ram:Description>
+                <ram:DueDateDateTime>
+                    <udt:DateTimeString format="102">20260415</udt:DateTimeString>
+                </ram:DueDateDateTime>
+            </ram:SpecifiedTradePaymentTerms>
+            <ram:ApplicableTradeTax>
+                <ram:CalculatedAmount>0.00</ram:CalculatedAmount>
+                <ram:TypeCode>VAT</ram:TypeCode>
+                <ram:BasisAmount>1500.00</ram:BasisAmount>
+                <ram:CategoryCode>E</ram:CategoryCode>
+                <ram:RateApplicablePercent>0.00</ram:RateApplicablePercent>
+                <ram:ExemptionReason>TVA non applicable — art. 293 B du CGI</ram:ExemptionReason>
+            </ram:ApplicableTradeTax>
+            <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+                <ram:LineTotalAmount>1500.00</ram:LineTotalAmount>
+                <ram:TaxBasisTotalAmount>1500.00</ram:TaxBasisTotalAmount>
+                <ram:TaxTotalAmount currencyID="EUR">0.00</ram:TaxTotalAmount>
+                <ram:GrandTotalAmount>1500.00</ram:GrandTotalAmount>
+                <ram:DuePayableAmount>1500.00</ram:DuePayableAmount>
+            </ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+        </ram:ApplicableHeaderTradeSettlement>
+
+    </rsm:SupplyChainTradeTransaction>
+</rsm:CrossIndustryInvoice>
