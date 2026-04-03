@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import InvoiceList from './pages/InvoiceList';
 import InvoiceCreate from './pages/InvoiceCreate';
@@ -15,7 +16,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-// Barre de navigation principale
+// Page d'accueil : landing si non connecte, dashboard si connecte
+function HomePage() {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) return <Dashboard />;
+  return <Landing />;
+}
+
+// Barre de navigation principale (affichee uniquement pour les utilisateurs connectes)
 function NavBar() {
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) return null;
@@ -35,17 +43,15 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <NavBar />
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/invoices" element={<ProtectedRoute><InvoiceList /></ProtectedRoute>} />
-            <Route path="/invoices/new" element={<ProtectedRoute><InvoiceCreate /></ProtectedRoute>} />
-            <Route path="/invoices/:id" element={<ProtectedRoute><InvoiceDetail /></ProtectedRoute>} />
-            <Route path="/clients" element={<ProtectedRoute><ClientList /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/invoices" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceList /></div></ProtectedRoute>} />
+          <Route path="/invoices/new" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceCreate /></div></ProtectedRoute>} />
+          <Route path="/invoices/:id" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceDetail /></div></ProtectedRoute>} />
+          <Route path="/clients" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ClientList /></div></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Settings /></div></ProtectedRoute>} />
+        </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
