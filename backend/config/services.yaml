@@ -21,3 +21,12 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\Pdp\ChorusProClient:
+        arguments:
+            $chorusProBaseUrl: '%env(CHORUS_PRO_BASE_URL)%'
+            $chorusProOauthUrl: '%env(CHORUS_PRO_OAUTH_URL)%'
+            $chorusProClientId: '%env(CHORUS_PRO_CLIENT_ID)%'
+            $chorusProClientSecret: '%env(CHORUS_PRO_CLIENT_SECRET)%'
+            $chorusProTechLogin: '%env(CHORUS_PRO_TECH_LOGIN)%'
+            $chorusProTechPassword: '%env(CHORUS_PRO_TECH_PASSWORD)%'
