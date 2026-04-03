@@ -1,0 +1,48 @@
+# Configuration locale
+CLAUDE.md
+SPEC-FACTURA.md
+SUIVI-FACTURA.md
+PROMPT-FACTURA.md
+
+# Variables d'environnement
+.env.local
+.env.*.local
+.env.prod
+.env.production
+
+# Cles et certificats
+config/jwt/private.pem
+config/jwt/public.pem
+*.pem
+*.key
+*.p12
+*.pfx
+*.cert
+*.crt
+*.csr
+
+# Dependances
+/vendor/
+/node_modules/
+/frontend/node_modules/
+
+# Build et cache
+/var/
+/public/build/
+/.php-cs-fixer.cache
+/.phpunit.cache
+/.phpstan/
+/coverage/
+*.cache
+
+# Editeurs et OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/var/log/
