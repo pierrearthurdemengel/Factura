@@ -148,6 +148,7 @@ class Invoice
 
     public function __construct()
     {
+        $this->id = Uuid::v7();
         $this->lines = new ArrayCollection();
         $this->events = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
@@ -415,8 +416,12 @@ class Invoice
         $totalTax = '0.00';
 
         foreach ($this->lines as $line) {
-            $totalHt = bcadd($totalHt, $line->getLineAmount(), 2);
-            $totalTax = bcadd($totalTax, $line->getVatAmount(), 2);
+            $lineAmount = $line->getLineAmount();
+            $vatAmount = $line->getVatAmount();
+            \assert(is_numeric($lineAmount));
+            \assert(is_numeric($vatAmount));
+            $totalHt = bcadd($totalHt, $lineAmount, 2);
+            $totalTax = bcadd($totalTax, $vatAmount, 2);
         }
 
         $this->totalExcludingTax = $totalHt;
@@ -430,10 +435,6 @@ class Invoice
     public function isValid(): bool
     {
         if ($this->lines->isEmpty()) {
-            return false;
-        }
-
-        if (null === $this->buyer) {
             return false;
         }
 

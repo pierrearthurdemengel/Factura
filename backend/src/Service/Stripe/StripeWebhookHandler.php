@@ -35,8 +35,9 @@ class StripeWebhookHandler
      */
     public function handlePaymentSucceeded(\Stripe\Event $event): Response
     {
-        $invoice = $event->data->object;
-        $customerId = $invoice->customer;
+        /** @var array<string, mixed> $objectData */
+        $objectData = $event->data['object'] ?? [];
+        $customerId = (string) ($objectData['customer'] ?? '');
 
         $subscription = $this->em->getRepository(Subscription::class)
             ->findOneBy(['stripeCustomerId' => $customerId]);
@@ -58,8 +59,9 @@ class StripeWebhookHandler
      */
     public function handlePaymentFailed(\Stripe\Event $event): Response
     {
-        $invoice = $event->data->object;
-        $customerId = $invoice->customer;
+        /** @var array<string, mixed> $objectData */
+        $objectData = $event->data['object'] ?? [];
+        $customerId = (string) ($objectData['customer'] ?? '');
 
         $subscription = $this->em->getRepository(Subscription::class)
             ->findOneBy(['stripeCustomerId' => $customerId]);
@@ -79,8 +81,9 @@ class StripeWebhookHandler
      */
     public function handleSubscriptionCancelled(\Stripe\Event $event): Response
     {
-        $stripeSubscription = $event->data->object;
-        $customerId = $stripeSubscription->customer;
+        /** @var array<string, mixed> $objectData */
+        $objectData = $event->data['object'] ?? [];
+        $customerId = (string) ($objectData['customer'] ?? '');
 
         $subscription = $this->em->getRepository(Subscription::class)
             ->findOneBy(['stripeCustomerId' => $customerId]);

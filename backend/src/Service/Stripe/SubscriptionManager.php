@@ -51,8 +51,17 @@ class SubscriptionManager
             $subscription = $this->em->getRepository(Subscription::class)->findOneBy(['user' => $user]);
         }
 
+        if (null === $subscription) {
+            throw new \RuntimeException('Abonnement introuvable pour cet utilisateur.');
+        }
+
+        $customerId = $subscription->getStripeCustomerId();
+        if (null === $customerId) {
+            throw new \RuntimeException('Identifiant client Stripe manquant.');
+        }
+
         $stripeSubscription = \Stripe\Subscription::create([
-            'customer' => $subscription->getStripeCustomerId(),
+            'customer' => $customerId,
             'items' => [['price' => $priceId]],
         ]);
 

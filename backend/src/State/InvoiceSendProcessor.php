@@ -52,7 +52,9 @@ class InvoiceSendProcessor implements ProcessorInterface
         $this->auditTrail->recordTransition($data, $oldStatus, $data->getStatus());
 
         // Transmission asynchrone a la PDP via Messenger
-        $this->bus->dispatch(new TransmitInvoiceToPdpMessage($data->getId()->toRfc4122()));
+        $invoiceId = $data->getId();
+        \assert(null !== $invoiceId);
+        $this->bus->dispatch(new TransmitInvoiceToPdpMessage($invoiceId->toRfc4122()));
 
         return $data;
     }

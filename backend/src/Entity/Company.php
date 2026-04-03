@@ -114,6 +114,7 @@ class Company
 
     public function __construct()
     {
+        $this->id = Uuid::v7();
         $this->clients = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }

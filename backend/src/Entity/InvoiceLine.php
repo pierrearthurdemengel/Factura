@@ -60,6 +60,11 @@ class InvoiceLine
     #[Groups(['invoice:read'])]
     private string $vatAmount = '0.00';
 
+    public function __construct()
+    {
+        $this->id = Uuid::v7();
+    }
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -166,6 +171,8 @@ class InvoiceLine
     public function computeAmounts(): void
     {
         // Montant HT = quantite * prix unitaire HT
+        \assert(is_numeric($this->quantity));
+        \assert(is_numeric($this->unitPriceExcludingTax));
         $this->lineAmount = bcmul($this->quantity, $this->unitPriceExcludingTax, 2);
 
         // Montant TVA = montant HT * taux TVA / 100

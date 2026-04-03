@@ -36,22 +36,14 @@ class ChorusProClient implements PdpClientInterface
             $data = $this->callApi('/cpro/factures/v1/soumettre', $payload);
 
             if (0 !== (int) ($data['codeRetour'] ?? -1)) {
-                throw new \RuntimeException(sprintf(
-                    'codeRetour=%s : %s',
-                    $data['codeRetour'] ?? '?',
-                    $data['libelle'] ?? 'Erreur inconnue'
-                ));
+                throw new \RuntimeException(sprintf('codeRetour=%s : %s', $data['codeRetour'] ?? '?', $data['libelle'] ?? 'Erreur inconnue'));
             }
 
             return (string) $data['identifiantFactureCPP'];
         } catch (PdpTransmissionException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            throw new PdpTransmissionException(
-                $this->getName(),
-                $invoice->getNumber() ?? 'N/A',
-                $e->getMessage()
-            );
+            throw new PdpTransmissionException($this->getName(), $invoice->getNumber() ?? 'N/A', $e->getMessage());
         }
     }
 
@@ -138,10 +130,7 @@ class ChorusProClient implements PdpClientInterface
         $sellerStructure = $this->rechercherStructure($sellerSiret);
 
         if (null === $sellerStructure) {
-            throw new \RuntimeException(sprintf(
-                'Structure fournisseur introuvable dans Chorus Pro (SIRET=%s)',
-                $sellerSiret
-            ));
+            throw new \RuntimeException(sprintf('Structure fournisseur introuvable dans Chorus Pro (SIRET=%s)', $sellerSiret));
         }
 
         $idFournisseur = (int) $sellerStructure['idStructureCPP'];
@@ -170,8 +159,12 @@ class ChorusProClient implements PdpClientInterface
             if (!isset($tvaParTaux[$taux])) {
                 $tvaParTaux[$taux] = ['base' => '0.00', 'montant' => '0.00'];
             }
-            $tvaParTaux[$taux]['base'] = bcadd($tvaParTaux[$taux]['base'], $line->getLineAmount(), 2);
-            $tvaParTaux[$taux]['montant'] = bcadd($tvaParTaux[$taux]['montant'], $line->getVatAmount(), 2);
+            $lineAmount = $line->getLineAmount();
+            $vatAmount = $line->getVatAmount();
+            \assert(is_numeric($lineAmount));
+            \assert(is_numeric($vatAmount));
+            $tvaParTaux[$taux]['base'] = bcadd($tvaParTaux[$taux]['base'], $lineAmount, 2);
+            $tvaParTaux[$taux]['montant'] = bcadd($tvaParTaux[$taux]['montant'], $vatAmount, 2);
         }
 
         $lignesTva = [];

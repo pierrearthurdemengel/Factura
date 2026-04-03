@@ -24,6 +24,11 @@ class InvoiceNumberGenerator
 
     public function generate(Company $company): string
     {
+        $companyId = $company->getId();
+        if (null === $companyId) {
+            throw new InvoiceNumberGenerationException('L\'entreprise n\'a pas d\'identifiant.');
+        }
+
         $connection = $this->em->getConnection();
 
         try {
@@ -31,7 +36,7 @@ class InvoiceNumberGenerator
 
             // Verrou pessimiste sur la ligne de l'entreprise
             $sql = 'SELECT last_invoice_number, last_invoice_year FROM companies WHERE id = :id FOR UPDATE';
-            $result = $connection->executeQuery($sql, ['id' => $company->getId()->toRfc4122()]);
+            $result = $connection->executeQuery($sql, ['id' => $companyId->toRfc4122()]);
             $row = $result->fetchAssociative();
 
             if (false === $row) {
@@ -55,7 +60,7 @@ class InvoiceNumberGenerator
                 [
                     'number' => $nextNumber,
                     'year' => $currentYear,
-                    'id' => $company->getId()->toRfc4122(),
+                    'id' => $companyId->toRfc4122(),
                 ],
             );
 

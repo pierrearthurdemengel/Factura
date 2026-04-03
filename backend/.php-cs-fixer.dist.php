@@ -15,6 +15,7 @@ return (new PhpCsFixer\Config())
         'trailing_comma_in_multiline' => true,
         'no_superfluous_phpdoc_tags' => true,
         'concat_space' => ['spacing' => 'one'],
+        'phpdoc_to_comment' => ['allow_before_return_statement' => true],
     ])
     ->setFinder($finder)
 ;

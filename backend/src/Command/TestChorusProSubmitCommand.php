@@ -198,7 +198,7 @@ class TestChorusProSubmitCommand extends Command
         ]);
 
         $submitData = $submitResponse->toArray(false);
-        $io->text(json_encode($submitData, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE));
+        $io->text((string) json_encode($submitData, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE));
 
         if (isset($submitData['identifiantFactureCPP']) && (int) $submitData['identifiantFactureCPP'] > 0) {
             $io->success(sprintf(
