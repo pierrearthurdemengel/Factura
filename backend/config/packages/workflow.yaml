@@ -1,0 +1,36 @@
+framework:
+    workflows:
+        invoice:
+            type: state_machine
+            marking_store:
+                type: method
+                property: status
+            supports:
+                - App\Entity\Invoice
+            initial_marking: DRAFT
+            places:
+                DRAFT: ~
+                SENT: ~
+                ACKNOWLEDGED: ~
+                REJECTED: ~
+                PAID: ~
+                CANCELLED: ~
+            transitions:
+                send:
+                    from: DRAFT
+                    to: SENT
+                acknowledge:
+                    from: SENT
+                    to: ACKNOWLEDGED
+                reject:
+                    from: SENT
+                    to: REJECTED
+                resend:
+                    from: REJECTED
+                    to: SENT
+                pay:
+                    from: [SENT, ACKNOWLEDGED]
+                    to: PAID
+                cancel:
+                    from: [DRAFT, SENT, ACKNOWLEDGED]
+                    to: CANCELLED
