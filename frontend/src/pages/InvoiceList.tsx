@@ -35,22 +35,43 @@ const statusBadge = (status: string) => {
   );
 };
 
-// Page liste des factures avec filtres et tri.
+const PAGE_SIZE = 20;
+
+// Page liste des factures avec filtres, tri et pagination.
 export default function InvoiceList() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const params: Record<string, string> = {};
+    setLoading(true);
+    const params: Record<string, string> = {
+      page: String(page),
+      itemsPerPage: String(PAGE_SIZE),
+    };
     if (statusFilter) params['status'] = statusFilter;
 
     getInvoices(params)
-      .then((res) => setInvoices(res.data['hydra:member']))
+      .then((res) => {
+        setInvoices(res.data['hydra:member']);
+        // API Platform retourne le nombre total dans hydra:totalItems
+        const total = (res.data as Record<string, unknown>)['hydra:totalItems'];
+        setTotalItems(typeof total === 'number' ? total : 0);
+      })
       .catch(() => setInvoices([]))
       .finally(() => setLoading(false));
-  }, [statusFilter]);
+  }, [statusFilter, page]);
+
+  // Reinitialiser la page quand le filtre change
+  const handleFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setPage(1);
+  };
+
+  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
 
   if (loading) return <p>Chargement...</p>;
 
@@ -65,7 +86,7 @@ export default function InvoiceList() {
 
       <div style={{ marginBottom: '20px' }}>
         <label>Filtrer par statut : </label>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+        <select value={statusFilter} onChange={(e) => handleFilterChange(e.target.value)}>
           <option value="">Tous</option>
           <option value="DRAFT">Brouillon</option>
           <option value="SENT">Envoyee</option>
@@ -104,6 +125,26 @@ export default function InvoiceList() {
       </table>
 
       {invoices.length === 0 && <p style={{ textAlign: 'center', marginTop: '20px' }}>Aucune facture trouvee.</p>}
+
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: '20px' }}>
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            style={{ padding: '6px 12px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+          >
+            Precedent
+          </button>
+          <span>Page {page} / {totalPages}</span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            style={{ padding: '6px 12px', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
+          >
+            Suivant
+          </button>
+        </div>
+      )}
     </div>
   );
 }

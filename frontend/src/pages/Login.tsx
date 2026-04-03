@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 // Page de connexion.
@@ -53,6 +53,10 @@ export default function Login() {
           Se connecter
         </button>
       </form>
+
+      <p style={{ textAlign: 'center', marginTop: '20px' }}>
+        Pas de compte ? <Link to="/register">Creer un compte</Link>
+      </p>
     </div>
   );
 }
