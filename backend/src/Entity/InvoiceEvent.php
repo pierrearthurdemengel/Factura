@@ -57,6 +57,7 @@ class InvoiceEvent
         ?string $ipAddress = null,
         ?string $userAgent = null,
     ) {
+        $this->id = Uuid::v7();
         $this->invoice = $invoice;
         $this->eventType = $eventType;
         $this->metadata = $metadata;
