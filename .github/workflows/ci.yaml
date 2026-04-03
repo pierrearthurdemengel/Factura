@@ -1,0 +1,68 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        services:
+            postgres:
+                image: postgres:16
+                env:
+                    POSTGRES_PASSWORD: test
+                    POSTGRES_DB: factura_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.3'
+                  extensions: pdo_pgsql, intl, zip
+                  coverage: xdebug
+
+            - name: Install dependencies
+              working-directory: backend
+              run: composer install --prefer-dist --no-progress
+
+            - name: Run PHPStan
+              working-directory: backend
+              run: vendor/bin/phpstan analyse src --level=8
+
+            - name: Run PHPUnit
+              working-directory: backend
+              env:
+                  DATABASE_URL: postgresql://postgres:test@localhost:5432/factura_test
+              run: vendor/bin/phpunit --coverage-text
+
+            - name: Run PHP CS Fixer
+              working-directory: backend
+              run: vendor/bin/php-cs-fixer fix --dry-run --diff
+
+    frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+
+            - name: Install dependencies
+              working-directory: frontend
+              run: npm ci
+
+            - name: Lint
+              working-directory: frontend
+              run: npm run lint
+
+            - name: Build
+              working-directory: frontend
+              run: npm run build
