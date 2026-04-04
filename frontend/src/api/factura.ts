@@ -193,4 +193,9 @@ export const getInvoiceEvents = async (id: string) => {
   return api.get<InvoiceEvent[]>(`/invoices/${id}/events`);
 };
 
+// Retourne l'URL du portail de facturation Stripe
+export const getStripePortalUrl = async () => {
+  return api.get<{ url: string }>('/subscription/portal');
+};
+
 export default api;

@@ -18,6 +18,8 @@ export default function InvoiceCreate() {
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState('');
   const [legalMention, setLegalMention] = useState('');
+  const [paymentTerms, setPaymentTerms] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
   const [lines, setLines] = useState<LineForm[]>([
     { description: '', quantity: '1', unit: 'EA', unitPriceExcludingTax: '', vatRate: '20' },
   ]);
@@ -70,6 +72,7 @@ export default function InvoiceCreate() {
         issueDate,
         dueDate: dueDate || undefined,
         legalMention: legalMention || undefined,
+        paymentTerms: paymentTerms || undefined,
         lines: lines.map((line, i) => ({
           position: i + 1,
           description: line.description,
@@ -162,7 +165,8 @@ export default function InvoiceCreate() {
                 <option value="20">20%</option>
                 <option value="10">10%</option>
                 <option value="5.5">5.5%</option>
-                <option value="0">0%</option>
+                <option value="2.1">2.1%</option>
+                <option value="0">0% (exoneration / autoliquidation)</option>
               </select>
             </div>
             <div style={{ flex: 1 }}>
@@ -177,6 +181,17 @@ export default function InvoiceCreate() {
         <button type="button" onClick={addLine} style={{ marginBottom: '20px' }}>
           Ajouter une ligne
         </button>
+
+        <div style={{ marginBottom: '20px' }}>
+          <label>Conditions de paiement</label>
+          <input
+            type="text"
+            value={paymentTerms}
+            onChange={(e) => setPaymentTerms(e.target.value)}
+            placeholder="Paiement a 30 jours fin de mois"
+            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+          />
+        </div>
 
         <div style={{ marginBottom: '20px' }}>
           <label>Mention legale</label>
@@ -194,10 +209,74 @@ export default function InvoiceCreate() {
           <p>Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
         </div>
 
-        <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>
-          Creer la facture
-        </button>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+          <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>
+            Creer la facture
+          </button>
+          <button type="button" onClick={() => setShowPreview(!showPreview)} style={{ padding: '10px 20px', cursor: 'pointer' }}>
+            {showPreview ? 'Masquer' : 'Previsualiser'}
+          </button>
+        </div>
       </form>
+
+      {showPreview && (
+        <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '30px', marginTop: '20px', background: '#fff', maxWidth: '800px' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '24px', color: '#2563eb' }}>Apercu de la facture</h2>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+            <div>
+              <p style={{ fontWeight: 'bold' }}>Vendeur</p>
+              <p style={{ color: '#6b7280', fontSize: '14px' }}>(Informations de votre entreprise)</p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontWeight: 'bold' }}>Client</p>
+              <p>{clients.find((c) => c['@id'] === selectedClient)?.name || '—'}</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '30px', marginBottom: '20px', fontSize: '14px', color: '#374151' }}>
+            <p>Date d'emission : <strong>{issueDate || '—'}</strong></p>
+            {dueDate && <p>Date d'echeance : <strong>{dueDate}</strong></p>}
+          </div>
+
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
+                <th style={{ textAlign: 'left', padding: '8px', fontSize: '13px' }}>Description</th>
+                <th style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>Qte</th>
+                <th style={{ textAlign: 'center', padding: '8px', fontSize: '13px' }}>Unite</th>
+                <th style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>Prix HT</th>
+                <th style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>TVA</th>
+                <th style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>Total HT</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lines.map((line, i) => {
+                const t = computeLineTotal(line);
+                return (
+                  <tr key={i} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                    <td style={{ padding: '8px', fontSize: '13px' }}>{line.description || '—'}</td>
+                    <td style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>{line.quantity}</td>
+                    <td style={{ textAlign: 'center', padding: '8px', fontSize: '13px' }}>{line.unit}</td>
+                    <td style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>{parseFloat(line.unitPriceExcludingTax || '0').toFixed(2)} EUR</td>
+                    <td style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>{line.vatRate}%</td>
+                    <td style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>{t.ht.toFixed(2)} EUR</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <div style={{ textAlign: 'right', marginBottom: '20px' }}>
+            <p>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
+            <p>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
+            <p style={{ fontSize: '18px' }}>Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
+          </div>
+
+          {paymentTerms && <p style={{ fontSize: '13px', color: '#6b7280' }}>Conditions : {paymentTerms}</p>}
+          {legalMention && <p style={{ fontSize: '13px', fontStyle: 'italic', color: '#6b7280' }}>{legalMention}</p>}
+        </div>
+      )}
     </div>
   );
 }

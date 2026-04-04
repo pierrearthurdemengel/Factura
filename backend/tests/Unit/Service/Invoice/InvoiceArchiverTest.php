@@ -7,9 +7,6 @@ use App\Entity\Company;
 use App\Entity\Invoice;
 use App\Entity\InvoiceLine;
 use App\Service\Format\FacturXGenerator;
-use App\Service\Format\UblGenerator;
-use App\Service\Invoice\InvoiceArchiver;
-use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
