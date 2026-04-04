@@ -13,6 +13,9 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\State\InvoiceCancelProcessor;
+use App\State\InvoicePayProcessor;
+use App\State\InvoiceSendProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,6 +34,27 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(security: "is_granted('ROLE_USER')"),
         new Put(security: "is_granted('EDIT', object)"),
         new Delete(security: "is_granted('DELETE', object)"),
+        new Post(
+            uriTemplate: '/invoices/{id}/send',
+            security: "is_granted('EDIT', object)",
+            processor: InvoiceSendProcessor::class,
+            denormalizationContext: ['groups' => []],
+            name: 'send',
+        ),
+        new Post(
+            uriTemplate: '/invoices/{id}/cancel',
+            security: "is_granted('EDIT', object)",
+            processor: InvoiceCancelProcessor::class,
+            denormalizationContext: ['groups' => []],
+            name: 'cancel',
+        ),
+        new Post(
+            uriTemplate: '/invoices/{id}/pay',
+            security: "is_granted('VIEW', object)",
+            processor: InvoicePayProcessor::class,
+            denormalizationContext: ['groups' => []],
+            name: 'pay',
+        ),
     ],
     normalizationContext: ['groups' => ['invoice:read']],
     denormalizationContext: ['groups' => ['invoice:write']],

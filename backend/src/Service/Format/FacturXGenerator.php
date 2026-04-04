@@ -23,6 +23,16 @@ class FacturXGenerator
      */
     public function generate(Invoice $invoice): string
     {
+        return $this->buildDocument($invoice)->getContent();
+    }
+
+    /**
+     * Construit et retourne le ZugferdDocumentBuilder pour une facture.
+     * Utilise par le generateur PDF pour obtenir le builder necessaire
+     * a la creation du Factur-X PDF/A-3.
+     */
+    public function buildDocument(Invoice $invoice): ZugferdDocumentBuilder
+    {
         $doc = ZugferdDocumentBuilder::CreateNew(ZugferdProfiles::PROFILE_EN16931);
 
         // En-tete du document
@@ -127,7 +137,7 @@ class FacturXGenerator
             (float) $invoice->getTotalTax(),
         );
 
-        return $doc->getContent();
+        return $doc;
     }
 
     /**

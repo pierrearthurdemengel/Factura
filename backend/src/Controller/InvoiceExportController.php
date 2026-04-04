@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Invoice;
 use App\Entity\User;
 use App\Service\Format\FacturXGenerator;
+use App\Service\Format\InvoicePdfGenerator;
 use App\Service\Format\UblGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use horstoeko\zugferd\ZugferdDocumentPdfBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,7 +19,43 @@ use Symfony\Component\Routing\Attribute\Route;
 class InvoiceExportController extends AbstractController
 {
     /**
-     * Telecharge la facture au format Factur-X (CII D16B).
+     * Telecharge la facture au format Factur-X PDF/A-3 (PDF avec XML CII D16B embarque).
+     */
+    #[Route('/api/invoices/{id}/pdf', name: 'api_invoice_download_pdf', methods: ['GET'])]
+    public function downloadPdf(
+        string $id,
+        EntityManagerInterface $em,
+        FacturXGenerator $facturXGenerator,
+        InvoicePdfGenerator $pdfGenerator,
+    ): Response {
+        $invoice = $this->findInvoiceForUser($id, $em);
+
+        if (null === $invoice) {
+            return new Response('Facture introuvable.', Response::HTTP_NOT_FOUND);
+        }
+
+        // Generer le document CII D16B via le builder
+        $docBuilder = $facturXGenerator->buildDocument($invoice);
+
+        // Generer le PDF de mise en page
+        $pdfContent = $pdfGenerator->generate($invoice);
+
+        // Fusionner XML + PDF pour creer un Factur-X PDF/A-3
+        $pdfBuilder = ZugferdDocumentPdfBuilder::fromPdfString($docBuilder, $pdfContent);
+        $pdfBuilder->setAdditionalCreatorTool('Factura v1.0');
+        $pdfBuilder->generateDocument();
+        $mergedPdf = $pdfBuilder->downloadString();
+
+        $filename = sprintf('%s.pdf', $invoice->getNumber() ?? 'brouillon');
+
+        return new Response($mergedPdf, Response::HTTP_OK, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+        ]);
+    }
+
+    /**
+     * Telecharge la facture au format Factur-X XML (CII D16B).
      */
     #[Route('/api/invoices/{id}/download/facturx', name: 'api_invoice_download_facturx', methods: ['GET'])]
     public function downloadFacturX(
