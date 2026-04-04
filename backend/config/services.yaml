@@ -30,3 +30,11 @@ services:
             $chorusProClientSecret: '%env(CHORUS_PRO_CLIENT_SECRET)%'
             $chorusProTechLogin: '%env(CHORUS_PRO_TECH_LOGIN)%'
             $chorusProTechPassword: '%env(CHORUS_PRO_TECH_PASSWORD)%'
+
+    App\Service\Invoice\InvoiceArchiver:
+        arguments:
+            $s3Bucket: '%env(S3_BUCKET)%'
+            $s3Region: '%env(S3_REGION)%'
+            $s3Endpoint: '%env(S3_ENDPOINT)%'
+            $s3Key: '%env(S3_KEY)%'
+            $s3Secret: '%env(S3_SECRET)%'

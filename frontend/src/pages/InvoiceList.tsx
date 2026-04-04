@@ -47,7 +47,7 @@ export default function InvoiceList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
     const params: Record<string, string> = {
       page: String(page),
       itemsPerPage: String(PAGE_SIZE),
@@ -56,13 +56,15 @@ export default function InvoiceList() {
 
     getInvoices(params)
       .then((res) => {
+        if (cancelled) return;
         setInvoices(res.data['hydra:member']);
-        // API Platform retourne le nombre total dans hydra:totalItems
         const total = (res.data as Record<string, unknown>)['hydra:totalItems'];
         setTotalItems(typeof total === 'number' ? total : 0);
       })
-      .catch(() => setInvoices([]))
-      .finally(() => setLoading(false));
+      .catch(() => { if (!cancelled) setInvoices([]); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
   }, [statusFilter, page]);
 
   // Reinitialiser la page quand le filtre change

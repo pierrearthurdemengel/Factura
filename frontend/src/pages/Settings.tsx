@@ -37,18 +37,18 @@ export default function Settings() {
         setForm({
           name: c.name || '',
           siren: c.siren || '',
-          siret: (c as Record<string, unknown>).siret as string || '',
+          siret: c.siret || '',
           vatNumber: c.vatNumber || '',
           legalForm: c.legalForm || '',
-          nafCode: (c as Record<string, unknown>).nafCode as string || '',
+          nafCode: c.nafCode || '',
           addressLine1: c.addressLine1 || '',
-          addressLine2: (c as Record<string, unknown>).addressLine2 as string || '',
+          addressLine2: c.addressLine2 || '',
           postalCode: c.postalCode || '',
           city: c.city || '',
-          countryCode: (c as Record<string, unknown>).countryCode as string || 'FR',
-          iban: (c as Record<string, unknown>).iban as string || '',
-          bic: (c as Record<string, unknown>).bic as string || '',
-          defaultPdp: (c as Record<string, unknown>).defaultPdp as string || '',
+          countryCode: c.countryCode || 'FR',
+          iban: c.iban || '',
+          bic: c.bic || '',
+          defaultPdp: c.defaultPdp || '',
         });
       })
       .catch(() => setError('Impossible de charger les informations entreprise.'))

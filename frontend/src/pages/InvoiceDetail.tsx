@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getInvoice, sendInvoice, cancelInvoice, payInvoice, downloadFacturX, downloadUbl, type Invoice } from '../api/factura';
+import { getInvoice, sendInvoice, cancelInvoice, payInvoice, downloadPdf, downloadFacturX, downloadUbl, getInvoiceEvents, type Invoice, type InvoiceEvent } from '../api/factura';
 
 // Telecharge un blob en fichier
 function downloadBlob(blob: Blob, filename: string) {
@@ -14,23 +14,63 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+// Labels des evenements PAF
+const eventLabel = (type: string): string => {
+  const labels: Record<string, string> = {
+    CREATED: 'Creation',
+    STATUS_CHANGED: 'Changement de statut',
+    TRANSMITTED_TO_PDP: 'Transmise a la PDP',
+    RECEIVED_BY_PDP: 'Recue par la PDP',
+    ACKNOWLEDGED: 'Acceptee',
+    REJECTED: 'Rejetee',
+    PAID: 'Payee',
+    ARCHIVED: 'Archivee',
+    VIEWED_BY_BUYER: 'Vue par le client',
+  };
+  return labels[type] || type;
+};
+
+// Couleurs des evenements PAF
+const eventColor = (type: string): string => {
+  const colors: Record<string, string> = {
+    CREATED: '#6b7280',
+    STATUS_CHANGED: '#3b82f6',
+    TRANSMITTED_TO_PDP: '#8b5cf6',
+    RECEIVED_BY_PDP: '#06b6d4',
+    ACKNOWLEDGED: '#22c55e',
+    REJECTED: '#ef4444',
+    PAID: '#10b981',
+    ARCHIVED: '#6366f1',
+    VIEWED_BY_BUYER: '#f59e0b',
+  };
+  return colors[type] || '#6b7280';
+};
+
 // Page detail d'une facture avec timeline PAF et actions.
 export default function InvoiceDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
+  const [events, setEvents] = useState<InvoiceEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
 
   const load = () => {
     if (!id) return;
     setLoading(true);
-    getInvoice(id)
-      .then((res) => setInvoice(res.data))
+    Promise.all([
+      getInvoice(id),
+      getInvoiceEvents(id).catch(() => ({ data: [] as InvoiceEvent[] })),
+    ])
+      .then(([invoiceRes, eventsRes]) => {
+        setInvoice(invoiceRes.data);
+        setEvents(eventsRes.data);
+      })
       .catch(() => navigate('/invoices'))
       .finally(() => setLoading(false));
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- load change a chaque render, on ne depend que de id
   useEffect(() => { load(); }, [id]);
 
   const handleAction = async (action: (id: string) => Promise<unknown>) => {
@@ -46,13 +86,17 @@ export default function InvoiceDetail() {
     }
   };
 
-  const handleDownload = async (format: 'facturx' | 'ubl') => {
+  const handleDownload = async (format: 'pdf' | 'facturx' | 'ubl') => {
     if (!id || !invoice) return;
     try {
-      const fn = format === 'facturx' ? downloadFacturX : downloadUbl;
-      const res = await fn(id);
-      const filename = `${invoice.number || 'brouillon'}-${format}.xml`;
-      downloadBlob(new Blob([res.data]), filename);
+      if (format === 'pdf') {
+        const res = await downloadPdf(id);
+        downloadBlob(new Blob([res.data], { type: 'application/pdf' }), `${invoice.number || 'brouillon'}.pdf`);
+      } else {
+        const fn = format === 'facturx' ? downloadFacturX : downloadUbl;
+        const res = await fn(id);
+        downloadBlob(new Blob([res.data]), `${invoice.number || 'brouillon'}-${format}.xml`);
+      }
     } catch {
       alert('Erreur lors du telechargement.');
     }
@@ -172,13 +216,55 @@ export default function InvoiceDetail() {
 
         <span style={{ borderLeft: '1px solid #e5e7eb', margin: '0 4px' }} />
 
+        <button onClick={() => handleDownload('pdf')} style={{ cursor: 'pointer' }}>
+          Telecharger PDF
+        </button>
         <button onClick={() => handleDownload('facturx')} style={{ cursor: 'pointer' }}>
-          Telecharger Factur-X
+          Telecharger XML CII
         </button>
         <button onClick={() => handleDownload('ubl')} style={{ cursor: 'pointer' }}>
-          Telecharger UBL
+          Telecharger XML UBL
         </button>
       </div>
+
+      {events.length > 0 && (
+        <div style={{ marginTop: '30px' }}>
+          <h2>Piste d'audit (PAF)</h2>
+          <div style={{ borderLeft: '2px solid #e5e7eb', paddingLeft: '16px', marginTop: '10px' }}>
+            {events.map((event) => (
+              <div key={event.id} style={{ marginBottom: '12px', position: 'relative' }}>
+                <div style={{
+                  width: '10px', height: '10px', borderRadius: '50%',
+                  backgroundColor: eventColor(event.eventType),
+                  position: 'absolute', left: '-22px', top: '4px',
+                }} />
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <span style={{
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    backgroundColor: eventColor(event.eventType),
+                    color: 'white',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                  }}>
+                    {eventLabel(event.eventType)}
+                  </span>
+                  <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                    {new Date(event.occurredAt).toLocaleString('fr-FR')}
+                  </span>
+                </div>
+                {event.metadata && Object.keys(event.metadata).length > 0 && (
+                  <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                    {event.metadata.from && event.metadata.to && (
+                      <span>{event.metadata.from} → {event.metadata.to}</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

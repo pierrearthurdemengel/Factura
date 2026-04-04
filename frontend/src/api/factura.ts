@@ -82,11 +82,18 @@ export interface Company {
   id: string;
   name: string;
   siren: string;
+  siret: string | null;
   vatNumber: string | null;
   legalForm: string;
+  nafCode: string | null;
   addressLine1: string;
+  addressLine2: string | null;
   postalCode: string;
   city: string;
+  countryCode: string;
+  iban: string | null;
+  bic: string | null;
+  defaultPdp: string | null;
 }
 
 // Fonctions API
@@ -109,12 +116,10 @@ export const getInvoice = async (id: string) => {
   return api.get<Invoice>(`/invoices/${id}`);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createInvoice = async (data: Record<string, unknown>) => {
   return api.post<Invoice>('/invoices', data);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const updateInvoice = async (id: string, data: Record<string, unknown>) => {
   return api.put<Invoice>(`/invoices/${id}`, data);
 };
@@ -151,6 +156,14 @@ export const updateCompany = async (id: string, data: Partial<Company>) => {
   return api.put<Company>(`/companies/${id}`, data);
 };
 
+// Telecharge le PDF Factur-X (PDF/A-3 avec XML CII embarque) d'une facture
+export const downloadPdf = async (id: string) => {
+  return api.get(`/invoices/${id}/pdf`, {
+    responseType: 'blob',
+    headers: { Accept: 'application/pdf' },
+  });
+};
+
 // Telecharge le XML Factur-X (CII D16B) d'une facture
 export const downloadFacturX = async (id: string) => {
   return api.get(`/invoices/${id}/download/facturx`, {
@@ -165,6 +178,19 @@ export const downloadUbl = async (id: string) => {
     responseType: 'blob',
     headers: { Accept: 'application/xml' },
   });
+};
+
+// Types pour les evenements PAF
+export interface InvoiceEvent {
+  id: string;
+  eventType: string;
+  metadata: Record<string, string>;
+  occurredAt: string;
+}
+
+// Recupere les evenements PAF d'une facture
+export const getInvoiceEvents = async (id: string) => {
+  return api.get<InvoiceEvent[]>(`/invoices/${id}/events`);
 };
 
 export default api;

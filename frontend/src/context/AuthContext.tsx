@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- hook partage avec le provider
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (!context) {
