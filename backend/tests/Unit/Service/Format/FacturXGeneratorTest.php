@@ -232,7 +232,7 @@ class FacturXGeneratorTest extends TestCase
         // Si la validation echoue a cause d'imports manquants (include dans le XSD),
         // on accepte uniquement les erreurs de resolution de schema
         if (!$valid && count($errors) > 0) {
-            $structuralErrors = array_filter($errors, fn ($e) => $e->level === LIBXML_ERR_ERROR && !str_contains($e->message, 'include'));
+            $structuralErrors = array_filter($errors, fn ($e) => LIBXML_ERR_ERROR === $e->level && !str_contains($e->message, 'include'));
             $this->assertCount(0, $structuralErrors, 'Le XML ne devrait pas contenir d\'erreurs structurelles.');
         }
     }

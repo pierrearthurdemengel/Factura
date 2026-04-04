@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getCompany, updateCompany, type Company } from '../api/factura';
+import { getCompany, updateCompany, getStripePortalUrl, type Company } from '../api/factura';
 
 // Page parametres : informations entreprise, PDP, abonnement.
 export default function Settings() {
@@ -194,9 +194,22 @@ export default function Settings() {
       <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #e5e7eb' }}>
         <h2>Abonnement</h2>
         <p style={{ marginBottom: '12px' }}>Plan actuel : <strong>Gratuit</strong> (30 factures/mois)</p>
-        <p style={{ color: '#6b7280', fontSize: '14px' }}>
+        <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '16px' }}>
           Le plan Pro (12 EUR/mois) offre des factures illimitees et l'acces aux exports avances.
         </p>
+        <button
+          onClick={async () => {
+            try {
+              const res = await getStripePortalUrl();
+              window.location.href = res.data.url;
+            } catch {
+              setError('Impossible d\'acceder au portail de facturation.');
+            }
+          }}
+          style={{ padding: '8px 16px', cursor: 'pointer' }}
+        >
+          Gerer mon abonnement
+        </button>
       </div>
 
       <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #e5e7eb' }}>
