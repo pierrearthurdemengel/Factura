@@ -1,5 +1,17 @@
-import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import { AudioProvider } from './context/AudioScope';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+import PageTransition from './components/PageTransition';
+import CommandMenu from './components/CommandMenu';
+import FloatingActionButton from './components/FloatingActionButton';
+import VoiceAssistant from './components/VoiceAssistant';
+import AmbientBackground from './components/AmbientBackground';
+import CustomCursor from './components/CustomCursor';
+import CollaboratorCursor from './components/CollaboratorCursor';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import InvoiceList from './pages/InvoiceList';
@@ -25,37 +37,145 @@ function HomePage() {
 }
 
 // Barre de navigation principale (affichee uniquement pour les utilisateurs connectes)
-function NavBar() {
+function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
   const { isAuthenticated } = useAuth();
+  const { setTheme, isDark } = useTheme();
+
   if (!isAuthenticated) return null;
 
   return (
-    <nav style={{ padding: '10px 20px', borderBottom: '1px solid #e5e7eb', display: 'flex', gap: '20px' }}>
-      <Link to="/" style={{ fontWeight: 'bold', textDecoration: 'none' }}>Ma Facture Pro</Link>
-      <Link to="/invoices">Factures</Link>
-      <Link to="/clients">Clients</Link>
-      <Link to="/settings">Parametres</Link>
+    <nav style={{ padding: '12px 24px', borderBottom: '1px solid var(--border)', display: 'flex', gap: '24px', alignItems: 'center', background: 'var(--bg)' }}>
+      <Link to="/" style={{ fontWeight: '800', textDecoration: 'none', color: 'var(--text-h)', fontSize: '1.1rem' }}>Factura</Link>
+      
+      <button 
+        onClick={onOpenCommand}
+        className="app-btn-outline"
+        style={{
+          marginLeft: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          padding: '6px 12px',
+          color: 'var(--text)',
+          borderColor: 'var(--border)',
+          background: 'transparent',
+          fontSize: '0.85rem',
+          borderRadius: '6px',
+          cursor: 'pointer'
+        }}
+      >
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>Rechercher...</span>
+        <kbd style={{ background: 'var(--social-bg)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', color: 'var(--text-h)', fontFamily: 'inherit', border: '1px solid var(--border)' }}>⌘K</kbd>
+      </button>
+
+      <button
+        onClick={() => setTheme(isDark ? 'light' : 'dark')}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          padding: '8px',
+          cursor: 'pointer',
+          color: 'var(--text-h)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '50%',
+          transition: 'background 0.2s'
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--social-bg)')}
+        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+        title={isDark ? "Activer le mode clair" : "Activer le mode sombre"}
+      >
+        {isDark ? (
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        ) : (
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        )}
+      </button>
+
+      <Link to="/invoices" style={{ color: 'var(--text-h)', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Factures</Link>
+      <Link to="/clients" style={{ color: 'var(--text-h, #111827)', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Clients</Link>
+      <Link to="/settings" style={{ color: 'var(--text-h, #111827)', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Parametres</Link>
     </nav>
+  );
+}
+
+function AnimatedAppCore() {
+  const [cmdOpen, setCmdOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignorer si on est dans un input
+      const target = e.target as HTMLElement;
+      const tName = target.tagName;
+      const isInput = tName === 'INPUT' || tName === 'TEXTAREA' || tName === 'SELECT' || target.isContentEditable;
+
+      // 1. Ouvrir le Command Menu avec Cmd+K ou Ctrl+K
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCmdOpen((o) => !o);
+      }
+      
+      // 2. Prevent Default sur Cmd+S pour eviter d'enregistrer la page native
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        // Une ecoute specifique locale gérera la logique
+      }
+
+      // 3. Raccourcis C pour creer (hors inputs)
+      if (!isInput && e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        window.location.href = '/invoices/new';
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  return (
+    <>
+      <CustomCursor />
+      <CollaboratorCursor />
+      <AmbientBackground />
+      <VoiceAssistant />
+      {location.pathname !== '/invoices/new' && (
+        <>
+          <NavBar onOpenCommand={() => setCmdOpen(true)} />
+          <FloatingActionButton onOpenSearch={() => setCmdOpen(true)} />
+        </>
+      )}
+      <CommandMenu isOpen={cmdOpen} onClose={() => setCmdOpen(false)} />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
+          <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+          <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
+          <Route path="/invoices" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceList /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/invoices/new" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceCreate /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/invoices/:id" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceDetail /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/clients" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ClientList /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Settings /></div></PageTransition></ProtectedRoute>} />
+        </Routes>
+      </AnimatePresence>
+    </>
   );
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/invoices" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceList /></div></ProtectedRoute>} />
-          <Route path="/invoices/new" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceCreate /></div></ProtectedRoute>} />
-          <Route path="/invoices/:id" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceDetail /></div></ProtectedRoute>} />
-          <Route path="/clients" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ClientList /></div></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Settings /></div></ProtectedRoute>} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AudioProvider>
+          <ToastProvider>
+            <BrowserRouter>
+              <AnimatedAppCore />
+            </BrowserRouter>
+          </ToastProvider>
+        </AudioProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

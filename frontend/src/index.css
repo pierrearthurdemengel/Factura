@@ -30,24 +30,38 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+[data-theme="dark"] {
+  --text: #9ca3af;
+  --text-h: #f3f4f6;
+  --bg: #16171d;
+  --border: #2e303a;
+  --code-bg: #1f2028;
+  --accent: #c084fc;
+  --accent-bg: rgba(192, 132, 252, 0.15);
+  --accent-border: rgba(192, 132, 252, 0.5);
+  --social-bg: rgba(47, 48, 58, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+}
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+[data-theme="dark"] #social .button-icon {
+  filter: invert(1) brightness(2);
+}
+
+/* Isolate specific blocks to ONLY remain light, regardless of theme (PDF exports) */
+.force-light-theme, 
+.force-light-theme * {
+  --text: #6b6375 !important;
+  --text-h: #08060d !important;
+  --bg: #fff !important;
+  --border: #e5e4e7 !important;
+  --social-bg: rgba(244, 243, 236, 0.5) !important;
+  color-scheme: light !important;
+}
+
+/* Elegant transition hack applied only during theme switch to avoid lag */
+.theme-switching * {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease !important;
 }
 
 #root {

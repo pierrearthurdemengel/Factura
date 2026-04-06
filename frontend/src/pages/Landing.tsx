@@ -1,441 +1,198 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import './Landing.css';
 
-// Couleurs et styles de la landing page
-const colors = {
-  primary: '#2563eb',
-  primaryDark: '#1d4ed8',
-  primaryLight: '#dbeafe',
-  dark: '#111827',
-  gray: '#6b7280',
-  grayLight: '#f9fafb',
-  border: '#e5e7eb',
-  white: '#ffffff',
-  green: '#059669',
-  greenLight: '#d1fae5',
-};
+// Hook pour les micro-animations au defilement de page
+function useScrollReveal() {
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+          // Desactiver l'option d'unobserve si on veut que l'animation se repete
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-const styles = {
-  // En-tete
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '16px 40px',
-    borderBottom: `1px solid ${colors.border}`,
-    background: colors.white,
-  } as React.CSSProperties,
-  logo: {
-    fontSize: '24px',
-    fontWeight: 700,
-    color: colors.primary,
-    textDecoration: 'none',
-  } as React.CSSProperties,
-  headerLinks: {
-    display: 'flex',
-    gap: '24px',
-    alignItems: 'center',
-  } as React.CSSProperties,
-  headerLink: {
-    color: colors.gray,
-    textDecoration: 'none',
-    fontSize: '15px',
-  } as React.CSSProperties,
-  ctaButton: {
-    background: colors.primary,
-    color: colors.white,
-    padding: '10px 24px',
-    borderRadius: '8px',
-    textDecoration: 'none',
-    fontWeight: 600,
-    fontSize: '15px',
-    border: 'none',
-    cursor: 'pointer',
-  } as React.CSSProperties,
-  ctaButtonOutline: {
-    background: 'transparent',
-    color: colors.primary,
-    padding: '10px 24px',
-    borderRadius: '8px',
-    textDecoration: 'none',
-    fontWeight: 600,
-    fontSize: '15px',
-    border: `2px solid ${colors.primary}`,
-    cursor: 'pointer',
-  } as React.CSSProperties,
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 
-  // Hero
-  hero: {
-    padding: '80px 40px',
-    textAlign: 'center' as const,
-    background: `linear-gradient(180deg, ${colors.white} 0%, ${colors.primaryLight} 100%)`,
-  } as React.CSSProperties,
-  heroTitle: {
-    fontSize: '48px',
-    fontWeight: 700,
-    color: colors.dark,
-    margin: '0 0 24px',
-    lineHeight: 1.2,
-    maxWidth: '700px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  } as React.CSSProperties,
-  heroSubtitle: {
-    fontSize: '20px',
-    color: colors.gray,
-    margin: '0 0 40px',
-    maxWidth: '600px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    lineHeight: 1.6,
-  } as React.CSSProperties,
-  heroCtas: {
-    display: 'flex',
-    gap: '16px',
-    justifyContent: 'center',
-    flexWrap: 'wrap' as const,
-  } as React.CSSProperties,
-  badge: {
-    display: 'inline-block',
-    background: colors.greenLight,
-    color: colors.green,
-    padding: '6px 16px',
-    borderRadius: '20px',
-    fontSize: '14px',
-    fontWeight: 600,
-    marginBottom: '24px',
-  } as React.CSSProperties,
+    return () => observer.disconnect();
+  }, []);
+}
 
-  // Section generique
-  section: {
-    padding: '80px 40px',
-  } as React.CSSProperties,
-  sectionAlt: {
-    padding: '80px 40px',
-    background: colors.grayLight,
-  } as React.CSSProperties,
-  sectionTitle: {
-    fontSize: '32px',
-    fontWeight: 700,
-    color: colors.dark,
-    margin: '0 0 16px',
-    textAlign: 'center' as const,
-  } as React.CSSProperties,
-  sectionSubtitle: {
-    fontSize: '18px',
-    color: colors.gray,
-    margin: '0 0 48px',
-    textAlign: 'center' as const,
-    maxWidth: '600px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  } as React.CSSProperties,
-
-  // Grille de fonctionnalites
-  featuresGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '32px',
-    maxWidth: '1000px',
-    margin: '0 auto',
-  } as React.CSSProperties,
-  featureCard: {
-    background: colors.white,
-    border: `1px solid ${colors.border}`,
-    borderRadius: '12px',
-    padding: '32px',
-    textAlign: 'left' as const,
-  } as React.CSSProperties,
-  featureIcon: {
-    fontSize: '32px',
-    marginBottom: '16px',
-  } as React.CSSProperties,
-  featureTitle: {
-    fontSize: '18px',
-    fontWeight: 600,
-    color: colors.dark,
-    margin: '0 0 8px',
-  } as React.CSSProperties,
-  featureDesc: {
-    fontSize: '15px',
-    color: colors.gray,
-    margin: 0,
-    lineHeight: 1.6,
-  } as React.CSSProperties,
-
-  // Tableau de prix
-  pricingGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '24px',
-    maxWidth: '900px',
-    margin: '0 auto',
-  } as React.CSSProperties,
-  pricingCard: {
-    background: colors.white,
-    border: `1px solid ${colors.border}`,
-    borderRadius: '12px',
-    padding: '32px',
-    textAlign: 'center' as const,
-  } as React.CSSProperties,
-  pricingCardFeatured: {
-    background: colors.white,
-    border: `2px solid ${colors.primary}`,
-    borderRadius: '12px',
-    padding: '32px',
-    textAlign: 'center' as const,
-    position: 'relative' as const,
-  } as React.CSSProperties,
-  pricingName: {
-    fontSize: '20px',
-    fontWeight: 600,
-    color: colors.dark,
-    margin: '0 0 8px',
-  } as React.CSSProperties,
-  pricingPrice: {
-    fontSize: '40px',
-    fontWeight: 700,
-    color: colors.dark,
-    margin: '16px 0 4px',
-  } as React.CSSProperties,
-  pricingPeriod: {
-    fontSize: '15px',
-    color: colors.gray,
-    margin: '0 0 24px',
-  } as React.CSSProperties,
-  pricingFeatures: {
-    listStyle: 'none',
-    padding: 0,
-    margin: '0 0 32px',
-    textAlign: 'left' as const,
-  } as React.CSSProperties,
-  pricingFeature: {
-    padding: '8px 0',
-    fontSize: '15px',
-    color: colors.gray,
-    borderBottom: `1px solid ${colors.border}`,
-  } as React.CSSProperties,
-
-  // Conformite
-  conformiteGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '24px',
-    maxWidth: '800px',
-    margin: '0 auto',
-  } as React.CSSProperties,
-  conformiteItem: {
-    textAlign: 'center' as const,
-    padding: '24px',
-  } as React.CSSProperties,
-  conformiteValue: {
-    fontSize: '28px',
-    fontWeight: 700,
-    color: colors.primary,
-    margin: '0 0 8px',
-  } as React.CSSProperties,
-  conformiteLabel: {
-    fontSize: '14px',
-    color: colors.gray,
-    margin: 0,
-  } as React.CSSProperties,
-
-  // Footer
-  footer: {
-    padding: '40px',
-    borderTop: `1px solid ${colors.border}`,
-    textAlign: 'center' as const,
-    color: colors.gray,
-    fontSize: '14px',
-  } as React.CSSProperties,
-};
-
-// Page d'accueil publique
+// Page d'accueil publique - Version Haut de Gamme Minimaliste
 export default function Landing() {
+  useScrollReveal();
+
   return (
     <div>
       {/* En-tete */}
-      <header style={styles.header}>
-        <span style={styles.logo}>Ma Facture Pro</span>
-        <div style={styles.headerLinks}>
-          <a href="#fonctionnalites" style={styles.headerLink}>Fonctionnalites</a>
-          <a href="#conformite" style={styles.headerLink}>Conformite</a>
-          <a href="#tarifs" style={styles.headerLink}>Tarifs</a>
-          <Link to="/login" style={styles.headerLink}>Connexion</Link>
-          <Link to="/register" style={styles.ctaButton}>Essai gratuit</Link>
+      <header className="l-header">
+        <span className="l-logo">Ma Facture Pro</span>
+        <div className="l-header-links">
+          <a href="#fonctionnalites" className="l-header-link">Fonctionnalites</a>
+          <a href="#conformite" className="l-header-link">Conformite</a>
+          <a href="#tarifs" className="l-header-link">Tarifs</a>
+          <Link to="/login" className="l-header-link">Connexion</Link>
+          <Link to="/register" className="l-btn-primary">Essai gratuit</Link>
         </div>
       </header>
 
       {/* Hero */}
-      <section style={styles.hero}>
-        <div style={styles.badge}>Conforme a la reforme 2026</div>
-        <h1 style={styles.heroTitle}>
-          La facturation electronique
-          simple et conforme
+      <section className="l-hero">
+        <div className="l-badge reveal">L'avenir de la facturation</div>
+        <h1 className="l-hero-title reveal reveal-delay-1">
+          L'evidence de la facturation<br/>electronique
         </h1>
-        <p style={styles.heroSubtitle}>
-          Creez, emettez et recevez vos factures electroniques
-          au format Factur-X et UBL. Raccorde a Chorus Pro,
-          conforme aux exigences DGFiP.
+        <p className="l-hero-subtitle reveal reveal-delay-2">
+          Design epure, emission simple, conformite exigeante.
+          Creez et recevez vos factures au format Factur-X et UBL, 
+          directement raccorde a Chorus Pro.
         </p>
-        <div style={styles.heroCtas}>
-          <Link to="/register" style={styles.ctaButton}>Commencer gratuitement</Link>
-          <a href="#fonctionnalites" style={styles.ctaButtonOutline}>Decouvrir</a>
+        <div className="l-hero-ctas reveal reveal-delay-3">
+          <Link to="/register" className="l-btn-primary">Demarrer gratuitement</Link>
+          <a href="#fonctionnalites" className="l-btn-outline">Explorer</a>
         </div>
       </section>
 
       {/* Conformite en chiffres */}
-      <section style={styles.sectionAlt} id="conformite">
-        <h2 style={styles.sectionTitle}>Conforme des le premier jour</h2>
-        <p style={styles.sectionSubtitle}>
-          Ma Facture Pro respecte toutes les exigences de la reforme de la facturation
-          electronique francaise et du standard europeen EN 16931.
+      <section className="l-section-alt" id="conformite">
+        <h2 className="l-section-title reveal">Conformite garantie</h2>
+        <p className="l-section-subtitle reveal reveal-delay-1">
+          Un respect absolu du standard europeen EN 16931 et des exigences de la DGFiP en France.
         </p>
-        <div style={styles.conformiteGrid}>
-          <div style={styles.conformiteItem}>
-            <p style={styles.conformiteValue}>EN 16931</p>
-            <p style={styles.conformiteLabel}>Norme europeenne respectee</p>
+        <div className="l-grid-conformite">
+          <div className="l-conformite-item reveal reveal-delay-1">
+            <p className="l-conformite-val">EN 16931</p>
+            <p className="l-conformite-lbl">Norme europeenne</p>
           </div>
-          <div style={styles.conformiteItem}>
-            <p style={styles.conformiteValue}>Factur-X</p>
-            <p style={styles.conformiteLabel}>PDF/A-3 + XML CII embarque</p>
+          <div className="l-conformite-item reveal reveal-delay-2">
+            <p className="l-conformite-val">Factur-X</p>
+            <p className="l-conformite-lbl">PDF/A-3 embarque</p>
           </div>
-          <div style={styles.conformiteItem}>
-            <p style={styles.conformiteValue}>UBL 2.1</p>
-            <p style={styles.conformiteLabel}>Peppol BIS Billing 3.0</p>
+          <div className="l-conformite-item reveal reveal-delay-3">
+            <p className="l-conformite-val">UBL 2.1</p>
+            <p className="l-conformite-lbl">Peppol BIS Billing</p>
           </div>
-          <div style={styles.conformiteItem}>
-            <p style={styles.conformiteValue}>10 ans</p>
-            <p style={styles.conformiteLabel}>Archivage legal en France</p>
+          <div className="l-conformite-item reveal reveal-delay-4">
+            <p className="l-conformite-val">10 ans</p>
+            <p className="l-conformite-lbl">Archivage legal</p>
           </div>
         </div>
       </section>
 
       {/* Fonctionnalites */}
-      <section style={styles.section} id="fonctionnalites">
-        <h2 style={styles.sectionTitle}>Tout ce qu'il faut pour facturer</h2>
-        <p style={styles.sectionSubtitle}>
-          De la creation a l'archivage, Ma Facture Pro gere l'integralite
-          du cycle de vie de vos factures.
+      <section className="l-section" id="fonctionnalites">
+        <h2 className="l-section-title reveal">L'excellence operationnelle</h2>
+        <p className="l-section-subtitle reveal reveal-delay-1">
+          De la creation a l'archivage legitime, tout est pense pour votre souverainete et votre fluidite professionnelle.
         </p>
-        <div style={styles.featuresGrid}>
-          <div style={styles.featureCard}>
-            <div style={styles.featureIcon}>&#128221;</div>
-            <h3 style={styles.featureTitle}>Creation guidee</h3>
-            <p style={styles.featureDesc}>
-              Saisie intuitive avec calcul automatique des montants HT, TVA et TTC.
-              Multi-taux TVA (0%, 5.5%, 10%, 20%).
+        <div className="l-grid-features">
+          <div className="l-feature-card reveal reveal-delay-1">
+            <h3 className="l-feature-title">Creation guidee</h3>
+            <p className="l-feature-desc">
+              Saisie intuitive avec calcul immediat des montants. Multi-taux TVA.
             </p>
           </div>
-          <div style={styles.featureCard}>
-            <div style={styles.featureIcon}>&#128196;</div>
-            <h3 style={styles.featureTitle}>Formats conformes</h3>
-            <p style={styles.featureDesc}>
-              Generation automatique en Factur-X (PDF/A-3 + XML) et UBL 2.1.
-              Profil EN 16931 garanti.
+          <div className="l-feature-card reveal reveal-delay-2">
+            <h3 className="l-feature-title">Formats conformes</h3>
+            <p className="l-feature-desc">
+              Generation hybride automatique Factur-X et UBL 2.1 garantissant le standard EN 16931.
             </p>
           </div>
-          <div style={styles.featureCard}>
-            <div style={styles.featureIcon}>&#128640;</div>
-            <h3 style={styles.featureTitle}>Emission automatique</h3>
-            <p style={styles.featureDesc}>
-              Transmission directe via Chorus Pro (PDP). Suivi du statut
-              en temps reel : deposee, acceptee, rejetee, payee.
+          <div className="l-feature-card reveal reveal-delay-3">
+            <h3 className="l-feature-title">Emission directe</h3>
+            <p className="l-feature-desc">
+              Transmission automatique via Chorus Pro. Statuts traduits en temps reel (deposee, payee).
             </p>
           </div>
-          <div style={styles.featureCard}>
-            <div style={styles.featureIcon}>&#128274;</div>
-            <h3 style={styles.featureTitle}>Piste d'audit fiable</h3>
-            <p style={styles.featureDesc}>
-              Journal immutable de chaque evenement. Hash SHA-256 pour
-              l'integrite. Conforme aux exigences PAF de la DGFiP.
+          <div className="l-feature-card reveal reveal-delay-4">
+            <h3 className="l-feature-title">Piste d'audit fiable</h3>
+            <p className="l-feature-desc">
+              Journalisation immutable de vos evenements. Validite garantie par hachage cryptographique.
             </p>
           </div>
-          <div style={styles.featureCard}>
-            <div style={styles.featureIcon}>&#128451;</div>
-            <h3 style={styles.featureTitle}>Archivage 10 ans</h3>
-            <p style={styles.featureDesc}>
-              Stockage securise en France (Scaleway). Versioning S3, aucune
-              suppression possible. Conformite article 289 VII du CGI.
+          <div className="l-feature-card reveal reveal-delay-5">
+            <h3 className="l-feature-title">Coffre-fort legal</h3>
+            <p className="l-feature-desc">
+              Un stockage securise localise en France, protegeant vos archives pendant 10 annees incompressibles.
             </p>
           </div>
-          <div style={styles.featureCard}>
-            <div style={styles.featureIcon}>&#128170;</div>
-            <h3 style={styles.featureTitle}>API ouverte</h3>
-            <p style={styles.featureDesc}>
-              API REST documentee (OpenAPI 3.1) pour integrer Ma Facture Pro
-              a vos outils existants : ERP, comptabilite, CRM.
+          <div className="l-feature-card reveal reveal-delay-6">
+            <h3 className="l-feature-title">API unifiee</h3>
+            <p className="l-feature-desc">
+              L'entierete de la plateforme accessible via notre API REST documentee (OpenAPI 3.1).
             </p>
           </div>
         </div>
       </section>
 
       {/* Tarifs */}
-      <section style={styles.sectionAlt} id="tarifs">
-        <h2 style={styles.sectionTitle}>Tarifs simples et transparents</h2>
-        <p style={styles.sectionSubtitle}>
-          Commencez gratuitement, passez au plan Pro quand votre activite grandit.
+      <section className="l-section-alt" id="tarifs">
+        <h2 className="l-section-title reveal">Un modele cristallin</h2>
+        <p className="l-section-subtitle reveal reveal-delay-1">
+          Des grilles tarifaires transparentes, grandissant harmonieusement avec vous.
         </p>
-        <div style={styles.pricingGrid}>
-          <div style={styles.pricingCard}>
-            <h3 style={styles.pricingName}>Gratuit</h3>
-            <p style={{ ...styles.featureDesc, margin: 0 }}>Pour demarrer</p>
-            <p style={styles.pricingPrice}>0 &euro;</p>
-            <p style={styles.pricingPeriod}>par mois</p>
-            <ul style={styles.pricingFeatures}>
-              <li style={styles.pricingFeature}>30 factures / mois</li>
-              <li style={styles.pricingFeature}>Factur-X + UBL</li>
-              <li style={styles.pricingFeature}>Emission via Chorus Pro</li>
-              <li style={styles.pricingFeature}>Archivage 10 ans</li>
+        <div className="l-grid-pricing">
+          <div className="l-pricing-card reveal reveal-delay-1">
+            <h3 className="l-pricing-name">Fondation</h3>
+            <p className="l-feature-desc">Pour explorer et initier</p>
+            <p className="l-pricing-price">0 &euro;</p>
+            <p className="l-pricing-period">mensuel</p>
+            <ul className="l-pricing-features">
+              <li className="l-pricing-feature">30 factures / mois</li>
+              <li className="l-pricing-feature">Formats hybrides standardises</li>
+              <li className="l-pricing-feature">Emission Chorus Pro native</li>
+              <li className="l-pricing-feature">Archivage standard</li>
             </ul>
-            <Link to="/register" style={styles.ctaButtonOutline}>Commencer</Link>
+            <Link to="/register" className="l-btn-outline">Demarrer</Link>
           </div>
-          <div style={styles.pricingCardFeatured}>
-            <h3 style={styles.pricingName}>Pro</h3>
-            <p style={{ ...styles.featureDesc, margin: 0 }}>Pour les independants</p>
-            <p style={styles.pricingPrice}>14,90 &euro;</p>
-            <p style={styles.pricingPeriod}>par mois, HT</p>
-            <ul style={styles.pricingFeatures}>
-              <li style={styles.pricingFeature}>Factures illimitees</li>
-              <li style={styles.pricingFeature}>Factur-X + UBL</li>
-              <li style={styles.pricingFeature}>Emission via Chorus Pro</li>
-              <li style={styles.pricingFeature}>Archivage 10 ans</li>
-              <li style={styles.pricingFeature}>Support prioritaire</li>
+          <div className="l-pricing-card featured reveal reveal-delay-2">
+            <h3 className="l-pricing-name">Independant</h3>
+            <p className="l-feature-desc">Liberte absolue</p>
+            <p className="l-pricing-price">14,90 &euro;</p>
+            <p className="l-pricing-period">mensuel, HT</p>
+            <ul className="l-pricing-features">
+              <li className="l-pricing-feature">Volume de factures illimite</li>
+              <li className="l-pricing-feature">Formats complets</li>
+              <li className="l-pricing-feature">Emission en un clic</li>
+              <li className="l-pricing-feature">Coffre-fort legal 10 ans</li>
+              <li className="l-pricing-feature">Assistance prioritaire</li>
             </ul>
-            <Link to="/register" style={styles.ctaButton}>Essai gratuit 30 jours</Link>
+            <Link to="/register" className="l-btn-primary">S'engager sans frais 30 jours</Link>
           </div>
-          <div style={styles.pricingCard}>
-            <h3 style={styles.pricingName}>Equipe</h3>
-            <p style={{ ...styles.featureDesc, margin: 0 }}>Pour les PME</p>
-            <p style={styles.pricingPrice}>29,90 &euro;</p>
-            <p style={styles.pricingPeriod}>par mois, HT</p>
-            <ul style={styles.pricingFeatures}>
-              <li style={styles.pricingFeature}>Factures illimitees</li>
-              <li style={styles.pricingFeature}>Multi-utilisateurs</li>
-              <li style={styles.pricingFeature}>API illimitee</li>
-              <li style={styles.pricingFeature}>Export FEC comptable</li>
-              <li style={styles.pricingFeature}>Support dedie</li>
+          <div className="l-pricing-card reveal reveal-delay-3">
+            <h3 className="l-pricing-name">Entreprise</h3>
+            <p className="l-feature-desc">Ecosysteme avance</p>
+            <p className="l-pricing-price">29,90 &euro;</p>
+            <p className="l-pricing-period">mensuel, HT</p>
+            <ul className="l-pricing-features">
+              <li className="l-pricing-feature">Acces multi-collaborateurs</li>
+              <li className="l-pricing-feature">Integration API debridee</li>
+              <li className="l-pricing-feature">Exports comptables (FEC)</li>
+              <li className="l-pricing-feature">Support applicatif dedie</li>
             </ul>
-            <Link to="/register" style={styles.ctaButtonOutline}>Nous contacter</Link>
+            <Link to="/register" className="l-btn-outline">Demander un contact</Link>
           </div>
         </div>
       </section>
 
       {/* CTA final */}
-      <section style={{ ...styles.section, textAlign: 'center' }}>
-        <h2 style={styles.sectionTitle}>Pret pour la facturation electronique ?</h2>
-        <p style={{ ...styles.sectionSubtitle, marginBottom: '32px' }}>
-          La reforme entre en vigueur le 1er septembre 2026.
-          Anticipez des maintenant avec Ma Facture Pro.
+      <section className="l-section">
+        <h2 className="l-section-title reveal">Le futur commence maintenant</h2>
+        <p className="l-section-subtitle reveal reveal-delay-1" style={{ marginBottom: '2rem' }}>
+          N'attendez pas la reforme de 2026. Transitionnez avec serenite grace a Ma Facture Pro.
         </p>
-        <Link to="/register" style={styles.ctaButton}>Creer mon compte gratuitement</Link>
+        <div className="reveal reveal-delay-2">
+          <Link to="/register" className="l-btn-primary">Creer mon espace</Link>
+        </div>
       </section>
 
       {/* Footer */}
-      <footer style={styles.footer}>
-        <p>&copy; 2026 Ma Facture Pro — Tous droits reserves</p>
-        <p style={{ marginTop: '8px' }}>
-          15 rue de la Paix, 75002 Paris — SIREN 930 538 111
-        </p>
+      <footer className="l-footer">
+        <p>&copy; 2026 Ma Facture Pro — Tous droits reserves.</p>
+        <p>15 rue de la Paix, 75002 Paris — SIREN 930 538 111</p>
       </footer>
     </div>
   );

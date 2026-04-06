@@ -1,8 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createInvoice, getClients, type Client } from '../api/factura';
+import { useToast } from '../context/ToastContext';
+import DatePicker from '../components/DatePicker';
+import { downloadLocalPdf } from '../utils/pdfGenerator';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { motion } from 'framer-motion';
+import './AppLayout.css';
+import './InvoiceCreate.css';
 
 interface LineForm {
+  id: string;
   description: string;
   quantity: string;
   unit: string;
@@ -10,7 +20,57 @@ interface LineForm {
   vatRate: string;
 }
 
-// Formulaire de creation de facture avec calcul automatique HT/TVA/TTC.
+function SortableLineItem({ id, children }: { id: string, children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.8 : 1,
+    boxShadow: isDragging ? '0 10px 25px rgba(0,0,0,0.1)' : 'none',
+    zIndex: isDragging ? 100 : 1,
+    position: 'relative' as any,
+    marginBottom: '1rem', 
+    padding: '0', 
+    display: 'flex',
+    background: 'var(--bg)',
+    borderRadius: '8px',
+    border: '1px solid var(--border)'
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <div 
+        {...attributes} 
+        {...listeners} 
+        style={{ 
+          cursor: isDragging ? 'grabbing' : 'grab', 
+          padding: '0 1rem', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          borderRight: '1px solid var(--border)', 
+          backgroundColor: 'var(--social-bg)', 
+          borderTopLeftRadius: '8px', 
+          borderBottomLeftRadius: '8px', 
+          color: 'var(--l-gray)' 
+        }}
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="9" cy="12" r="1.5"></circle>
+          <circle cx="9" cy="5" r="1.5"></circle>
+          <circle cx="9" cy="19" r="1.5"></circle>
+          <circle cx="15" cy="12" r="1.5"></circle>
+          <circle cx="15" cy="5" r="1.5"></circle>
+          <circle cx="15" cy="19" r="1.5"></circle>
+        </svg>
+      </div>
+      <div style={{ flex: 1, padding: '1rem' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function InvoiceCreate() {
   const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
@@ -19,11 +79,42 @@ export default function InvoiceCreate() {
   const [dueDate, setDueDate] = useState('');
   const [legalMention, setLegalMention] = useState('');
   const [paymentTerms, setPaymentTerms] = useState('');
-  const [showPreview, setShowPreview] = useState(false);
   const [lines, setLines] = useState<LineForm[]>([
-    { description: '', quantity: '1', unit: 'EA', unitPriceExcludingTax: '', vatRate: '20' },
+    { id: crypto.randomUUID(), description: '', quantity: '1', unit: 'EA', unitPriceExcludingTax: '', vatRate: '20' },
   ]);
-  const [error, setError] = useState('');
+  const { error, success } = useToast();
+  
+  // Holographic 3D state
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!previewRef.current) return;
+    const rect = previewRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // Rotate max 8 degrees
+    const rotateX = ((y - centerY) / centerY) * -8;
+    const rotateY = ((x - centerX) / centerX) * 8;
+    
+    // Glare position
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+
+    setTilt({ x: rotateX, y: rotateY, glareX, glareY });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0, glareX: 50, glareY: 50 });
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor)
+  );
 
   useEffect(() => {
     getClients()
@@ -31,7 +122,6 @@ export default function InvoiceCreate() {
       .catch(() => setClients([]));
   }, []);
 
-  // Calcul automatique des totaux
   const computeLineTotal = (line: LineForm) => {
     const qty = parseFloat(line.quantity) || 0;
     const price = parseFloat(line.unitPriceExcludingTax) || 0;
@@ -49,22 +139,30 @@ export default function InvoiceCreate() {
   );
 
   const addLine = () => {
-    setLines([...lines, { description: '', quantity: '1', unit: 'EA', unitPriceExcludingTax: '', vatRate: '20' }]);
+    setLines([...lines, { id: crypto.randomUUID(), description: '', quantity: '1', unit: 'EA', unitPriceExcludingTax: '', vatRate: '20' }]);
   };
 
-  const removeLine = (index: number) => {
-    setLines(lines.filter((_, i) => i !== index));
+  const removeLine = (id: string) => {
+    setLines(lines.filter(l => l.id !== id));
   };
 
-  const updateLine = (index: number, field: keyof LineForm, value: string) => {
-    const updated = [...lines];
-    updated[index] = { ...updated[index], [field]: value };
-    setLines(updated);
+  const updateLine = (id: string, field: keyof LineForm, value: string) => {
+    setLines(lines.map(l => l.id === id ? { ...l, [field]: value } : l));
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setLines((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
 
     try {
       const data = {
@@ -84,199 +182,269 @@ export default function InvoiceCreate() {
       };
 
       await createInvoice(data);
+      success('Facture creee avec succes.');
       navigate('/invoices');
     } catch {
-      setError('Erreur lors de la creation de la facture.');
+      error('Erreur lors de la creation de la facture.');
     }
   };
 
+  const handlePreviewPdf = async () => {
+    try {
+      success('Capture Ultra-HD en cours...');
+      await downloadLocalPdf('.a4-paper', `Aperçu_Facture_${selectedClient ? 'Client' : 'Brouillon'}.pdf`);
+    } catch {
+      error('Erreur lors de la génération PDF locale.');
+    }
+  };
+
+  // Typeform completion gauge logic
+  const completionRate = useMemo(() => {
+    let score = 0;
+    if (selectedClient) score += 35;
+    if (issueDate) score += 15;
+    if (lines.length > 0 && lines[0].description && lines[0].unitPriceExcludingTax) score += 50;
+    return score;
+  }, [selectedClient, issueDate, lines]);
+
   return (
-    <div>
-      <h1>Nouvelle facture</h1>
+    <div className="app-container">
+      <h1 className="app-page-title">Nouvelle facture</h1>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <div className="invoice-create-layout">
+        <div className="invoice-create-form">
+          <form onSubmit={handleSubmit}>
+            <div className="app-form-group">
+              <label className="app-label">Client</label>
+              <select value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} required className="app-select">
+                <option value="">Selectionner un client</option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c['@id']}>{c.name}</option>
+                ))}
+              </select>
+            </div>
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '20px' }}>
-          <label>Client</label>
-          <select value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} required>
-            <option value="">Selectionner un client</option>
-            {clients.map((c) => (
-              <option key={c.id} value={c['@id']}>{c.name}</option>
-            ))}
-          </select>
-        </div>
+            <div className="app-form-row">
+              <div className="app-form-group">
+                <label className="app-label">Date d'emission</label>
+                <DatePicker value={issueDate} onChange={setIssueDate} />
+              </div>
+              <div className="app-form-group">
+                <label className="app-label">Date d'echeance</label>
+                <DatePicker value={dueDate} onChange={setDueDate} placeholder="Facultatif" />
+              </div>
+            </div>
 
-        <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-          <div>
-            <label>Date d'emission</label>
-            <input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} required />
-          </div>
-          <div>
-            <label>Date d'echeance</label>
-            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-          </div>
-        </div>
+            <h2 className="app-section-title">Lignes</h2>
+            
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={lines.map(l => l.id)} strategy={verticalListSortingStrategy}>
+                {lines.map((line) => (
+                  <SortableLineItem key={line.id} id={line.id}>
+                    <div className="app-form-row">
+                      <div className="app-form-group flex-2">
+                        <label className="app-label">Description</label>
+                        <input
+                          type="text"
+                          value={line.description}
+                          onChange={(e) => updateLine(line.id, 'description', e.target.value)}
+                          required
+                          className="app-input"
+                        />
+                      </div>
+                      <div className="app-form-group">
+                        <label className="app-label">Quantite</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={line.quantity}
+                          onChange={(e) => updateLine(line.id, 'quantity', e.target.value)}
+                          required
+                          className="app-input"
+                        />
+                      </div>
+                      <div className="app-form-group">
+                        <label className="app-label">Unite</label>
+                        <select value={line.unit} onChange={(e) => updateLine(line.id, 'unit', e.target.value)} className="app-select">
+                          <option value="EA">Unite</option>
+                          <option value="HUR">Heure</option>
+                          <option value="DAY">Jour</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="app-form-row" style={{ alignItems: 'flex-end', marginTop: '1rem' }}>
+                      <div className="app-form-group">
+                        <label className="app-label">Prix HT</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={line.unitPriceExcludingTax}
+                          onChange={(e) => updateLine(line.id, 'unitPriceExcludingTax', e.target.value)}
+                          required
+                          className="app-input"
+                        />
+                      </div>
+                      <div className="app-form-group">
+                        <label className="app-label">TVA %</label>
+                        <select value={line.vatRate} onChange={(e) => updateLine(line.id, 'vatRate', e.target.value)} className="app-select">
+                          <option value="20">20%</option>
+                          <option value="10">10%</option>
+                          <option value="5.5">5.5%</option>
+                          <option value="2.1">2.1%</option>
+                          <option value="0">0% (exoneration)</option>
+                        </select>
+                      </div>
+                      <div className="app-form-group" style={{ alignItems: 'flex-end' }}>
+                        <p style={{ margin: '0 0 10px', fontWeight: 600 }}>{computeLineTotal(line).ht.toFixed(2)} EUR HT</p>
+                        <button type="button" onClick={() => removeLine(line.id)} disabled={lines.length === 1} className="app-btn-outline-danger">
+                          Supprimer
+                        </button>
+                      </div>
+                    </div>
+                  </SortableLineItem>
+                ))}
+              </SortableContext>
+            </DndContext>
 
-        <h2>Lignes</h2>
-        {lines.map((line, index) => (
-          <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'end' }}>
-            <div style={{ flex: 3 }}>
-              <label>Description</label>
+            <button type="button" onClick={addLine} className="app-btn-outline-danger" style={{ marginBottom: 'clamp(1.5rem, 3vw, 2rem)', color: 'var(--text-h)', borderColor: 'var(--border)' }}>
+              + Ajouter une ligne
+            </button>
+
+            <div className="app-form-group">
+              <label className="app-label">Conditions de paiement</label>
               <input
                 type="text"
-                value={line.description}
-                onChange={(e) => updateLine(index, 'description', e.target.value)}
-                required
-                style={{ width: '100%' }}
+                value={paymentTerms}
+                onChange={(e) => setPaymentTerms(e.target.value)}
+                placeholder="Paiement a 30 jours fin de mois"
+                className="app-input"
               />
             </div>
-            <div style={{ flex: 1 }}>
-              <label>Quantite</label>
-              <input
-                type="number"
-                step="0.01"
-                value={line.quantity}
-                onChange={(e) => updateLine(index, 'quantity', e.target.value)}
-                required
+
+            <div className="app-form-group">
+              <label className="app-label">Mention legale</label>
+              <textarea
+                value={legalMention}
+                onChange={(e) => setLegalMention(e.target.value)}
+                placeholder="TVA non applicable - art. 293 B du CGI"
+                className="app-input"
+                style={{ resize: 'vertical', minHeight: '80px' }}
               />
             </div>
-            <div style={{ flex: 1 }}>
-              <label>Unite</label>
-              <select value={line.unit} onChange={(e) => updateLine(index, 'unit', e.target.value)}>
-                <option value="EA">Unite</option>
-                <option value="HUR">Heure</option>
-                <option value="DAY">Jour</option>
-              </select>
-            </div>
-            <div style={{ flex: 1 }}>
-              <label>Prix HT</label>
-              <input
-                type="number"
-                step="0.01"
-                value={line.unitPriceExcludingTax}
-                onChange={(e) => updateLine(index, 'unitPriceExcludingTax', e.target.value)}
-                required
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label>TVA %</label>
-              <select value={line.vatRate} onChange={(e) => updateLine(index, 'vatRate', e.target.value)}>
-                <option value="20">20%</option>
-                <option value="10">10%</option>
-                <option value="5.5">5.5%</option>
-                <option value="2.1">2.1%</option>
-                <option value="0">0% (exoneration / autoliquidation)</option>
-              </select>
-            </div>
-            <div style={{ flex: 1 }}>
-              <p>{computeLineTotal(line).ht.toFixed(2)} EUR HT</p>
-            </div>
-            <button type="button" onClick={() => removeLine(index)} disabled={lines.length === 1}>
-              Supprimer
-            </button>
-          </div>
-        ))}
 
-        <button type="button" onClick={addLine} style={{ marginBottom: '20px' }}>
-          Ajouter une ligne
-        </button>
+            <div className="app-card" style={{ marginBottom: 'clamp(2.5rem, 5vw, 4rem)', alignItems: 'flex-end', background: 'var(--social-bg)' }}>
+              <p style={{ margin: '0 0 0.5rem', color: 'var(--text)' }}>Total HT : <strong style={{ color: 'var(--text-h)' }}>{totals.ht.toFixed(2)} EUR</strong></p>
+              <p style={{ margin: '0 0 0.5rem', color: 'var(--text)' }}>Total TVA : <strong style={{ color: 'var(--text-h)' }}>{totals.vat.toFixed(2)} EUR</strong></p>
+              <p style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-h)' }}>Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
+            </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label>Conditions de paiement</label>
-          <input
-            type="text"
-            value={paymentTerms}
-            onChange={(e) => setPaymentTerms(e.target.value)}
-            placeholder="Paiement a 30 jours fin de mois"
-            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-          />
+            {/* Barre de Progression / Focus Bottom Bar */}
+            <div style={{ position: 'fixed', bottom: 0, left: 0, width: '50vw', padding: '24px', background: 'var(--bg)', borderTop: '1px solid var(--border)', display: 'flex', gap: '20px', alignItems: 'center', zIndex: 100, borderRight: '1px solid var(--border)' }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-h)', fontWeight: 600 }}>
+                  <span>Progression ({completionRate}%)</span>
+                  <span>{completionRate === 100 ? 'Prêt à valider' : 'Champs manquants'}</span>
+                </div>
+                <div style={{ width: '100%', height: '6px', background: 'var(--social-bg)', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ width: `${completionRate}%`, background: 'var(--accent)', height: '100%', transition: 'width 0.4s cubic-bezier(0.22, 1, 0.36, 1)' }} />
+                </div>
+              </div>
+              <button type="button" onClick={() => navigate('/invoices')} className="app-btn-outline" style={{ padding: '12px 24px' }}>
+                Annuler
+              </button>
+              <button type="submit" disabled={completionRate < 100} className="app-btn-primary" style={{ padding: '12px 24px', opacity: completionRate === 100 ? 1 : 0.5 }}>
+                Creer la facture
+              </button>
+            </div>
+            
+            <div className="app-form-row" style={{ marginTop: '0.5rem', marginBottom: '8rem' }}>
+              <button type="button" onClick={handlePreviewPdf} className="app-btn-outline" style={{ width: '100%', padding: '12px' }}>
+                ⬇️ Télécharger Aperçu PDF (Ultra-HD)
+              </button>
+            </div>
+          </form>
         </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label>Mention legale</label>
-          <textarea
-            value={legalMention}
-            onChange={(e) => setLegalMention(e.target.value)}
-            placeholder="TVA non applicable - art. 293 B du CGI"
-            style={{ width: '100%' }}
-          />
-        </div>
+        <div className="invoice-create-preview-sticky" style={{ perspective: '1500px' }}>
+          <motion.div 
+            ref={previewRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            animate={{ rotateX: tilt.x, rotateY: tilt.y }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="a4-paper force-light-theme"
+            style={{ position: 'relative', overflow: 'hidden', transformStyle: 'preserve-3d' }}
+          >
+            {/* Glare effect */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%)`,
+              mixBlendMode: 'overlay',
+              pointerEvents: 'none',
+              zIndex: 10,
+              transition: 'background 0.1s'
+            }} />
 
-        <div style={{ padding: '15px', backgroundColor: '#f9fafb', borderRadius: '8px', marginBottom: '20px' }}>
-          <p>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
-          <p>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
-          <p>Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
-        </div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 2rem 0', color: '#111' }}>FACTURE {selectedClient ? '' : '(Brouillon)'}</h2>
 
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
-          <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>
-            Creer la facture
-          </button>
-          <button type="button" onClick={() => setShowPreview(!showPreview)} style={{ padding: '10px 20px', cursor: 'pointer' }}>
-            {showPreview ? 'Masquer' : 'Previsualiser'}
-          </button>
-        </div>
-      </form>
-
-      {showPreview && (
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '30px', marginTop: '20px', background: '#fff', maxWidth: '800px' }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '24px', color: '#2563eb' }}>Apercu de la facture</h2>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <div>
-              <p style={{ fontWeight: 'bold' }}>Vendeur</p>
-              <p style={{ color: '#6b7280', fontSize: '14px' }}>(Informations de votre entreprise)</p>
+            <div className="app-grid">
+              <div className="app-form-group">
+                <p className="app-label">Vendeur</p>
+                <p style={{ color: 'var(--text)', fontSize: '0.9rem', margin: 0 }}>(Informations de votre entreprise)</p>
+              </div>
+              <div className="app-form-group" style={{ textAlign: 'right' }}>
+                <p className="app-label">Client</p>
+                <p style={{ color: 'var(--text)', margin: 0 }}>{clients.find((c) => c['@id'] === selectedClient)?.name || '—'}</p>
+              </div>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ fontWeight: 'bold' }}>Client</p>
-              <p>{clients.find((c) => c['@id'] === selectedClient)?.name || '—'}</p>
+
+            <div className="app-grid" style={{ fontSize: '0.9rem', color: 'var(--text)', marginBottom: '1.5rem' }}>
+              <p style={{ margin: 0 }}>Date d'emission : <strong style={{ color: 'var(--text-h)' }}>{issueDate || '—'}</strong></p>
+              {dueDate && <p style={{ margin: 0 }}>Date d'echeance : <strong style={{ color: 'var(--text-h)' }}>{dueDate}</strong></p>}
             </div>
-          </div>
 
-          <div style={{ display: 'flex', gap: '30px', marginBottom: '20px', fontSize: '14px', color: '#374151' }}>
-            <p>Date d'emission : <strong>{issueDate || '—'}</strong></p>
-            {dueDate && <p>Date d'echeance : <strong>{dueDate}</strong></p>}
-          </div>
-
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                <th style={{ textAlign: 'left', padding: '8px', fontSize: '13px' }}>Description</th>
-                <th style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>Qte</th>
-                <th style={{ textAlign: 'center', padding: '8px', fontSize: '13px' }}>Unite</th>
-                <th style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>Prix HT</th>
-                <th style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>TVA</th>
-                <th style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>Total HT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lines.map((line, i) => {
-                const t = computeLineTotal(line);
-                return (
-                  <tr key={i} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                    <td style={{ padding: '8px', fontSize: '13px' }}>{line.description || '—'}</td>
-                    <td style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>{line.quantity}</td>
-                    <td style={{ textAlign: 'center', padding: '8px', fontSize: '13px' }}>{line.unit}</td>
-                    <td style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>{parseFloat(line.unitPriceExcludingTax || '0').toFixed(2)} EUR</td>
-                    <td style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>{line.vatRate}%</td>
-                    <td style={{ textAlign: 'right', padding: '8px', fontSize: '13px' }}>{t.ht.toFixed(2)} EUR</td>
+            <div className="app-table-wrapper" style={{ marginBottom: '1.5rem' }}>
+              <table className="app-table">
+                <thead>
+                  <tr>
+                    <th style={{ fontSize: '0.85rem' }}>Description</th>
+                    <th style={{ textAlign: 'right', fontSize: '0.85rem' }}>Qte</th>
+                    <th style={{ textAlign: 'center', fontSize: '0.85rem' }}>Unite</th>
+                    <th style={{ textAlign: 'right', fontSize: '0.85rem' }}>Prix HT</th>
+                    <th style={{ textAlign: 'right', fontSize: '0.85rem' }}>TVA</th>
+                    <th style={{ textAlign: 'right', fontSize: '0.85rem' }}>Total HT</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {lines.map((line, i) => {
+                    const t = computeLineTotal(line);
+                    return (
+                      <tr key={i}>
+                        <td style={{ fontSize: '0.85rem' }}>{line.description || '—'}</td>
+                        <td style={{ textAlign: 'right', fontSize: '0.85rem' }}>{line.quantity}</td>
+                        <td style={{ textAlign: 'center', fontSize: '0.85rem' }}>{line.unit}</td>
+                        <td style={{ textAlign: 'right', fontSize: '0.85rem' }}>{parseFloat(line.unitPriceExcludingTax || '0').toFixed(2)} EUR</td>
+                        <td style={{ textAlign: 'right', fontSize: '0.85rem' }}>{line.vatRate}%</td>
+                        <td style={{ textAlign: 'right', fontSize: '0.85rem' }}>{t.ht.toFixed(2)} EUR</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
 
-          <div style={{ textAlign: 'right', marginBottom: '20px' }}>
-            <p>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
-            <p>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
-            <p style={{ fontSize: '18px' }}>Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
-          </div>
+            <div style={{ textAlign: 'right', marginBottom: '1.5rem', color: '#111' }}>
+              <p style={{ margin: '0 0 0.25rem' }}>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
+              <p style={{ margin: '0 0 0.25rem' }}>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
+              <p style={{ margin: 0, fontSize: '1.15rem' }}>Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
+            </div>
 
-          {paymentTerms && <p style={{ fontSize: '13px', color: '#6b7280' }}>Conditions : {paymentTerms}</p>}
-          {legalMention && <p style={{ fontSize: '13px', fontStyle: 'italic', color: '#6b7280' }}>{legalMention}</p>}
+            {paymentTerms && <p style={{ fontSize: '0.85rem', color: '#444', margin: '0 0 0.5rem' }}>Conditions : {paymentTerms}</p>}
+            {legalMention && <p style={{ fontSize: '0.85rem', fontStyle: 'italic', color: '#666', margin: 0 }}>{legalMention}</p>}
+          </motion.div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

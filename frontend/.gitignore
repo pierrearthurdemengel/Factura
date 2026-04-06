@@ -23,3 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+build_logs.txt
+error_dump.json

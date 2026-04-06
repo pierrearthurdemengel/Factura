@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { getClients, createClient, type Client } from '../api/factura';
+import { getClients, createClient, updateClient, deleteClient, type Client } from '../api/factura';
+import EmptyState from '../components/EmptyState';
+import ClientDataGrid from '../components/ClientDataGrid';
+import Drawer from '../components/Drawer';
+import { useToast } from '../context/ToastContext';
+import './AppLayout.css';
 
 // Page de gestion des clients.
 export default function ClientList() {
@@ -10,6 +15,7 @@ export default function ClientList() {
   const [addressLine1, setAddressLine1] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [city, setCity] = useState('');
+  const { success, error } = useToast();
 
   const load = () => {
     getClients()
@@ -23,6 +29,7 @@ export default function ClientList() {
     e.preventDefault();
     await createClient({ name, siren: siren || undefined, addressLine1, postalCode, city });
     setShowForm(false);
+    success('Client ajouté.');
     setName('');
     setSiren('');
     setAddressLine1('');
@@ -31,61 +38,86 @@ export default function ClientList() {
     load();
   };
 
+  const handleUpdate = async (id: string, data: Partial<Client>) => {
+    // API Call (ClientDataGrid catches errors locally or throws them).
+    await updateClient(id, data);
+    load();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) return;
+    try {
+      await deleteClient(id);
+      success("Client supprimé avec succès.");
+      setClients(clients.filter(c => c.id !== id));
+    } catch {
+      error("Impossible de supprimer le client, peut-être lié à une facture.");
+    }
+  };
+
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Clients</h1>
-        <button onClick={() => setShowForm(!showForm)}>
+    <div className="app-container">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'clamp(1rem, 3vw, 2rem)', flexWrap: 'wrap', gap: '1rem' }}>
+        <h1 className="app-page-title" style={{ margin: 0 }}>Clients</h1>
+        <button onClick={() => setShowForm(!showForm)} className="app-btn-outline-danger">
           {showForm ? 'Annuler' : 'Nouveau client'}
         </button>
       </div>
 
-      {showForm && (
-        <form onSubmit={handleSubmit} style={{ marginBottom: '20px', padding: '15px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-          <div style={{ marginBottom: '10px' }}>
-            <label>Raison sociale</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required style={{ width: '100%' }} />
+      <Drawer isOpen={showForm} onClose={() => setShowForm(false)} title="Ajouter un client">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', height: '100%' }}>
+          
+          <div className="app-form-group">
+            <label className="app-label">Raison sociale</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="app-input" placeholder="Ex: Acme Corp" />
           </div>
-          <div style={{ marginBottom: '10px' }}>
-            <label>SIREN (optionnel)</label>
-            <input type="text" value={siren} onChange={(e) => setSiren(e.target.value)} style={{ width: '100%' }} />
+          <div className="app-form-group">
+            <label className="app-label">SIREN (optionnel)</label>
+            <input type="text" value={siren} onChange={(e) => setSiren(e.target.value)} className="app-input" placeholder="Ex: 123 456 789" />
           </div>
-          <div style={{ marginBottom: '10px' }}>
-            <label>Adresse</label>
-            <input type="text" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} required style={{ width: '100%' }} />
+          
+          <div className="app-form-group">
+            <label className="app-label">Adresse</label>
+            <input type="text" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} required className="app-input" placeholder="123 Rue de la Paix" />
           </div>
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-            <div>
-              <label>Code postal</label>
-              <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} required />
-            </div>
-            <div>
-              <label>Ville</label>
-              <input type="text" value={city} onChange={(e) => setCity(e.target.value)} required />
-            </div>
-          </div>
-          <button type="submit">Creer</button>
-        </form>
-      )}
 
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-            <th style={{ textAlign: 'left', padding: '8px' }}>Raison sociale</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>SIREN</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>Ville</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clients.map((c) => (
-            <tr key={c.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-              <td style={{ padding: '8px' }}>{c.name}</td>
-              <td style={{ padding: '8px' }}>{c.siren || '-'}</td>
-              <td style={{ padding: '8px' }}>{c.city}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div className="app-form-group" style={{ flex: 1 }}>
+              <label className="app-label">Code postal</label>
+              <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} required className="app-input" placeholder="75000" />
+            </div>
+            <div className="app-form-group" style={{ flex: 2 }}>
+              <label className="app-label">Ville</label>
+              <input type="text" value={city} onChange={(e) => setCity(e.target.value)} required className="app-input" placeholder="Paris" />
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
+            <button type="submit" className="app-btn-primary" style={{ width: '100%' }}>Créer le client</button>
+          </div>
+        </form>
+      </Drawer>
+
+      {clients.length > 0 && (
+        <ClientDataGrid 
+          clients={clients} 
+          onUpdateClient={handleUpdate} 
+          onDeleteClient={handleDelete} 
+        />
+      )}
+      
+      {clients.length === 0 && (
+        <EmptyState
+          title="Aucun client"
+          description="Vous n'avez pas encore de clients dans votre repertoire."
+          icon={
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          }
+        />
+      )}
     </div>
   );
 }

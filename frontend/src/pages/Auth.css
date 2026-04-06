@@ -1,0 +1,131 @@
+/* Shared Auth Styles - Fluid and Media-Query-Free */
+
+.auth-container {
+  width: 100%;
+  max-width: clamp(350px, 90vw, 500px);
+  margin: clamp(2rem, 8vh, 100px) auto;
+  padding: 0 clamp(1rem, 5vw, 2rem);
+  box-sizing: border-box;
+}
+
+.auth-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  color: var(--text-h);
+  margin: 0 0 1.5rem;
+}
+
+.auth-desc {
+  color: var(--text);
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  line-height: 1.5;
+}
+
+.auth-section-title {
+  margin-top: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: 1rem;
+  font-size: clamp(1.15rem, 3vw, 1.35rem);
+  color: var(--text-h);
+  font-weight: 500;
+}
+
+.auth-form-group {
+  margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.auth-row {
+  display: flex;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  flex-wrap: wrap; 
+}
+
+/* Fluid wrap: min-width ensures proper stacking on mobile */
+.auth-row > .auth-form-group {
+  min-width: clamp(150px, 45%, 100%);
+}
+
+.auth-row-2-1 > .auth-form-group:first-child { 
+  flex: 1; 
+  min-width: clamp(100px, 30%, 100%); 
+}
+.auth-row-2-1 > .auth-form-group:last-child { 
+  flex: 2; 
+  min-width: clamp(150px, 60%, 100%); 
+}
+
+.auth-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-h);
+  font-size: 0.95rem;
+}
+
+.auth-input,
+.auth-select {
+  width: 100%;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.auth-input:focus,
+.auth-select:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}
+
+.auth-error {
+  color: #ef4444;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  padding: 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 6px;
+}
+
+.auth-btn-submit {
+  width: 100%;
+  padding: clamp(0.75rem, 2vw, 1rem);
+  margin-top: clamp(1rem, 3vw, 1.5rem);
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.auth-btn-submit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.auth-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: clamp(1.25rem, 4vw, 2rem);
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.auth-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}

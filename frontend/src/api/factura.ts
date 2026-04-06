@@ -148,6 +148,15 @@ export const createClient = async (data: Partial<Client>) => {
   return api.post<Client>('/clients', data);
 };
 
+export const updateClient = async (id: string, data: Partial<Client>) => {
+  // Using patch or put depending on how the PHP API backend handles it. But put was used for updateCompany.
+  return api.put<Client>(`/clients/${id}`, data);
+};
+
+export const deleteClient = async (id: string) => {
+  return api.delete(`/clients/${id}`);
+};
+
 export const getCompany = async () => {
   return api.get<Company>('/companies/me');
 };
