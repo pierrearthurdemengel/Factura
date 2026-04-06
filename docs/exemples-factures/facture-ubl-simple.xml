@@ -17,7 +17,7 @@
         <cac:Party>
             <cbc:EndpointID schemeID="0009">FR32930538111</cbc:EndpointID>
             <cac:PartyName>
-                <cbc:Name>Factura SAS</cbc:Name>
+                <cbc:Name>Ma Facture Pro</cbc:Name>
             </cac:PartyName>
             <cac:PostalAddress>
                 <cbc:StreetName>15 rue de la Paix</cbc:StreetName>
@@ -34,7 +34,7 @@
                 </cac:TaxScheme>
             </cac:PartyTaxScheme>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName>Factura SAS</cbc:RegistrationName>
+                <cbc:RegistrationName>Ma Facture Pro</cbc:RegistrationName>
                 <cbc:CompanyID schemeID="0002">930538111</cbc:CompanyID>
             </cac:PartyLegalEntity>
         </cac:Party>
@@ -73,7 +73,7 @@
         <cbc:PaymentMeansCode>30</cbc:PaymentMeansCode>
         <cac:PayeeFinancialAccount>
             <cbc:ID>FR7630001007941234567890185</cbc:ID>
-            <cbc:Name>Factura SAS</cbc:Name>
+            <cbc:Name>Ma Facture Pro</cbc:Name>
             <cac:FinancialInstitutionBranch>
                 <cbc:ID>BDFEFRPP</cbc:ID>
             </cac:FinancialInstitutionBranch>

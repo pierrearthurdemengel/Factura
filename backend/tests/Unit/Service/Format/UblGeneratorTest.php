@@ -21,7 +21,7 @@ class UblGeneratorTest extends TestCase
     private function createInvoice(): Invoice
     {
         $seller = new Company();
-        $seller->setName('Factura SAS');
+        $seller->setName('Ma Facture Pro');
         $seller->setSiren('123456789');
         $seller->setLegalForm('SAS');
         $seller->setAddressLine1('10 rue de la Paix');
@@ -100,7 +100,7 @@ class UblGeneratorTest extends TestCase
         $invoice = $this->createInvoice();
         $xml = $this->generator->generate($invoice);
 
-        $this->assertStringContainsString('Factura SAS', $xml);
+        $this->assertStringContainsString('Ma Facture Pro', $xml);
         $this->assertStringContainsString('FR12123456789', $xml);
     }
 

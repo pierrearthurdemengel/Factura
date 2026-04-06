@@ -106,7 +106,7 @@ class SubscriptionManager
 
         $session = \Stripe\BillingPortal\Session::create([
             'customer' => $subscription->getStripeCustomerId(),
-            'return_url' => 'https://factura.fr/settings',
+            'return_url' => 'https://ma-facture-pro.com/settings',
         ]);
 
         return $session->url;

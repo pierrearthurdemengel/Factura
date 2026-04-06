@@ -107,7 +107,7 @@
         <!-- Parties -->
         <ram:ApplicableHeaderTradeAgreement>
             <ram:SellerTradeParty>
-                <ram:Name>Factura SAS</ram:Name>
+                <ram:Name>Ma Facture Pro</ram:Name>
                 <ram:SpecifiedLegalOrganization>
                     <ram:ID schemeID="0002">930538111</ram:ID>
                 </ram:SpecifiedLegalOrganization>

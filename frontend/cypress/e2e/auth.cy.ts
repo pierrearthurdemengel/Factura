@@ -35,6 +35,6 @@ describe('Authentification', () => {
 
   it('affiche la landing page publique', () => {
     cy.visit('/');
-    cy.contains('Factura');
+    cy.contains('Ma Facture Pro');
   });
 });

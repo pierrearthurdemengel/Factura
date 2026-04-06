@@ -54,10 +54,10 @@
         <ram:ApplicableHeaderTradeAgreement>
             <!-- Vendeur -->
             <ram:SellerTradeParty>
-                <ram:Name>Factura SAS</ram:Name>
+                <ram:Name>Ma Facture Pro</ram:Name>
                 <ram:SpecifiedLegalOrganization>
                     <ram:ID schemeID="0002">930538111</ram:ID>
-                    <ram:TradingBusinessName>Factura</ram:TradingBusinessName>
+                    <ram:TradingBusinessName>Ma Facture Pro</ram:TradingBusinessName>
                 </ram:SpecifiedLegalOrganization>
                 <ram:PostalTradeAddress>
                     <ram:LineOne>15 rue de la Paix</ram:LineOne>

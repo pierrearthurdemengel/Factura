@@ -31,7 +31,7 @@ function NavBar() {
 
   return (
     <nav style={{ padding: '10px 20px', borderBottom: '1px solid #e5e7eb', display: 'flex', gap: '20px' }}>
-      <Link to="/" style={{ fontWeight: 'bold', textDecoration: 'none' }}>Factura</Link>
+      <Link to="/" style={{ fontWeight: 'bold', textDecoration: 'none' }}>Ma Facture Pro</Link>
       <Link to="/invoices">Factures</Link>
       <Link to="/clients">Clients</Link>
       <Link to="/settings">Parametres</Link>

@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ Factura
+# Ma Facture Pro
 
 ### La facturation électronique conforme, simple et élégante.
 
@@ -27,13 +27,13 @@
 
 ---
 
-## 🎯 Pourquoi Factura ?
+## 🎯 Pourquoi Ma Facture Pro ?
 
 À partir de **septembre 2026**, toutes les entreprises françaises doivent recevoir des factures électroniques. L'émission devient obligatoire progressivement jusqu'en **septembre 2027**. Environ **8 millions d'acteurs économiques** sont concernés.
 
-Factura est la réponse open-source à ce besoin :
+Ma Facture Pro est la réponse open-source à ce besoin :
 
-| | Factura | Solutions existantes |
+| | Ma Facture Pro | Solutions existantes |
 |---|---|---|
 | 💰 **Prix** | **Gratuit** jusqu'à 30 factures/mois | 15-50 €/mois |
 | 📄 **Formats** | Factur-X, UBL 2.1, CII D16B | Souvent un seul format |
@@ -466,7 +466,7 @@ Format XML pur **UN/CEFACT**, alternative au UBL. Même sémantique que le XML e
 
 ## 🏛️ Conformité DGFiP
 
-Factura implémente **toutes les exigences** du Décret n° 2022-1299 du 7 octobre 2022 :
+Ma Facture Pro implémente **toutes les exigences** du Décret n° 2022-1299 du 7 octobre 2022 :
 
 | Exigence | Implémentation |
 |---|---|
@@ -503,7 +503,7 @@ docs/
 ## 📂 Structure du projet
 
 ```
-factura/
+ma-facture-pro/
 ├── backend/                          # Symfony 7.2 + API Platform 3.3
 │   ├── src/
 │   │   ├── Controller/               # 7 controllers (Auth, Export, Events, PDP, Stripe, Subscription, Company)
@@ -591,7 +591,7 @@ fly secrets set DATABASE_URL="postgresql://..." \
 
 # Vercel
 vercel env add VITE_API_URL production
-# → https://api.factura.fr/api
+# → https://api.ma-facture-pro.com/api
 ```
 
 ---
@@ -695,7 +695,7 @@ make deploy    # Déploie backend (Fly.io) + frontend (Vercel)
 
 <div align="center">
 
-**Factura** est un projet français, conçu pour la conformité et la simplicité.
+**Ma Facture Pro** est un projet français, conçu pour la conformité et la simplicité.
 
 Développé avec ❤️ à Paris.
 

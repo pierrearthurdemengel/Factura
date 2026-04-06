@@ -255,7 +255,7 @@ export default function Landing() {
     <div>
       {/* En-tete */}
       <header style={styles.header}>
-        <span style={styles.logo}>Factura</span>
+        <span style={styles.logo}>Ma Facture Pro</span>
         <div style={styles.headerLinks}>
           <a href="#fonctionnalites" style={styles.headerLink}>Fonctionnalites</a>
           <a href="#conformite" style={styles.headerLink}>Conformite</a>
@@ -287,7 +287,7 @@ export default function Landing() {
       <section style={styles.sectionAlt} id="conformite">
         <h2 style={styles.sectionTitle}>Conforme des le premier jour</h2>
         <p style={styles.sectionSubtitle}>
-          Factura respecte toutes les exigences de la reforme de la facturation
+          Ma Facture Pro respecte toutes les exigences de la reforme de la facturation
           electronique francaise et du standard europeen EN 16931.
         </p>
         <div style={styles.conformiteGrid}>
@@ -314,7 +314,7 @@ export default function Landing() {
       <section style={styles.section} id="fonctionnalites">
         <h2 style={styles.sectionTitle}>Tout ce qu'il faut pour facturer</h2>
         <p style={styles.sectionSubtitle}>
-          De la creation a l'archivage, Factura gere l'integralite
+          De la creation a l'archivage, Ma Facture Pro gere l'integralite
           du cycle de vie de vos factures.
         </p>
         <div style={styles.featuresGrid}>
@@ -362,7 +362,7 @@ export default function Landing() {
             <div style={styles.featureIcon}>&#128170;</div>
             <h3 style={styles.featureTitle}>API ouverte</h3>
             <p style={styles.featureDesc}>
-              API REST documentee (OpenAPI 3.1) pour integrer Factura
+              API REST documentee (OpenAPI 3.1) pour integrer Ma Facture Pro
               a vos outils existants : ERP, comptabilite, CRM.
             </p>
           </div>
@@ -425,14 +425,14 @@ export default function Landing() {
         <h2 style={styles.sectionTitle}>Pret pour la facturation electronique ?</h2>
         <p style={{ ...styles.sectionSubtitle, marginBottom: '32px' }}>
           La reforme entre en vigueur le 1er septembre 2026.
-          Anticipez des maintenant avec Factura.
+          Anticipez des maintenant avec Ma Facture Pro.
         </p>
         <Link to="/register" style={styles.ctaButton}>Creer mon compte gratuitement</Link>
       </section>
 
       {/* Footer */}
       <footer style={styles.footer}>
-        <p>&copy; 2026 Factura SAS — Tous droits reserves</p>
+        <p>&copy; 2026 Ma Facture Pro — Tous droits reserves</p>
         <p style={{ marginTop: '8px' }}>
           15 rue de la Paix, 75002 Paris — SIREN 930 538 111
         </p>

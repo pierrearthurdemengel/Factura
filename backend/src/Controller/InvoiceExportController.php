@@ -42,7 +42,7 @@ class InvoiceExportController extends AbstractController
 
         // Fusionner XML + PDF pour creer un Factur-X PDF/A-3
         $pdfBuilder = ZugferdDocumentPdfBuilder::fromPdfString($docBuilder, $pdfContent);
-        $pdfBuilder->setAdditionalCreatorTool('Factura v1.0');
+        $pdfBuilder->setAdditionalCreatorTool('Ma Facture Pro v1.0');
         $pdfBuilder->generateDocument();
         $mergedPdf = $pdfBuilder->downloadString();
 

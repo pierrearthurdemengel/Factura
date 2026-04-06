@@ -21,7 +21,7 @@ class FacturXGeneratorTest extends TestCase
     private function createInvoice(): Invoice
     {
         $seller = new Company();
-        $seller->setName('Factura SAS');
+        $seller->setName('Ma Facture Pro');
         $seller->setSiren('123456789');
         $seller->setLegalForm('SAS');
         $seller->setAddressLine1('10 rue de la Paix');
@@ -79,7 +79,7 @@ class FacturXGeneratorTest extends TestCase
         $invoice = $this->createInvoice();
         $xml = $this->generator->generate($invoice);
 
-        $this->assertStringContainsString('Factura SAS', $xml);
+        $this->assertStringContainsString('Ma Facture Pro', $xml);
     }
 
     public function testContainsBuyerName(): void

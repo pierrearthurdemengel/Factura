@@ -1,7 +1,7 @@
 # Dossier de candidature — Label "Solution compatible – Facturation electronique"
 
 **Editeur :** Pierre-Arthur Demengel
-**Solution :** Factura
+**Solution :** Ma Facture Pro
 **Date :** avril 2026
 **Version :** 1.0.0
 
@@ -11,7 +11,7 @@
 
 ### 1.1 Presentation de la solution
 
-Factura est un logiciel SaaS de facturation electronique destine aux freelances,
+Ma Facture Pro est un logiciel SaaS de facturation electronique destine aux freelances,
 auto-entrepreneurs et PME francaises. Il permet de creer, emettre, recevoir et
 archiver des factures conformes a la reforme de la facturation electronique
 (Decret n. 2022-1299 du 7 octobre 2022).

@@ -25,7 +25,7 @@ class InvoiceValidatorTest extends TestCase
     private function createValidInvoice(): Invoice
     {
         $seller = new Company();
-        $seller->setName('Factura SAS');
+        $seller->setName('Ma Facture Pro');
         $seller->setSiren('123456789');
         $seller->setLegalForm('SAS');
         $seller->setAddressLine1('10 rue de la Paix');
