@@ -1,0 +1,297 @@
+openapi: 3.1.0
+info:
+  title: Ma Facture Pro
+  description: |
+    API de facturation electronique conforme a la reforme DGFiP 2026.
+    Permet de creer, emettre et gerer des factures via un assistant conversationnel.
+  version: 1.0.0
+servers:
+  - url: https://api.ma-facture-pro.com
+
+paths:
+  /api/invoices:
+    get:
+      operationId: listInvoices
+      summary: Lister les factures
+      description: Liste les factures de l'entreprise, avec filtre optionnel par statut.
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [DRAFT, SENT, ACKNOWLEDGED, REJECTED, PAID, CANCELLED]
+        - name: itemsPerPage
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Liste des factures
+          content:
+            application/ld+json:
+              schema:
+                type: object
+                properties:
+                  hydra:member:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invoice'
+    post:
+      operationId: createInvoice
+      summary: Creer une facture
+      requestBody:
+        required: true
+        content:
+          application/ld+json:
+            schema:
+              $ref: '#/components/schemas/InvoiceWrite'
+      responses:
+        '201':
+          description: Facture creee
+          content:
+            application/ld+json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+
+  /api/invoices/{id}:
+    get:
+      operationId: getInvoice
+      summary: Detail d'une facture
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detail de la facture
+          content:
+            application/ld+json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+
+  /api/invoices/{id}/send:
+    post:
+      operationId: sendInvoice
+      summary: Emettre une facture
+      description: Emet une facture DRAFT. Genere le numero sequentiel et transmet a la PDP. Irreversible.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Facture emise
+
+  /api/invoices/{id}/pay:
+    post:
+      operationId: markInvoicePaid
+      summary: Marquer une facture payee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Facture marquee payee
+
+  /api/invoices/{id}/cancel:
+    post:
+      operationId: cancelInvoice
+      summary: Annuler une facture
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Facture annulee
+
+  /api/invoices/{id}/pdf:
+    get:
+      operationId: downloadInvoicePdf
+      summary: Telecharger le PDF Factur-X
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Fichier PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+  /api/clients:
+    get:
+      operationId: listClients
+      summary: Lister les clients
+      responses:
+        '200':
+          description: Liste des clients
+          content:
+            application/ld+json:
+              schema:
+                type: object
+                properties:
+                  hydra:member:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Client'
+    post:
+      operationId: createClient
+      summary: Creer un client
+      requestBody:
+        required: true
+        content:
+          application/ld+json:
+            schema:
+              $ref: '#/components/schemas/ClientWrite'
+      responses:
+        '201':
+          description: Client cree
+          content:
+            application/ld+json:
+              schema:
+                $ref: '#/components/schemas/Client'
+
+components:
+  schemas:
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+          description: "Numero sequentiel (ex: FA-2026-0001)"
+        status:
+          type: string
+          enum: [DRAFT, SENT, ACKNOWLEDGED, REJECTED, PAID, CANCELLED]
+        issueDate:
+          type: string
+          format: date
+        dueDate:
+          type: string
+          format: date
+        totalExcludingTax:
+          type: string
+        totalTax:
+          type: string
+        totalIncludingTax:
+          type: string
+        currency:
+          type: string
+
+    InvoiceWrite:
+      type: object
+      required: [buyer, issueDate, lines]
+      properties:
+        buyer:
+          type: string
+          description: IRI du client (ex /api/clients/{id})
+        issueDate:
+          type: string
+          format: date
+        dueDate:
+          type: string
+          format: date
+        paymentTerms:
+          type: string
+        lines:
+          type: array
+          items:
+            type: object
+            required: [description, quantity, unitPriceExcludingTax]
+            properties:
+              description:
+                type: string
+              quantity:
+                type: string
+              unit:
+                type: string
+                default: EA
+              unitPriceExcludingTax:
+                type: string
+              vatRate:
+                type: string
+                default: "20"
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        siren:
+          type: string
+        addressLine1:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+        countryCode:
+          type: string
+
+    ClientWrite:
+      type: object
+      required: [name, addressLine1, postalCode, city]
+      properties:
+        name:
+          type: string
+        siren:
+          type: string
+        addressLine1:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+        countryCode:
+          type: string
+          default: FR
+
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.ma-facture-pro.com/oauth/authorize
+          tokenUrl: https://api.ma-facture-pro.com/oauth/token
+          scopes:
+            invoices:read: Consulter les factures
+            invoices:write: Creer et gerer les factures
+            clients:read: Consulter les clients
+            clients:write: Creer et modifier les clients
+            company:read: Consulter les infos entreprise
+            stats:read: Consulter les statistiques
+
+security:
+  - oauth2:
+      - invoices:read
+      - invoices:write
+      - clients:read
+      - clients:write
+      - company:read
+      - stats:read
