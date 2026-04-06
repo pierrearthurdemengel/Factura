@@ -27,6 +27,14 @@ security:
             jwt: ~
         main:
             lazy: true
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                username_parameter: _username
+                password_parameter: _password
+                enable_csrf: true
+            logout:
+                path: /logout
 
     access_control:
         - { path: ^/api/auth$, roles: PUBLIC_ACCESS }
@@ -35,6 +43,7 @@ security:
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/\.well-known/, roles: PUBLIC_ACCESS }
         - { path: ^/oauth/, roles: PUBLIC_ACCESS }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: ROLE_USER }
         - { path: ^/mcp, roles: ROLE_USER }
         - { path: ^/webhooks, roles: PUBLIC_ACCESS }

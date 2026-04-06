@@ -83,10 +83,10 @@ class OAuthController extends AbstractController
         // Verifier que l'utilisateur est connecte
         $user = $this->getUser();
         if (!$user instanceof User) {
-            // Stocker les params OAuth en session et rediriger vers le login
-            $request->getSession()->set('oauth_params', $request->query->all());
+            // Stocker l'URL OAuth complete pour y revenir apres le login
+            $request->getSession()->set('_security.main.target_path', $request->getUri());
 
-            return $this->redirect('/login?redirect=' . urlencode($request->getUri()));
+            return $this->redirectToRoute('app_login');
         }
 
         // POST = l'utilisateur a clique "Autoriser"
