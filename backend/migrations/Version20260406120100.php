@@ -29,6 +29,7 @@ final class Version20260406120100 extends AbstractMigration
             'client_id' => 'mfp_mcp',
             'name' => 'Assistants IA (MCP)',
             'redirect_uris' => json_encode([
+                'https://claude.ai/api/mcp/auth_callback',
                 'https://claude.ai/oauth/callback',
                 'http://localhost:*/oauth/callback',
             ]),
