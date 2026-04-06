@@ -1,0 +1,10 @@
+var/
+vendor/
+.env.local
+.env.*.local
+config/jwt/private.pem
+config/jwt/public.pem
+tests/
+phpstan.neon
+.php-cs-fixer.dist.php
+.phpunit.cache/
