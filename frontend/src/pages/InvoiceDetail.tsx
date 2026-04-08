@@ -270,6 +270,36 @@ export default function InvoiceDetail() {
         <p style={{ marginTop: 'clamp(1rem, 3vw, 2rem)', fontStyle: 'italic', color: 'var(--text)' }}>{invoice.legalMention}</p>
       )}
 
+      {/* Affacturage : proposition de financement pour les factures non payees */}
+      {['SENT', 'ACKNOWLEDGED'].includes(invoice.status) && parseFloat(invoice.totalIncludingTax) > 0 && (
+        <div className="app-card" style={{ marginTop: 'clamp(1rem, 3vw, 2rem)', padding: '1.25rem', background: 'linear-gradient(135deg, rgba(37,99,235,0.05), rgba(139,92,246,0.05))', borderColor: 'rgba(37,99,235,0.2)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.25rem' }}>
+                Recevoir le paiement maintenant
+              </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.5 }}>
+                Financez cette facture et recevez {(parseFloat(invoice.totalIncludingTax) * 0.95).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR sous 48h
+                <span style={{ color: 'var(--text)', opacity: 0.7 }}> (commission de 5%)</span>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                api.post(`/factoring/request`, { invoiceId: invoice.id }).then(() => {
+                  success('Demande de financement envoyee.');
+                }).catch(() => {
+                  error('Erreur lors de la demande de financement.');
+                });
+              }}
+              className="app-btn-primary"
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              Financer cette facture
+            </button>
+          </div>
+        </div>
+      )}
+
       <div style={{ marginTop: 'clamp(1.5rem, 4vw, 2.5rem)', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
         <button onClick={() => handleDownload('pdf')} className="app-btn-primary">
           Telecharger PDF
