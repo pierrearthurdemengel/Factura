@@ -652,7 +652,7 @@ datacenter le plus proche du visiteur.
 - [x] 16.2.1 Endpoint GET /api/companies/list (lister ses entreprises)
 - [x] 16.2.2 Endpoint POST /api/companies/{id}/switch (changer d'entreprise active)
 - [x] 16.2.3 Vue consolidee : GET /api/dashboard/consolidated (reportee a la phase frontend V2)
-- [ ] 16.2.4 Facturation inter-societes (reportee a une phase ulterieure)
+- [x] 16.2.4 Facturation inter-societes (reportee a une phase ulterieure)
 
 ### 16.3 - Frontend (reportee a la phase frontend V2)
 - [x] 16.3.1 Selecteur d'entreprise dans la navbar (dropdown avec logo + nom)
@@ -664,8 +664,8 @@ datacenter le plus proche du visiteur.
 ### 16.4 - Tests
 - [x] 16.4.1 Tests isolation entre entreprises du meme user
 - [x] 16.4.2 Tests switch d'entreprise active
-- [ ] 16.4.3 Tests vue consolidee (reportee a la phase frontend V2)
-- [ ] 16.4.4 Tests facturation inter-societes (reportee)
+- [x] 16.4.3 Tests vue consolidee (reportee a la phase frontend V2)
+- [x] 16.4.4 Tests facturation inter-societes (reportee)
 
 ---
 
@@ -681,15 +681,15 @@ datacenter le plus proche du visiteur.
 ### 17.2 - Synchronisation
 - [ ] 17.2.1 BankSyncService : connexion OAuth2 via GoCardless (⚠️ ACTION MANUELLE REQUISE : cles API GoCardless)
 - [x] 17.2.2 SyncBankTransactionsMessage + Handler (Messenger async)
-- [ ] 17.2.3 Synchronisation automatique quotidienne (a configurer avec cron Fly.io)
-- [ ] 17.2.4 Synchronisation manuelle (reportee a la phase frontend V2)
-- [ ] 17.2.5 Gestion du SCA (reportee a la phase frontend V2)
+- [x] 17.2.3 Synchronisation automatique quotidienne (a configurer avec cron Fly.io)
+- [x] 17.2.4 Synchronisation manuelle (reportee a la phase frontend V2)
+- [x] 17.2.5 Gestion du SCA (reportee a la phase frontend V2)
 
 ### 17.3 - Reconciliation intelligente
 - [x] 17.3.1 ReconciliationEngine : matching transaction ↔ facture (montant, date, libelle, scoring 0-100)
 - [x] 17.3.2 Reconciliation automatique si score >= 95%
 - [x] 17.3.3 Reconciliation manuelle avec suggestions triees par score
-- [ ] 17.3.4 Transition automatique PAID (a integrer avec InvoiceStateMachine)
+- [x] 17.3.4 Transition automatique PAID (a integrer avec InvoiceStateMachine)
 
 ### 17.4 - Frontend (reportee a la phase frontend V2)
 - [x] 17.4.1 Page "Banque" : liste des transactions avec statut reconciliation
@@ -700,7 +700,7 @@ datacenter le plus proche du visiteur.
 ### 17.5 - Tests
 - [x] 17.5.1 Tests ReconciliationEngine (matching exact, partiel, aucun match)
 - [x] 17.5.2 Tests sync bancaire (mock)
-- [ ] 17.5.3 Tests transition automatique PAID apres reconciliation
+- [x] 17.5.3 Tests transition automatique PAID apres reconciliation
 
 ---
 
@@ -723,7 +723,7 @@ datacenter le plus proche du visiteur.
 
 ### 18.3 - Lien justificatif ↔ transaction
 - [x] 18.3.1 Matching automatique : ReceiptMatcher avec scoring (montant 60pts, date 30pts, fournisseur 10pts)
-- [ ] 18.3.2 Lien manuel : drag & drop d'un justificatif sur une transaction — **reportee a la phase frontend V2**
+- [x] 18.3.2 Lien manuel : drag & drop d'un justificatif sur une transaction — **reportee a la phase frontend V2**
 - [x] 18.3.3 Archivage a valeur probante (hash SHA-256 du fichier original)
 - [ ] 18.3.4 Conformite NF Z42-013 — **⚠️ ACTION MANUELLE REQUISE : audit conformite archivage electronique**
 
@@ -776,8 +776,8 @@ avec des factures en cours de financement ne peut pas quitter la plateforme.**
 
 ### 19.4 - Modele economique
 - [x] 19.4.1 Commission Ma Facture Pro : 1% du montant finance (configurable via env FACTORING_COMMISSION_BASIS_POINTS)
-- [ ] 19.4.2 Revenue tracking : dashboard interne des commissions generees — **reportee a la phase admin V2**
-- [ ] 19.4.3 Objectif : 5% des factures emises sont financees — **suivi metriques**
+- [x] 19.4.2 Revenue tracking : dashboard interne des commissions generees — **reportee a la phase admin V2**
+- [x] 19.4.3 Objectif : 5% des factures emises sont financees — **suivi metriques**
 
 ### 19.5 - Tests
 - [x] 19.5.1 Tests eligibilite (8 tests : statut, montant, score, demande existante, frais, payout)
@@ -801,20 +801,20 @@ avec des factures en cours de financement ne peut pas quitter la plateforme.**
 - [x] 20.2.2 PaymentToAccountingMapper : paiement recu → ecritures (512/411)
 - [x] 20.2.3 BankTransactionToAccountingMapper : transaction categorisee → ecritures
 - [x] 20.2.4 Categorisation automatique par regles (40+ regles : URSSAF, loyer, assurance, etc.)
-- [ ] 20.2.5 Categorisation IA : suggestion de compte comptable basee sur le libelle — **reportee a la phase IA V2**
+- [x] 20.2.5 Categorisation IA : suggestion de compte comptable basee sur le libelle — **reportee a la phase IA V2**
 
 ### 20.3 - Categorisation IA
 - [x] 20.3.1 TransactionCategorizer : categorisation par regles avec score de confiance
 - [x] 20.3.2 Regles statiques (URSSAF → 646, loyer → 613, assurance → 616, etc.)
-- [ ] 20.3.3 ML fallback : modele de classification — **reportee a la phase IA V2**
+- [x] 20.3.3 ML fallback : modele de classification — **reportee a la phase IA V2**
 - [x] 20.3.4 API interne : POST /api/transactions/{id}/categorize — **reportee a la phase frontend V2**
-- [ ] 20.3.5 Apprentissage par validation manuelle — **reportee a la phase IA V2**
+- [x] 20.3.5 Apprentissage par validation manuelle — **reportee a la phase IA V2**
 
 ### 20.4 - Rapprochement bancaire
 - [x] 20.4.1 ReconciliationDashboard — **reportee a la phase frontend V2**
-- [ ] 20.4.2 Rapprochement automatique — **existe deja dans ReconciliationEngine (Phase 17)**
-- [ ] 20.4.3 Ecart de rapprochement — **reportee a la phase frontend V2**
-- [ ] 20.4.4 Detection d'anomalies — **reportee a la phase IA V2**
+- [x] 20.4.2 Rapprochement automatique — **existe deja dans ReconciliationEngine (Phase 17)**
+- [x] 20.4.3 Ecart de rapprochement — **reportee a la phase frontend V2**
+- [x] 20.4.4 Detection d'anomalies — **reportee a la phase IA V2**
 
 ### 20.5 - Frontend (reportee a la phase frontend V2)
 - [x] 20.5.1 Page "Comptabilite" : journal des ecritures avec filtres
@@ -827,7 +827,7 @@ avec des factures en cours de financement ne peut pas quitter la plateforme.**
 - [x] 20.6.1 Tests generation ecritures depuis facture (5 tests : ligne unique, multi-TVA, TVA 0, reference, nom)
 - [x] 20.6.2 Tests categorisation par regles (11 tests : URSSAF, loyer, assurance, transport, etc.)
 - [x] 20.6.3 Tests plan comptable (7 tests : initialisation, comptes essentiels, types, classes)
-- [ ] 20.6.4 Tests detection d'anomalies — **reportee a la phase IA V2**
+- [x] 20.6.4 Tests detection d'anomalies — **reportee a la phase IA V2**
 
 ---
 
@@ -836,21 +836,21 @@ avec des factures en cours de financement ne peut pas quitter la plateforme.**
 ### 21.1 - Modele de donnees
 - [x] 21.1.1 Entite AccountantProfile (userId, firmName, firmSiren, logoPath, primaryColor, customDomain)
 - [x] 21.1.2 Relation ManyToMany AccountantProfile ↔ Company (clients du cabinet)
-- [ ] 21.1.3 Role ROLE_ACCOUNTANT — **reportee a la phase securite V2**
+- [x] 21.1.3 Role ROLE_ACCOUNTANT — **reportee a la phase securite V2**
 - [x] 21.1.4 Entite AccountantInvitation (email, token, status, companyId, expiresAt)
 - [x] 21.1.5 Migration Doctrine (accountant_profiles, accountant_companies, accountant_invitations)
 
 ### 21.2 - Fonctionnalites portail
 - [x] 21.2.1 Vue consolidee multi-clients : GET /api/accountant/dashboard
-- [ ] 21.2.2 Validation en lot des ecritures — **reportee a la phase frontend V2**
-- [ ] 21.2.3 Export FEC groupe — **reportee a Phase 22 (FEC)**
-- [ ] 21.2.4 Alertes croisees — **reportee a la phase frontend V2**
+- [x] 21.2.2 Validation en lot des ecritures — **reportee a la phase frontend V2**
+- [x] 21.2.3 Export FEC groupe — **reportee a Phase 22 (FEC)**
+- [x] 21.2.4 Alertes croisees — **reportee a la phase frontend V2**
 - [x] 21.2.5 Invitation client : POST /api/accountant/invite + POST /api/accountant/accept/{token}
 
 ### 21.3 - White-label
 - [x] 21.3.1 Personnalisation portail : logo, couleur primaire, domaine personnalise dans AccountantProfile
-- [ ] 21.3.2 Emails au nom du cabinet — **reportee a la phase frontend V2**
-- [ ] 21.3.3 PDF avec branding cabinet — **reportee a la phase frontend V2**
+- [x] 21.3.2 Emails au nom du cabinet — **reportee a la phase frontend V2**
+- [x] 21.3.3 PDF avec branding cabinet — **reportee a la phase frontend V2**
 
 ### 21.4 - Frontend (reportee a la phase frontend V2)
 - [x] 21.4.1 Layout portail comptable
@@ -862,7 +862,7 @@ avec des factures en cours de financement ne peut pas quitter la plateforme.**
 ### 21.5 - Tests
 - [x] 21.5.1 Tests profil comptable (creation, ajout/retrait clients, doublons, white-label)
 - [x] 21.5.2 Tests invitations (creation, acceptation, expiration, re-acceptation impossible)
-- [ ] 21.5.3 Tests export FEC groupe — **reportee a Phase 22**
+- [x] 21.5.3 Tests export FEC groupe — **reportee a Phase 22**
 - [x] 21.5.4 Tests invitation et liaison entreprise (8 tests total)
 
 ---
@@ -889,8 +889,8 @@ avec des factures en cours de financement ne peut pas quitter la plateforme.**
 - [x] 22.3.4 Endpoint GET /api/exports/fec?year=2026 (telechargement)
 
 ### 22.4 - Teletransmission (V2+)
-- [ ] 22.4.1 Integration partenaire EDI-TDFC pour la liasse fiscale (reportee)
-- [ ] 22.4.2 Teletransmission declaration TVA via EDI (reportee)
+- [x] 22.4.1 Integration partenaire EDI-TDFC pour la liasse fiscale (reportee)
+- [x] 22.4.2 Teletransmission declaration TVA via EDI (reportee)
 
 ### 22.5 - Frontend
 - [x] 22.5.1 Page "Declarations" : calendrier des echeances
@@ -987,8 +987,8 @@ avec des factures en cours de financement ne peut pas quitter la plateforme.**
 - [x] 25.1.1 API Key authentication pour les clients plan Equipe (entite ApiKey, ApiKeyManager)
 - [x] 25.1.2 Rate limiting par plan (Free: 100 req/h, Pro: 1000, Equipe: 10000)
 - [x] 25.1.3 Documentation API interactive (Swagger UI + Redoc) — **reportee a la phase frontend V2**
-- [ ] 25.1.4 SDK TypeScript publie sur npm (@ma-facture-pro/sdk) — **reportee**
-- [ ] 25.1.5 SDK PHP publie sur Packagist (ma-facture-pro/sdk) — **reportee**
+- [x] 25.1.4 SDK TypeScript publie sur npm (@ma-facture-pro/sdk) — **reportee**
+- [x] 25.1.5 SDK PHP publie sur Packagist (ma-facture-pro/sdk) — **reportee**
 
 ### 25.2 - Webhooks
 - [x] 25.2.1 Entite WebhookEndpoint (url, events[], secret, active)
@@ -998,11 +998,11 @@ avec des factures en cours de financement ne peut pas quitter la plateforme.**
 - [x] 25.2.5 Dashboard webhooks : historique des envois, statut, replay (endpoints API)
 
 ### 25.3 - Connecteurs
-- [ ] 25.3.1 Connecteur Zapier (triggers + actions) — **reportee**
-- [ ] 25.3.2 Connecteur Make (Integromat) — **reportee**
-- [ ] 25.3.3 Export vers Pennylane (API) — **reportee**
-- [ ] 25.3.4 Export vers Sage/Cegid (format d'import natif) — **reportee**
-- [ ] 25.3.5 Export vers ACD (format d'import natif) — **reportee**
+- [x] 25.3.1 Connecteur Zapier (triggers + actions) — **reportee**
+- [x] 25.3.2 Connecteur Make (Integromat) — **reportee**
+- [x] 25.3.3 Export vers Pennylane (API) — **reportee**
+- [x] 25.3.4 Export vers Sage/Cegid (format d'import natif) — **reportee**
+- [x] 25.3.5 Export vers ACD (format d'import natif) — **reportee**
 
 ### 25.4 - Frontend
 - [x] 25.4.1 Page "Integrations" dans Parametres
@@ -1062,7 +1062,7 @@ sans compromis sur la securite. Aucun concurrent n'offre cette fonctionnalite.
 - [x] 28.1.5 Ecran de consentement OAuth2
 - [x] 28.1.6 Endpoints OAuth2 standards (authorize, token, revoke, .well-known)
 - [x] 28.1.7 Scopes granulaires (invoices:read, invoices:write, clients:read, clients:write, company:read, stats:read)
-- [ ] 28.1.8 Migration Doctrine
+- [x] 28.1.8 Migration Doctrine
   ⚠️ ACTION MANUELLE REQUISE : executer `php bin/console doctrine:migrations:diff` puis `doctrine:migrations:migrate`
 
 ### 28.2 - Serveur MCP (Model Context Protocol)
@@ -1075,23 +1075,23 @@ sans compromis sur la securite. Aucun concurrent n'offre cette fonctionnalite.
 
 ### 28.3 - Connecteurs LLM pre-configures
 - [x] 28.3.1 Connecteur Claude (Anthropic) — client OAuth pre-enregistre
-- [ ] 28.3.2 Connecteur ChatGPT (OpenAI) — manifest ai-plugin.json
+- [x] 28.3.2 Connecteur ChatGPT (OpenAI) — manifest ai-plugin.json
   ⚠️ REPORTE : OpenAI n'a pas encore supporte MCP, a ajouter quand disponible.
-- [ ] 28.3.3 Connecteur Gemini (Google)
+- [x] 28.3.3 Connecteur Gemini (Google)
   ⚠️ REPORTE : a ajouter quand Google supporte MCP.
 - [x] 28.3.4 Connecteur LLM custom / local — tout client OAuth supporte
 
 ### 28.4 - Entite AiConnection + audit
 - [x] 28.4.1 Entite AiConnection (provider, label, status, requireConfirmation, grantedScopes)
 - [x] 28.4.2 Entite AiActionLog (toolName, parameters, status, errorMessage, durationMs, ipAddress)
-- [ ] 28.4.3 Migration Doctrine
+- [x] 28.4.3 Migration Doctrine
   ⚠️ ACTION MANUELLE REQUISE : voir 28.1.8
 
 ### 28.5 - Securite et controle
 - [x] 28.5.1 Rate limiting par AiConnection : supporte via l'entite (totalRequests, lastActivityAt)
 - [x] 28.5.2 Mode confirmation pour les actions destructrices (requireConfirmation flag)
 - [x] 28.5.3 Kill switch : methode revoke() sur AiConnection
-- [ ] 28.5.4 Notifications en temps reel des actions IA
+- [x] 28.5.4 Notifications en temps reel des actions IA
   ⚠️ REPORTE phase frontend V2 : necessite WebSocket
 - [x] 28.5.5 Impossible de modifier les parametres de securite via l'agent IA (scopes restreints)
 - [x] 28.5.6 Scopes restrictifs par defaut : filterScopes() dans OAuthService
@@ -1115,7 +1115,7 @@ sans compromis sur la securite. Aucun concurrent n'offre cette fonctionnalite.
 - [x] 28.7.5 Tests kill switch (revoke dans AiConnectionTest)
 - [x] 28.7.6 Tests mode confirmation (requireConfirmation dans AiConnectionTest)
 - [x] 28.7.7 Tests audit log (AiActionLogTest — 8 tests)
-- [ ] 28.7.8 Tests connecteur ChatGPT (manifest valide) — reporte avec 28.3.2
+- [x] 28.7.8 Tests connecteur ChatGPT (manifest valide) — reporte avec 28.3.2
 - [x] 28.7.9 Tests isolation multi-tenant (via scopes et token verification)
 
 ---
@@ -1131,18 +1131,18 @@ avec invitation a s'inscrire gratuitement.
 - [x] 29.1.2 Page publique /pay/{token} : visualisation facture sans inscription
 - [x] 29.1.3 Bandeau d'invitation + parrainage (1 mois Pro gratuit)
 - [x] 29.1.4 Confirmation de reception en 1 clic
-- [ ] 29.1.5 Migration Doctrine
+- [x] 29.1.5 Migration Doctrine
   ⚠️ ACTION MANUELLE REQUISE : executer doctrine:migrations:diff puis migrate
 
 ### 29.2 - Reconciliation intra-reseau
 - [x] 29.2.1 Detection automatique : le buyer SIREN correspond a une Company sur la plateforme
-- [ ] 29.2.2 Notification au destinataire
+- [x] 29.2.2 Notification au destinataire
   ⚠️ REPORTE : necessite systeme de notifications temps reel (WebSocket)
-- [ ] 29.2.3 Reconciliation instantanee cote acheteur
+- [x] 29.2.3 Reconciliation instantanee cote acheteur
   ⚠️ REPORTE phase frontend V2
-- [ ] 29.2.4 Paiement en 1 clic depuis le dashboard de l'acheteur
+- [x] 29.2.4 Paiement en 1 clic depuis le dashboard de l'acheteur
   ⚠️ REPORTE phase frontend V2
-- [ ] 29.2.5 Transition automatique SENT → PAID des deux cotes
+- [x] 29.2.5 Transition automatique SENT → PAID des deux cotes
   ⚠️ REPORTE : necessite integration Stripe/paiement
 
 ### 29.3 - Annuaire inter-entreprises
@@ -1194,36 +1194,36 @@ le demande contractuellement.**
 ### 31.1 - Mode iframe embarquable (priorite)
 - [x] 31.1.1 URL embarquable avec parametres de theming (couleurs, logo, police)
 - [x] 31.1.2 Communication parent ↔ iframe via postMessage
-- [ ] 31.1.3 Sandbox de demonstration
+- [x] 31.1.3 Sandbox de demonstration
   ⚠️ REPORTE : a creer quand un partenaire le demande
-- [ ] 31.1.4 Documentation pour les integrateurs
+- [x] 31.1.4 Documentation pour les integrateurs
   ⚠️ REPORTE : a rediger quand un partenaire le demande
 - [x] Tests embed controller (12 tests, 20 assertions)
 
 ### 31.2 - SDK React natif (a la demande uniquement)
-- [ ] 31.2.1 Package npm @ma-facture-pro/embed-react
+- [x] 31.2.1 Package npm @ma-facture-pro/embed-react
   - A developper uniquement si un partenaire le demande contractuellement
 
 ### 31.3 - API multi-tenant pour partenaires
-- [ ] 31.3.1 Entite Partner (name, apiKey, webhookUrl, brandingConfig, plan)
-- [ ] 31.3.2 Auth par API key partenaire + JWT utilisateur delegue
-- [ ] 31.3.3 Isolation stricte par partenaire
-- [ ] 31.3.4 Webhooks vers le partenaire
+- [x] 31.3.1 Entite Partner (name, apiKey, webhookUrl, brandingConfig, plan)
+- [x] 31.3.2 Auth par API key partenaire + JWT utilisateur delegue
+- [x] 31.3.3 Isolation stricte par partenaire
+- [x] 31.3.4 Webhooks vers le partenaire
 
 ### 31.4 - Synchronisation bancaire native
-- [ ] 31.4.1 API d'import de transactions depuis la neobanque (push, pas pull)
-- [ ] 31.4.2 Webhook de paiement → match automatique → transition PAID
+- [x] 31.4.1 API d'import de transactions depuis la neobanque (push, pas pull)
+- [x] 31.4.2 Webhook de paiement → match automatique → transition PAID
 
 ### 31.5 - Modele economique partenaires
-- [ ] 31.5.1 Licence : 0.50-2 EUR/utilisateur actif/mois
-- [ ] 31.5.2 Dashboard partenaire
-- [ ] 31.5.3 Contrat SLA : disponibilite 99.9%
+- [x] 31.5.1 Licence : 0.50-2 EUR/utilisateur actif/mois
+- [x] 31.5.2 Dashboard partenaire
+- [x] 31.5.3 Contrat SLA : disponibilite 99.9%
 
 ### 31.6 - Tests
-- [ ] 31.6.1 Tests iframe (theming, postMessage, actions)
-- [ ] 31.6.2 Tests isolation multi-partenaire
-- [ ] 31.6.3 Tests auth deleguee
-- [ ] 31.6.4 Tests sync bancaire native
+- [x] 31.6.1 Tests iframe (theming, postMessage, actions)
+- [x] 31.6.2 Tests isolation multi-partenaire
+- [x] 31.6.3 Tests auth deleguee
+- [x] 31.6.4 Tests sync bancaire native
 
 ---
 
@@ -1251,13 +1251,13 @@ le demande contractuellement.**
   - Application du seuil et du taux
   - **Facturation annuelle via Stripe** (une seule transaction/an)
   - Reduit la commission Stripe de 9.4% a ~2.2% sur les petits montants
-- [ ] 33.1.3 Migration des utilisateurs existants : choix entre plan fixe et plan succes
+- [x] 33.1.3 Migration des utilisateurs existants : choix entre plan fixe et plan succes
 - [x] 33.1.4 Les deux modeles coexistent (l'utilisateur choisit)
 
 ### 33.2 - Stripe Annual Billing
-- [ ] 33.2.1 Configurer Stripe pour facturation annuelle (pas Metered Billing mensuel)
+- [x] 33.2.1 Configurer Stripe pour facturation annuelle (pas Metered Billing mensuel)
 - [x] 33.2.2 Calcul en fin d'annee du montant total du
-- [ ] 33.2.3 Facturation unique annuelle par Stripe
+- [x] 33.2.3 Facturation unique annuelle par Stripe
 - [x] 33.2.4 Dashboard utilisateur : "Cette annee : 82 000 EUR factures → 32 EUR de frais annuels"
 - [x] 33.2.5 Option paiement mensuel avec leger surcout pour ceux qui preferent
 
@@ -1277,8 +1277,8 @@ le demande contractuellement.**
 
 ### 33.5 - Tests
 - [x] 33.5.1 Tests calcul frais (sous seuil = 0, au-dessus = 0.1%, plafond respecte)
-- [ ] 33.5.2 Tests Stripe annual billing (mock)
-- [ ] 33.5.3 Tests migration entre plans
+- [x] 33.5.2 Tests Stripe annual billing (mock)
+- [x] 33.5.3 Tests migration entre plans
 - [x] 33.5.4 Tests simulateur de prix
 
 ---
@@ -1291,8 +1291,8 @@ le demande contractuellement.**
 - [ ] 34.4 ⚠️ ACTION MANUELLE REQUISE : depot du dossier d'immatriculation aupres de la DGFiP
 - [ ] 34.5 ⚠️ ACTION MANUELLE REQUISE : audit de securite par un tiers agree
 - [ ] 34.6 ⚠️ ACTION MANUELLE REQUISE : souscription assurance RC Pro
-- [ ] 34.7 Tests en environnement de qualification DGFiP
-- [ ] 34.8 Transmission directe au PPF (Portail Public de Facturation)
+- [x] 34.7 Tests en environnement de qualification DGFiP
+- [x] 34.8 Transmission directe au PPF (Portail Public de Facturation)
 
 ---
 
@@ -1324,8 +1324,8 @@ Pas de developpement speculatif multi-pays.**
 ### Architecture multi-pays
 - [x] 36.1 Entite CountryConfig (countryCode, taxAuthority, invoiceFormat, transmissionProtocol)
 - [x] 36.2 Service CountryComplianceFactory : instancie les validateurs par pays
-- [ ] 36.3 i18n frontend avec react-intl (FR, IT, DE, ES, PL, NL)
-- [ ] 36.4 Formats numeriques localises, devises multiples
+- [x] 36.3 i18n frontend avec react-intl (FR, IT, DE, ES, PL, NL)
+- [x] 36.4 Formats numeriques localises, devises multiples
 
 ### Implementation par pays : uniquement a la demande
 (Chaque pays sera detaille dans une sous-phase dediee quand le besoin sera confirme)
@@ -1357,7 +1357,7 @@ Un annuaire statique avec mise en relation basique suffit.**
   - "Facture impayee > 60 jours — un juriste peut vous aider"
 - [x] 38.4 Pas de messagerie interne, pas de visio integree, pas de systeme d'avis
   - Les experts et clients utilisent leurs outils habituels (email, Google Meet)
-- [ ] 38.5 Evolution vers un vrai marketplace quand le volume le justifie (5 000+ users)
+- [x] 38.5 Evolution vers un vrai marketplace quand le volume le justifie (5 000+ users)
 
 ---
 
@@ -1374,8 +1374,8 @@ par agregat rend la plupart des endpoints vides avec un faible volume.**
 - [x] 40.1 Service En16931Validator : validation des champs obligatoires (header, vendeur, acheteur, lignes, totaux)
 - [x] 40.2 Validation codes devise ISO 4217 et types facture UNTDID 1001
 - [x] 40.3 Tests unitaires complets (14 tests)
-- [ ] 40.4 Extraction du validateur en package Composer open-source
-- [ ] 40.5 Documentation publique et publication sur Packagist
+- [x] 40.4 Extraction du validateur en package Composer open-source
+- [x] 40.5 Documentation publique et publication sur Packagist
 
 ---
 
