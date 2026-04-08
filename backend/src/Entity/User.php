@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -40,8 +42,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     private string $lastName;
 
-    #[ORM\OneToOne(mappedBy: 'owner', cascade: ['persist', 'remove'])]
-    private ?Company $company = null;
+    /** @var Collection<int, Company> */
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class, cascade: ['persist', 'remove'])]
+    private Collection $companies;
+
+    // Entreprise active (selectionnee par l'utilisateur)
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Company $activeCompany = null;
 
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
@@ -49,6 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->id = Uuid::v7();
+        $this->companies = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -134,17 +143,57 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Retourne l'entreprise active de l'utilisateur.
+     *
+     * Cette methode sert de point d'acces unique pour tous les services
+     * qui ont besoin de l'entreprise courante. En mode multi-entite,
+     * elle retourne l'entreprise explicitement selectionnee, sinon la premiere.
+     */
     public function getCompany(): ?Company
     {
-        return $this->company;
+        if (null !== $this->activeCompany) {
+            return $this->activeCompany;
+        }
+
+        // Fallback : premiere entreprise si aucune active selectionnee
+        $first = $this->companies->first();
+
+        return false !== $first ? $first : null;
     }
 
-    public function setCompany(?Company $company): static
+    public function getActiveCompany(): ?Company
     {
-        $this->company = $company;
+        return $this->activeCompany;
+    }
 
-        if (null !== $company && $company->getOwner() !== $this) {
+    public function setActiveCompany(?Company $activeCompany): static
+    {
+        $this->activeCompany = $activeCompany;
+
+        return $this;
+    }
+
+    /** @return Collection<int, Company> */
+    public function getCompanies(): Collection
+    {
+        return $this->companies;
+    }
+
+    /**
+     * Ajoute une entreprise a l'utilisateur et la definit comme active
+     * si c'est la premiere.
+     */
+    public function addCompany(Company $company): static
+    {
+        if (!$this->companies->contains($company)) {
+            $this->companies->add($company);
             $company->setOwner($this);
+
+            // Premiere entreprise : la definir comme active automatiquement
+            if (1 === $this->companies->count()) {
+                $this->activeCompany = $company;
+            }
         }
 
         return $this;

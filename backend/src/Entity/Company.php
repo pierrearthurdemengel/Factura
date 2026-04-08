@@ -31,7 +31,7 @@ class Company
     #[Groups(['company:read', 'invoice:read'])]
     private ?Uuid $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'company')]
+    #[ORM\ManyToOne(inversedBy: 'companies')]
     #[ORM\JoinColumn(nullable: false)]
     private User $owner;
 
