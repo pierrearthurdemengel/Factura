@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { AudioProvider } from './context/AudioScope';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { AppIntlProvider, useLocale } from './i18n/IntlProvider';
 import PageTransition from './components/PageTransition';
 import CommandMenu from './components/CommandMenu';
 import FloatingActionButton from './components/FloatingActionButton';
@@ -64,8 +65,10 @@ function HomePage() {
 function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
   const { isAuthenticated } = useAuth();
   const { setTheme, isDark } = useTheme();
+  const { locale, setLocale, supportedLocales } = useLocale();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [companySelectorOpen, setCompanySelectorOpen] = useState(false);
+  const [localeSelectorOpen, setLocaleSelectorOpen] = useState(false);
   const [companies, setCompanies] = useState<{ id: string; name: string; siren: string }[]>([]);
   const [activeCompany, setActiveCompany] = useState<{ id: string; name: string; siren: string } | null>(null);
   const location = useLocation();
@@ -177,6 +180,43 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         )}
       </button>
+
+      {/* Selecteur de langue */}
+      <div style={{ position: 'relative' }}>
+        <button
+          onClick={() => setLocaleSelectorOpen(!localeSelectorOpen)}
+          className="navbar-icon-btn"
+          title="Langue"
+          style={{ fontSize: '0.85rem', fontWeight: 600 }}
+        >
+          {supportedLocales.find(l => l.code === locale)?.flag || '🌐'}
+        </button>
+        {localeSelectorOpen && (
+          <div style={{
+            position: 'absolute', top: '100%', right: 0, marginTop: '0.25rem',
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            minWidth: 160, zIndex: 1000, padding: '0.25rem',
+          }}>
+            {supportedLocales.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => { setLocale(l.code); setLocaleSelectorOpen(false); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%',
+                  padding: '0.5rem 0.75rem', border: 'none',
+                  background: locale === l.code ? 'var(--accent-bg)' : 'transparent',
+                  borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem',
+                  color: 'var(--text-h)', textAlign: 'left',
+                }}
+              >
+                <span>{l.flag}</span>
+                <span>{l.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Liens desktop */}
       <div className="navbar-links">
@@ -300,15 +340,17 @@ function AnimatedAppCore() {
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <AudioProvider>
-          <ToastProvider>
-            <BrowserRouter>
-              <AnimatedAppCore />
-            </BrowserRouter>
-          </ToastProvider>
-        </AudioProvider>
-      </AuthProvider>
+      <AppIntlProvider>
+        <AuthProvider>
+          <AudioProvider>
+            <ToastProvider>
+              <BrowserRouter>
+                <AnimatedAppCore />
+              </BrowserRouter>
+            </ToastProvider>
+          </AudioProvider>
+        </AuthProvider>
+      </AppIntlProvider>
     </ThemeProvider>
   );
 }
