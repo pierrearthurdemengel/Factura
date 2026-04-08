@@ -34,3 +34,35 @@ framework:
                 cancel:
                     from: [DRAFT, SENT, ACKNOWLEDGED]
                     to: CANCELLED
+
+        quote:
+            type: state_machine
+            marking_store:
+                type: method
+                property: status
+            supports:
+                - App\Entity\Quote
+            initial_marking: DRAFT
+            places:
+                DRAFT: ~
+                SENT: ~
+                ACCEPTED: ~
+                REJECTED: ~
+                EXPIRED: ~
+                CONVERTED: ~
+            transitions:
+                send:
+                    from: DRAFT
+                    to: SENT
+                accept:
+                    from: SENT
+                    to: ACCEPTED
+                reject:
+                    from: SENT
+                    to: REJECTED
+                expire:
+                    from: SENT
+                    to: EXPIRED
+                convert:
+                    from: ACCEPTED
+                    to: CONVERTED

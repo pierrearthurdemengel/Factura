@@ -13,9 +13,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\State\InvoiceCancelProcessor;
-use App\State\InvoicePayProcessor;
-use App\State\InvoiceSendProcessor;
+use App\State\QuoteConvertProcessor;
+use App\State\QuoteSendProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,8 +23,8 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'invoices')]
-#[ORM\Index(columns: ['status', 'issue_date'], name: 'idx_invoice_status_date')]
+#[ORM\Table(name: 'quotes')]
+#[ORM\Index(columns: ['status', 'issue_date'], name: 'idx_quote_status_date')]
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource(
     operations: [
@@ -35,29 +34,22 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Put(security: "is_granted('EDIT', object)"),
         new Delete(security: "is_granted('DELETE', object)"),
         new Post(
-            uriTemplate: '/invoices/{id}/send',
+            uriTemplate: '/quotes/{id}/send',
             security: "is_granted('EDIT', object)",
-            processor: InvoiceSendProcessor::class,
+            processor: QuoteSendProcessor::class,
             denormalizationContext: ['groups' => []],
             name: 'send',
         ),
         new Post(
-            uriTemplate: '/invoices/{id}/cancel',
+            uriTemplate: '/quotes/{id}/convert',
             security: "is_granted('EDIT', object)",
-            processor: InvoiceCancelProcessor::class,
+            processor: QuoteConvertProcessor::class,
             denormalizationContext: ['groups' => []],
-            name: 'cancel',
-        ),
-        new Post(
-            uriTemplate: '/invoices/{id}/pay',
-            security: "is_granted('VIEW', object)",
-            processor: InvoicePayProcessor::class,
-            denormalizationContext: ['groups' => []],
-            name: 'pay',
+            name: 'convert',
         ),
     ],
-    normalizationContext: ['groups' => ['invoice:read']],
-    denormalizationContext: ['groups' => ['invoice:write']],
+    normalizationContext: ['groups' => ['quote:read']],
+    denormalizationContext: ['groups' => ['quote:write']],
     order: ['issueDate' => 'DESC'],
 )]
 #[ApiFilter(SearchFilter::class, properties: [
@@ -65,123 +57,101 @@ use Symfony\Component\Validator\Constraints as Assert;
     'buyer.name' => 'partial',
     'status' => 'exact',
 ])]
-#[ApiFilter(DateFilter::class, properties: ['issueDate', 'dueDate'])]
+#[ApiFilter(DateFilter::class, properties: ['issueDate', 'validityEndDate'])]
 #[ApiFilter(OrderFilter::class, properties: ['issueDate', 'totalIncludingTax', 'status'])]
 #[ApiFilter(RangeFilter::class, properties: ['totalIncludingTax'])]
-class Invoice
+class Quote
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(['invoice:read'])]
+    #[Groups(['quote:read'])]
     private ?Uuid $id = null;
 
-    // Numero sequentiel obligatoire (ex: FA-2026-0001)
+    // Numero sequentiel obligatoire (ex: DV-2026-0001)
     #[ORM\Column(length: 50, unique: true, nullable: true)]
-    #[Groups(['invoice:read'])]
+    #[Groups(['quote:read'])]
     private ?string $number = null;
 
-    // Type : STANDARD, DEPOSIT (acompte), CREDIT_NOTE (avoir)
+    // Statuts : DRAFT, SENT, ACCEPTED, REJECTED, EXPIRED, CONVERTED
     #[ORM\Column(length: 20)]
-    #[Groups(['invoice:read', 'invoice:write'])]
-    private string $type = 'STANDARD';
-
-    // Statuts : DRAFT, SENT, ACKNOWLEDGED, REJECTED, PAID, CANCELLED
-    #[ORM\Column(length: 20)]
-    #[Groups(['invoice:read'])]
+    #[Groups(['quote:read'])]
     private string $status = 'DRAFT';
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
-    #[Groups(['invoice:read'])]
+    #[Groups(['quote:read'])]
     private Company $seller;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
-    #[Groups(['invoice:read', 'invoice:write'])]
+    #[Groups(['quote:read', 'quote:write'])]
     private Client $buyer;
 
     #[ORM\Column(type: 'date_immutable')]
     #[Assert\NotNull]
-    #[Groups(['invoice:read', 'invoice:write'])]
+    #[Groups(['quote:read', 'quote:write'])]
     private \DateTimeImmutable $issueDate;
 
+    // Date de fin de validite du devis
     #[ORM\Column(type: 'date_immutable', nullable: true)]
-    #[Groups(['invoice:read', 'invoice:write'])]
-    private ?\DateTimeImmutable $deliveryDate = null;
+    #[Groups(['quote:read', 'quote:write'])]
+    private ?\DateTimeImmutable $validityEndDate = null;
 
     #[ORM\Column(type: 'date_immutable', nullable: true)]
-    #[Groups(['invoice:read', 'invoice:write'])]
-    private ?\DateTimeImmutable $dueDate = null;
+    #[Groups(['quote:read'])]
+    private ?\DateTimeImmutable $acceptedAt = null;
+
+    #[ORM\Column(type: 'date_immutable', nullable: true)]
+    #[Groups(['quote:read'])]
+    private ?\DateTimeImmutable $rejectedAt = null;
+
+    // Facture generee lors de la conversion devis → facture
+    #[ORM\OneToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['quote:read'])]
+    private ?Invoice $convertedInvoice = null;
 
     #[ORM\Column(length: 3)]
-    #[Groups(['invoice:read', 'invoice:write'])]
+    #[Groups(['quote:read', 'quote:write'])]
     private string $currency = 'EUR';
 
-    // Totaux calcules (denormalises pour la performance)
     #[ORM\Column(type: 'decimal', precision: 15, scale: 2)]
-    #[Groups(['invoice:read'])]
+    #[Groups(['quote:read'])]
     private string $totalExcludingTax = '0.00';
 
     #[ORM\Column(type: 'decimal', precision: 15, scale: 2)]
-    #[Groups(['invoice:read'])]
+    #[Groups(['quote:read'])]
     private string $totalTax = '0.00';
 
     #[ORM\Column(type: 'decimal', precision: 15, scale: 2)]
-    #[Groups(['invoice:read'])]
+    #[Groups(['quote:read'])]
     private string $totalIncludingTax = '0.00';
 
-    // Reference PDP (retournee par la PDP apres transmission)
-    #[ORM\Column(nullable: true)]
-    #[Groups(['invoice:read'])]
-    private ?string $pdpReference = null;
-
-    // Hash SHA-256 du fichier transmis (piste d'audit fiable)
-    #[ORM\Column(nullable: true)]
-    private ?string $fileHash = null;
-
-    // Chemin S3 du fichier archive
-    #[ORM\Column(nullable: true)]
-    private ?string $archivedFilePath = null;
-
-    // Mention legale specifique (autoliquidation, exoneration TVA, art. 293B...)
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['invoice:read', 'invoice:write'])]
+    #[Groups(['quote:read', 'quote:write'])]
     private ?string $legalMention = null;
 
-    // Conditions de paiement
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['invoice:read', 'invoice:write'])]
-    private ?string $paymentTerms = null;
+    #[Groups(['quote:read', 'quote:write'])]
+    private ?string $notes = null;
 
-    // Devis d'origine (si la facture est issue d'une conversion de devis)
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['invoice:read'])]
-    private ?Quote $sourceQuote = null;
-
-    // Facture parente (pour les acomptes : lien vers la facture principale)
-    #[ORM\ManyToOne(targetEntity: self::class)]
-    #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['invoice:read', 'invoice:write'])]
-    private ?self $parentInvoice = null;
-
-    /** @var Collection<int, InvoiceLine> */
-    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceLine::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    /** @var Collection<int, QuoteLine> */
+    #[ORM\OneToMany(mappedBy: 'quote', targetEntity: QuoteLine::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC'])]
-    #[Groups(['invoice:read', 'invoice:write'])]
+    #[Groups(['quote:read', 'quote:write'])]
     private Collection $lines;
 
-    /** @var Collection<int, InvoiceEvent> */
-    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceEvent::class, cascade: ['persist'])]
+    /** @var Collection<int, QuoteEvent> */
+    #[ORM\OneToMany(mappedBy: 'quote', targetEntity: QuoteEvent::class, cascade: ['persist'])]
     #[ORM\OrderBy(['occurredAt' => 'ASC'])]
     private Collection $events;
 
     #[ORM\Column]
-    #[Groups(['invoice:read'])]
+    #[Groups(['quote:read'])]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
@@ -209,18 +179,6 @@ class Invoice
     public function setNumber(?string $number): static
     {
         $this->number = $number;
-
-        return $this;
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
 
         return $this;
     }
@@ -273,26 +231,50 @@ class Invoice
         return $this;
     }
 
-    public function getDeliveryDate(): ?\DateTimeImmutable
+    public function getValidityEndDate(): ?\DateTimeImmutable
     {
-        return $this->deliveryDate;
+        return $this->validityEndDate;
     }
 
-    public function setDeliveryDate(?\DateTimeImmutable $deliveryDate): static
+    public function setValidityEndDate(?\DateTimeImmutable $validityEndDate): static
     {
-        $this->deliveryDate = $deliveryDate;
+        $this->validityEndDate = $validityEndDate;
 
         return $this;
     }
 
-    public function getDueDate(): ?\DateTimeImmutable
+    public function getAcceptedAt(): ?\DateTimeImmutable
     {
-        return $this->dueDate;
+        return $this->acceptedAt;
     }
 
-    public function setDueDate(?\DateTimeImmutable $dueDate): static
+    public function setAcceptedAt(?\DateTimeImmutable $acceptedAt): static
     {
-        $this->dueDate = $dueDate;
+        $this->acceptedAt = $acceptedAt;
+
+        return $this;
+    }
+
+    public function getRejectedAt(): ?\DateTimeImmutable
+    {
+        return $this->rejectedAt;
+    }
+
+    public function setRejectedAt(?\DateTimeImmutable $rejectedAt): static
+    {
+        $this->rejectedAt = $rejectedAt;
+
+        return $this;
+    }
+
+    public function getConvertedInvoice(): ?Invoice
+    {
+        return $this->convertedInvoice;
+    }
+
+    public function setConvertedInvoice(?Invoice $convertedInvoice): static
+    {
+        $this->convertedInvoice = $convertedInvoice;
 
         return $this;
     }
@@ -345,42 +327,6 @@ class Invoice
         return $this;
     }
 
-    public function getPdpReference(): ?string
-    {
-        return $this->pdpReference;
-    }
-
-    public function setPdpReference(?string $pdpReference): static
-    {
-        $this->pdpReference = $pdpReference;
-
-        return $this;
-    }
-
-    public function getFileHash(): ?string
-    {
-        return $this->fileHash;
-    }
-
-    public function setFileHash(?string $fileHash): static
-    {
-        $this->fileHash = $fileHash;
-
-        return $this;
-    }
-
-    public function getArchivedFilePath(): ?string
-    {
-        return $this->archivedFilePath;
-    }
-
-    public function setArchivedFilePath(?string $archivedFilePath): static
-    {
-        $this->archivedFilePath = $archivedFilePath;
-
-        return $this;
-    }
-
     public function getLegalMention(): ?string
     {
         return $this->legalMention;
@@ -393,72 +339,48 @@ class Invoice
         return $this;
     }
 
-    public function getPaymentTerms(): ?string
+    public function getNotes(): ?string
     {
-        return $this->paymentTerms;
+        return $this->notes;
     }
 
-    public function setPaymentTerms(?string $paymentTerms): static
+    public function setNotes(?string $notes): static
     {
-        $this->paymentTerms = $paymentTerms;
+        $this->notes = $notes;
 
         return $this;
     }
 
-    public function getSourceQuote(): ?Quote
-    {
-        return $this->sourceQuote;
-    }
-
-    public function setSourceQuote(?Quote $sourceQuote): static
-    {
-        $this->sourceQuote = $sourceQuote;
-
-        return $this;
-    }
-
-    public function getParentInvoice(): ?self
-    {
-        return $this->parentInvoice;
-    }
-
-    public function setParentInvoice(?self $parentInvoice): static
-    {
-        $this->parentInvoice = $parentInvoice;
-
-        return $this;
-    }
-
-    /** @return Collection<int, InvoiceLine> */
+    /** @return Collection<int, QuoteLine> */
     public function getLines(): Collection
     {
         return $this->lines;
     }
 
-    public function addLine(InvoiceLine $line): static
+    public function addLine(QuoteLine $line): static
     {
         if (!$this->lines->contains($line)) {
             $this->lines->add($line);
-            $line->setInvoice($this);
+            $line->setQuote($this);
         }
 
         return $this;
     }
 
-    public function removeLine(InvoiceLine $line): static
+    public function removeLine(QuoteLine $line): static
     {
         $this->lines->removeElement($line);
 
         return $this;
     }
 
-    /** @return Collection<int, InvoiceEvent> */
+    /** @return Collection<int, QuoteEvent> */
     public function getEvents(): Collection
     {
         return $this->events;
     }
 
-    public function addEvent(InvoiceEvent $event): static
+    public function addEvent(QuoteEvent $event): static
     {
         if (!$this->events->contains($event)) {
             $this->events->add($event);
@@ -507,7 +429,7 @@ class Invoice
     }
 
     /**
-     * Verifie que la facture contient les donnees minimales pour etre emise.
+     * Verifie que le devis contient les donnees minimales pour etre envoye.
      */
     public function isValid(): bool
     {

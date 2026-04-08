@@ -109,6 +109,13 @@ class Company
     #[ORM\Column(nullable: true)]
     private ?int $lastInvoiceYear = null;
 
+    // Compteur de sequence pour la numerotation des devis
+    #[ORM\Column(nullable: true)]
+    private ?int $lastQuoteNumber = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $lastQuoteYear = null;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -330,6 +337,30 @@ class Company
     public function setLastInvoiceYear(?int $lastInvoiceYear): static
     {
         $this->lastInvoiceYear = $lastInvoiceYear;
+
+        return $this;
+    }
+
+    public function getLastQuoteNumber(): ?int
+    {
+        return $this->lastQuoteNumber;
+    }
+
+    public function setLastQuoteNumber(?int $lastQuoteNumber): static
+    {
+        $this->lastQuoteNumber = $lastQuoteNumber;
+
+        return $this;
+    }
+
+    public function getLastQuoteYear(): ?int
+    {
+        return $this->lastQuoteYear;
+    }
+
+    public function setLastQuoteYear(?int $lastQuoteYear): static
+    {
+        $this->lastQuoteYear = $lastQuoteYear;
 
         return $this;
     }
