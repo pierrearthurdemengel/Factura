@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getInvoice, sendInvoice, cancelInvoice, payInvoice, downloadPdf, downloadFacturX, downloadUbl, getInvoiceEvents, type Invoice, type InvoiceEvent } from '../api/factura';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import api, { getInvoice, sendInvoice, cancelInvoice, payInvoice, downloadPdf, downloadFacturX, downloadUbl, getInvoiceEvents, type Invoice, type InvoiceEvent } from '../api/factura';
 import { useToast } from '../context/ToastContext';
 import StatusDropdown from '../components/StatusDropdown';
 import { downloadLocalPdf } from '../utils/pdfGenerator';
@@ -29,6 +29,8 @@ const eventLabel = (type: string): string => {
     PAID: 'Payee',
     ARCHIVED: 'Archivee',
     VIEWED_BY_BUYER: 'Vue par le client',
+    REMINDER_SENT: 'Relance envoyee',
+    FORMAL_NOTICE_SENT: 'Mise en demeure',
   };
   return labels[type] || type;
 };
@@ -44,6 +46,8 @@ const eventColor = (type: string): string => {
     PAID: '#10b981',
     ARCHIVED: '#6366f1',
     VIEWED_BY_BUYER: '#f59e0b',
+    REMINDER_SENT: '#f97316',
+    FORMAL_NOTICE_SENT: '#dc2626',
   };
   return colors[type] || '#6b7280';
 };
@@ -156,6 +160,9 @@ export default function InvoiceDetail() {
   if (['SENT', 'ACKNOWLEDGED'].includes(invoice.status)) {
     availableActions.push({ label: 'Marquer payee', icon: '✅', onClick: () => handleAction(payInvoice) });
   }
+  if (['SENT', 'ACKNOWLEDGED'].includes(invoice.status)) {
+    availableActions.push({ label: 'Relancer manuellement', icon: '🔔', onClick: () => handleAction((invoiceId: string) => api.post(`/invoices/${invoiceId}/remind`)) });
+  }
   if (['DRAFT', 'SENT', 'ACKNOWLEDGED'].includes(invoice.status)) {
     availableActions.push({ label: 'Annuler la facture', icon: '❌', onClick: () => handleAction(cancelInvoice), danger: true });
   }
@@ -171,6 +178,36 @@ export default function InvoiceDetail() {
           actions={availableActions}
         />
       </div>
+
+      {/* Badge "Issu du devis" si la facture provient d'un devis */}
+      {invoice.sourceQuote && (
+        <div style={{ marginBottom: '1rem', padding: '0.75rem', background: 'rgba(139,92,246,0.1)', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.9rem', color: '#8b5cf6', fontWeight: 600 }}>
+            Issu du devis {invoice.sourceQuote.number || ''}
+          </span>
+          <Link to={`/quotes/${invoice.sourceQuote.id}`} style={{ color: '#8b5cf6', textDecoration: 'underline', fontSize: '0.9rem' }}>
+            Voir le devis
+          </Link>
+        </div>
+      )}
+
+      {/* Badge de relance si des relances ont ete envoyees */}
+      {(() => {
+        const reminderEvents = events.filter((e) => e.eventType === 'REMINDER_SENT' || e.eventType === 'FORMAL_NOTICE_SENT');
+        if (reminderEvents.length === 0) return null;
+        const lastReminder = reminderEvents[reminderEvents.length - 1];
+        const daysSinceReminder = Math.floor((Date.now() - new Date(lastReminder.occurredAt).getTime()) / (1000 * 60 * 60 * 24));
+        return (
+          <div style={{ marginBottom: '1rem', padding: '0.75rem', background: 'rgba(249,115,22,0.1)', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.9rem', color: '#f97316', fontWeight: 600 }}>
+              Relance envoyee (J+{daysSinceReminder})
+            </span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text)' }}>
+              — {reminderEvents.length} relance(s) au total, derniere le {new Date(lastReminder.occurredAt).toLocaleDateString('fr-FR')}
+            </span>
+          </div>
+        );
+      })()}
 
       <div className="app-grid">
         <div className="app-card">
