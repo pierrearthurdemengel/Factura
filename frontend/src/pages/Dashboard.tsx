@@ -103,7 +103,7 @@ export default function Dashboard() {
   // Widget Layout Order
   const [widgets, setWidgets] = useState<string[]>(() => {
     const saved = localStorage.getItem('factura-dashboard-layout');
-    return saved ? JSON.parse(saved) : ['kpi-month', 'kpi-revenue', 'kpi-pending', 'kpi-treasury', 'chart-revenue', 'list-recent', 'list-feed'];
+    return saved ? JSON.parse(saved) : ['kpi-month', 'kpi-revenue', 'kpi-pending', 'kpi-treasury', 'chart-revenue', 'list-recent', 'list-feed', 'suggestions'];
   });
 
   const sensors = useSensors(
@@ -378,6 +378,52 @@ export default function Dashboard() {
                           })}
                         </div>
                       )}
+                    </div>
+                  </SortableWidget>
+                );
+              }
+              if (wId === 'suggestions') {
+                // Suggestions contextuelles basees sur les donnees
+                const suggestions: { icon: string; text: string; action: string }[] = [];
+                if (invoices.length === 0) {
+                  suggestions.push({ icon: '📝', text: 'Creez votre premiere facture pour commencer', action: '/invoices/new' });
+                }
+                const overdue = invoices.filter(inv => inv.status === 'SENT' && inv.dueDate && new Date(inv.dueDate) < new Date());
+                if (overdue.length > 0) {
+                  suggestions.push({ icon: '⚠️', text: `${overdue.length} facture(s) en retard de paiement`, action: '/unpaid' });
+                }
+                if (pending.length > 3) {
+                  suggestions.push({ icon: '💰', text: 'Pensez a activer l\'affacturage pour recevoir vos paiements plus vite', action: '/settings' });
+                }
+                if (thisMonth.length >= 10) {
+                  suggestions.push({ icon: '🏦', text: 'Connectez votre banque pour automatiser le rapprochement', action: '/banking' });
+                }
+                if (suggestions.length === 0) {
+                  suggestions.push({ icon: '✅', text: 'Tout est en ordre. Continuez comme ca !', action: '/' });
+                }
+                return (
+                  <SortableWidget key={wId} id={wId} className="widget-full">
+                    <div className="app-card" style={{ width: '100%', padding: '1.25rem' }}>
+                      <h3 className="app-card-title" style={{ marginBottom: '0.75rem' }}>Suggestions</h3>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {suggestions.map((s, i) => (
+                          <Link
+                            key={i}
+                            to={s.action}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: '0.75rem',
+                              padding: '0.6rem 0.75rem', borderRadius: '8px',
+                              background: 'var(--social-bg)', textDecoration: 'none',
+                              color: 'var(--text-h)', fontSize: '0.85rem',
+                              transition: 'background 0.2s',
+                            }}
+                          >
+                            <span style={{ fontSize: '1.1rem' }}>{s.icon}</span>
+                            <span>{s.text}</span>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text)" strokeWidth="2" style={{ marginLeft: 'auto', flexShrink: 0 }}><polyline points="9 18 15 12 9 6"></polyline></svg>
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   </SortableWidget>
                 );

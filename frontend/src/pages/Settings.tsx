@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getCompany, updateCompany, getStripePortalUrl, type Company } from '../api/factura';
+import { getCompany, updateCompany, getStripePortalUrl, getInvoices, type Company, type Invoice } from '../api/factura';
 import './AppLayout.css';
 
 // Onglets disponibles dans les parametres
-type SettingsTab = 'company' | 'customization' | 'reminders' | 'integrations' | 'factoring';
+type SettingsTab = 'company' | 'customization' | 'reminders' | 'integrations' | 'factoring' | 'billing';
 
 export default function Settings() {
   const { logout } = useAuth();
@@ -25,6 +25,10 @@ export default function Settings() {
   // Relances
   const [remindersEnabled, setRemindersEnabled] = useState(true);
   const [reminderDelays, setReminderDelays] = useState({ first: '7', second: '30', formal: '60' });
+
+  // Facturation / Billing
+  const [billingInvoices, setBillingInvoices] = useState<Invoice[]>([]);
+  const [currentPlan, setCurrentPlan] = useState<'free' | 'pro' | 'success'>('free');
 
   const [form, setForm] = useState({
     name: '', siren: '', siret: '', vatNumber: '', legalForm: '', nafCode: '',
@@ -108,7 +112,22 @@ export default function Settings() {
     { key: 'reminders', label: 'Relances' },
     { key: 'integrations', label: 'Integrations' },
     { key: 'factoring', label: 'Affacturage' },
+    { key: 'billing', label: 'Facturation' },
   ];
+
+  // Charger les factures pour l'onglet facturation
+  useEffect(() => {
+    if (activeTab === 'billing') {
+      getInvoices().then(res => setBillingInvoices(res.data['hydra:member'])).catch(() => setBillingInvoices([]));
+    }
+  }, [activeTab]);
+
+  // Calcul du montant facture cette annee
+  const currentYear = new Date().getFullYear();
+  const yearInvoices = billingInvoices.filter(inv => new Date(inv.issueDate).getFullYear() === currentYear);
+  const yearTotal = yearInvoices.reduce((s, inv) => s + parseFloat(inv.totalExcludingTax), 0);
+  // Estimation des frais selon le plan
+  const estimatedFees = currentPlan === 'free' ? 0 : currentPlan === 'pro' ? 14.90 * 12 : Math.max(29, yearTotal * 0.001);
 
   return (
     <div className="app-container">
@@ -547,6 +566,96 @@ export default function Settings() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Onglet Facturation */}
+      {activeTab === 'billing' && (
+        <div>
+          <h2 className="app-section-title" style={{ marginTop: 0 }}>Tableau de bord facturation</h2>
+
+          {/* Resume annuel */}
+          <div className="app-card" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, var(--accent-bg) 0%, var(--surface) 100%)' }}>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '0.5rem' }}>Cette annee ({currentYear})</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-h)' }}>{yearTotal.toFixed(0)} EUR</span>
+              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>factures HT</span>
+              <span style={{ fontSize: '1.2rem', color: 'var(--text)', margin: '0 0.25rem' }}>→</span>
+              <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--accent)' }}>{estimatedFees.toFixed(2)} EUR</span>
+              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>de frais {currentPlan === 'pro' ? 'annuels' : currentPlan === 'success' ? 'estimes' : ''}</span>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.5rem' }}>
+              {yearInvoices.length} facture(s) emise(s) en {currentYear}
+            </div>
+          </div>
+
+          {/* Selecteur de plan */}
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-h)', marginBottom: '1rem' }}>Choisir un plan</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+            {[
+              { key: 'free' as const, name: 'Gratuit', price: '0 EUR', desc: '30 factures/mois', features: ['Factures illimitees (30/mois)', 'Export PDF Factur-X', 'Support email'] },
+              { key: 'pro' as const, name: 'Pro', price: '14,90 EUR/mois', desc: 'ou 149 EUR/an', features: ['Factures illimitees', 'Relances automatiques', 'Rapprochement bancaire', 'Support prioritaire'] },
+              { key: 'success' as const, name: 'Succes', price: '0,1% du CA', desc: 'min 29 EUR/an', features: ['Tout le plan Pro', 'Affacturage', 'Expert-comptable', 'API et webhooks'] },
+            ].map((plan) => (
+              <div
+                key={plan.key}
+                onClick={() => setCurrentPlan(plan.key)}
+                className="app-card"
+                style={{
+                  padding: '1.25rem', cursor: 'pointer', position: 'relative',
+                  border: currentPlan === plan.key ? '2px solid var(--accent)' : '2px solid transparent',
+                  transition: 'border-color 0.2s',
+                }}
+              >
+                {currentPlan === plan.key && (
+                  <div style={{ position: 'absolute', top: 8, right: 8, width: 20, height: 20, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                )}
+                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-h)', marginBottom: '0.25rem' }}>{plan.name}</div>
+                <div style={{ fontWeight: 600, color: 'var(--accent)', marginBottom: '0.25rem' }}>{plan.price}</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginBottom: '0.75rem' }}>{plan.desc}</div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.8rem' }}>
+                  {plan.features.map((f, i) => (
+                    <li key={i} style={{ padding: '2px 0', color: 'var(--text-h)' }}>✓ {f}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Option paiement mensuel/annuel */}
+          <div className="app-card" style={{ padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.9rem' }}>Mode de paiement</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Payez annuellement et economisez 2 mois</div>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button className="app-btn-outline-danger" style={{ fontSize: '0.8rem', padding: '6px 14px' }}>Mensuel</button>
+              <button className="app-btn-primary" style={{ fontSize: '0.8rem', padding: '6px 14px' }}>Annuel (-17%)</button>
+            </div>
+          </div>
+
+          {/* Historique facturation */}
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-h)', marginBottom: '1rem' }}>Historique de facturation</h3>
+          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text)' }}>
+            <p style={{ fontSize: '0.9rem' }}>Aucune facture Factura emise pour le moment.</p>
+            <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Vos factures d'abonnement apparaitront ici.</p>
+          </div>
+
+          <button
+            className="app-btn-primary"
+            onClick={async () => {
+              try {
+                const res = await getStripePortalUrl();
+                window.location.href = res.data.url;
+              } catch {
+                setError('Impossible d\'acceder au portail de facturation.');
+              }
+            }}
+          >
+            Gerer l'abonnement via Stripe
+          </button>
         </div>
       )}
 
