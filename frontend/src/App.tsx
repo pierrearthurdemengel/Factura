@@ -12,6 +12,7 @@ import VoiceAssistant from './components/VoiceAssistant';
 import AmbientBackground from './components/AmbientBackground';
 import CustomCursor from './components/CustomCursor';
 import CollaboratorCursor from './components/CollaboratorCursor';
+import './components/NavBar.css';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import InvoiceList from './pages/InvoiceList';
@@ -40,51 +41,31 @@ function HomePage() {
 function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
   const { isAuthenticated } = useAuth();
   const { setTheme, isDark } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Fermer le menu mobile lors d'un changement de page
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   if (!isAuthenticated) return null;
 
   return (
-    <nav style={{ padding: '12px 24px', borderBottom: '1px solid var(--border)', display: 'flex', gap: '24px', alignItems: 'center', background: 'var(--bg)' }}>
-      <Link to="/" style={{ fontWeight: '800', textDecoration: 'none', color: 'var(--text-h)', fontSize: '1.1rem' }}>Factura</Link>
-      
-      <button 
-        onClick={onOpenCommand}
-        className="app-btn-outline"
-        style={{
-          marginLeft: 'auto',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          padding: '6px 12px',
-          color: 'var(--text)',
-          borderColor: 'var(--border)',
-          background: 'transparent',
-          fontSize: '0.85rem',
-          borderRadius: '6px',
-          cursor: 'pointer'
-        }}
-      >
+    <nav className="navbar">
+      <Link to="/" className="navbar-brand">Factura</Link>
+
+      {/* Barre de recherche desktop */}
+      <button onClick={onOpenCommand} className="navbar-search">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <span>Rechercher...</span>
-        <kbd style={{ background: 'var(--social-bg)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', color: 'var(--text-h)', fontFamily: 'inherit', border: '1px solid var(--border)' }}>⌘K</kbd>
+        <kbd>&#8984;K</kbd>
       </button>
 
+      {/* Bouton theme */}
       <button
         onClick={() => setTheme(isDark ? 'light' : 'dark')}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          padding: '8px',
-          cursor: 'pointer',
-          color: 'var(--text-h)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '50%',
-          transition: 'background 0.2s'
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--social-bg)')}
-        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+        className="navbar-icon-btn"
         title={isDark ? "Activer le mode clair" : "Activer le mode sombre"}
       >
         {isDark ? (
@@ -94,9 +75,34 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
         )}
       </button>
 
-      <Link to="/invoices" style={{ color: 'var(--text-h)', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Factures</Link>
-      <Link to="/clients" style={{ color: 'var(--text-h, #111827)', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Clients</Link>
-      <Link to="/settings" style={{ color: 'var(--text-h, #111827)', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Parametres</Link>
+      {/* Liens desktop */}
+      <div className="navbar-links">
+        <Link to="/invoices" className="navbar-link">Factures</Link>
+        <Link to="/clients" className="navbar-link">Clients</Link>
+        <Link to="/settings" className="navbar-link">Parametres</Link>
+      </div>
+
+      {/* Bouton hamburger mobile */}
+      <button
+        className={`navbar-hamburger ${mobileMenuOpen ? 'open' : ''}`}
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        aria-label="Menu"
+      >
+        <span /><span /><span />
+      </button>
+
+      {/* Menu mobile plein ecran */}
+      {mobileMenuOpen && (
+        <div className="navbar-mobile-menu">
+          <Link to="/" className="navbar-mobile-link">Tableau de bord</Link>
+          <Link to="/invoices" className="navbar-mobile-link">Factures</Link>
+          <Link to="/clients" className="navbar-mobile-link">Clients</Link>
+          <Link to="/settings" className="navbar-mobile-link">Parametres</Link>
+          <button onClick={() => { onOpenCommand(); setMobileMenuOpen(false); }} className="navbar-mobile-link" style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' }}>
+            Rechercher
+          </button>
+        </div>
+      )}
     </nav>
   );
 }

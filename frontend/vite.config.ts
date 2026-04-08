@@ -33,10 +33,28 @@ export default defineConfig({
       manifest: {
         name: 'Ma Facture Pro',
         short_name: 'Factura',
-        description: 'La meilleure app SaaS de facturation.',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        description: 'Facturation electronique conforme, gestion comptable et tresorerie predictive.',
+        theme_color: '#1e40af',
+        background_color: '#f8fafc',
         display: 'standalone',
+        start_url: '/',
+        scope: '/',
+        lang: 'fr',
+        categories: ['business', 'finance', 'productivity'],
+        icons: [
+          {
+            src: '/icons/icon-192x192.svg',
+            sizes: '192x192',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
+          },
+          {
+            src: '/icons/icon-512x512.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
+          }
+        ]
       }
     })
   ],
