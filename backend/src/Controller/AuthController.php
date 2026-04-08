@@ -60,7 +60,7 @@ class AuthController extends AbstractController
         $company->setPostalCode($data['postalCode'] ?? '');
         $company->setCity($data['city'] ?? '');
         $company->setOwner($user);
-        $user->setCompany($company);
+        $user->addCompany($company);
 
         // Creation de l'abonnement gratuit
         $subscription = new Subscription();

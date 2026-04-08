@@ -10,6 +10,7 @@ use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\Product;
 use App\Entity\Quote;
+use App\Entity\ReminderTemplate;
 use App\Entity\User;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -69,7 +70,7 @@ class InvoiceOwnerExtension implements QueryCollectionExtensionInterface, QueryI
             $queryBuilder
                 ->andWhere(sprintf('%s.company = :company', $rootAlias))
                 ->setParameter('company', $company);
-        } elseif (Product::class === $resourceClass) {
+        } elseif (Product::class === $resourceClass || ReminderTemplate::class === $resourceClass) {
             $queryBuilder
                 ->andWhere(sprintf('%s.company = :company', $rootAlias))
                 ->setParameter('company', $company);
