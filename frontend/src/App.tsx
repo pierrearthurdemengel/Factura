@@ -22,6 +22,7 @@ import ClientList from './pages/ClientList';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import CompanyCreation from './pages/CompanyCreation';
 
 // Route protegee : redirige vers /login si non authentifie
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -163,6 +164,7 @@ function AnimatedAppCore() {
           <Route path="/invoices/:id" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceDetail /></div></PageTransition></ProtectedRoute>} />
           <Route path="/clients" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ClientList /></div></PageTransition></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Settings /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/creer-entreprise" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><CompanyCreation /></div></PageTransition>} />
         </Routes>
       </AnimatePresence>
     </>

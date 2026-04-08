@@ -1,0 +1,254 @@
+/* Page creation d'entreprise — arbre decisionnel et checklist */
+.cc-page {
+  text-align: left;
+}
+
+.cc-intro {
+  font-size: 1.05rem;
+  color: var(--text);
+  max-width: 650px;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.cc-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  max-width: 700px;
+  animation: cc-fade-in 0.3s ease-out;
+}
+
+.cc-card-title {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  color: var(--text-h);
+  margin: 0 0 1rem;
+  font-weight: 700;
+}
+
+.cc-hint {
+  color: var(--text);
+  font-size: 0.95rem;
+  margin: 0 0 1.5rem;
+}
+
+/* Choix de l'arbre decisionnel */
+.cc-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cc-choice {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--social-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.cc-choice:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+
+.cc-choice-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.cc-choice-label {
+  font-weight: 600;
+  color: var(--text-h);
+  display: block;
+  font-size: 1rem;
+}
+
+.cc-choice-desc {
+  font-size: 0.85rem;
+  color: var(--text);
+  display: block;
+  margin-top: 0.15rem;
+}
+
+/* Bouton retour */
+.cc-back {
+  margin-top: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+  font: inherit;
+}
+
+.cc-back:hover {
+  color: var(--text-h);
+}
+
+/* Badges resultats */
+.cc-badge-green {
+  display: inline-block;
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.cc-badge-blue {
+  display: inline-block;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.cc-badge-purple {
+  display: inline-block;
+  background: var(--accent-bg);
+  color: var(--accent);
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+/* Listes */
+.cc-list {
+  padding-left: 1.25rem;
+  margin: 0 0 1.5rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.cc-list a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.cc-list a:hover {
+  text-decoration: underline;
+}
+
+/* Actions (boutons CTA) */
+.cc-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.cc-btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: opacity 0.2s;
+}
+
+.cc-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.cc-btn-outline {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.2s;
+}
+
+.cc-btn-outline:hover {
+  background: var(--accent-bg);
+}
+
+/* Checklist post-creation */
+.cc-checklist {
+  padding-left: 1.25rem;
+  margin: 0 0 2rem;
+  counter-reset: checklist;
+}
+
+.cc-checklist li {
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.cc-checklist li strong {
+  display: block;
+  color: var(--text-h);
+  font-size: 1rem;
+}
+
+.cc-checklist li span {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.cc-links {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  margin-top: 1rem;
+}
+
+.cc-links h3 {
+  font-size: 1.1rem;
+  color: var(--text-h);
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+}
+
+@keyframes cc-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile */
+@media (max-width: 639px) {
+  .cc-card {
+    padding: 1.25rem;
+  }
+
+  .cc-actions {
+    flex-direction: column;
+  }
+
+  .cc-btn-primary,
+  .cc-btn-outline {
+    width: 100%;
+    text-align: center;
+  }
+}
