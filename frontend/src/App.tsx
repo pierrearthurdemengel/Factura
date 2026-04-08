@@ -41,6 +41,7 @@ import AssistantPage from './pages/AssistantPage';
 import ClientPortal from './pages/ClientPortal';
 import Benchmarks from './pages/Benchmarks';
 import AutopilotConfig from './pages/AutopilotConfig';
+import Network from './pages/Network';
 
 // Route protegee : redirige vers /login si non authentifie
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -280,6 +281,7 @@ function AnimatedAppCore() {
           <Route path="/assistant" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AssistantPage /></div></PageTransition></ProtectedRoute>} />
           <Route path="/benchmarks" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Benchmarks /></div></PageTransition></ProtectedRoute>} />
           <Route path="/autopilot" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AutopilotConfig /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/network" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Network /></div></PageTransition></ProtectedRoute>} />
           <Route path="/portal/:token" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ClientPortal /></div></PageTransition>} />
           <Route path="/creer-entreprise" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><CompanyCreation /></div></PageTransition>} />
           <Route path="/experts" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Experts /></div></PageTransition>} />
