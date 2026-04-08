@@ -42,3 +42,11 @@ services:
             $s3Endpoint: '%env(S3_ENDPOINT)%'
             $s3Key: '%env(S3_KEY)%'
             $s3Secret: '%env(S3_SECRET)%'
+
+    App\Controller\ReceiptUploadController:
+        arguments:
+            $receiptUploadDir: '%kernel.project_dir%/var/uploads/receipts'
+
+    App\Service\Ocr\OcrExtractor:
+        arguments:
+            $environment: '%kernel.environment%'

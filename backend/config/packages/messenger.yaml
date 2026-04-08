@@ -17,6 +17,7 @@ framework:
             App\Message\TransmitInvoiceToPdpMessage: async
             App\Message\SendReminderMessage: async
             App\Message\SyncBankTransactionsMessage: async
+            App\Message\ExtractReceiptDataMessage: async
 
 when@test:
     framework:
