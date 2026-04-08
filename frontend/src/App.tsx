@@ -24,6 +24,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import CompanyCreation from './pages/CompanyCreation';
 import Experts from './pages/Experts';
+import QuoteList from './pages/QuoteList';
+import Pricing from './pages/Pricing';
+import AdminHub from './pages/AdminHub';
 
 // Route protegee : redirige vers /login si non authentifie
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -80,6 +83,7 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
       {/* Liens desktop */}
       <div className="navbar-links">
         <Link to="/invoices" className="navbar-link">Factures</Link>
+        <Link to="/quotes" className="navbar-link">Devis</Link>
         <Link to="/clients" className="navbar-link">Clients</Link>
         <Link to="/settings" className="navbar-link">Parametres</Link>
       </div>
@@ -98,7 +102,9 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
         <div className="navbar-mobile-menu">
           <Link to="/" className="navbar-mobile-link">Tableau de bord</Link>
           <Link to="/invoices" className="navbar-mobile-link">Factures</Link>
+          <Link to="/quotes" className="navbar-mobile-link">Devis</Link>
           <Link to="/clients" className="navbar-mobile-link">Clients</Link>
+          <Link to="/admin-hub" className="navbar-mobile-link">Hub admin</Link>
           <Link to="/settings" className="navbar-mobile-link">Parametres</Link>
           <button onClick={() => { onOpenCommand(); setMobileMenuOpen(false); }} className="navbar-mobile-link" style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' }}>
             Rechercher
@@ -165,6 +171,9 @@ function AnimatedAppCore() {
           <Route path="/invoices/:id" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceDetail /></div></PageTransition></ProtectedRoute>} />
           <Route path="/clients" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ClientList /></div></PageTransition></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Settings /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/quotes" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><QuoteList /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/pricing" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Pricing /></div></PageTransition>} />
+          <Route path="/admin-hub" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AdminHub /></div></PageTransition></ProtectedRoute>} />
           <Route path="/creer-entreprise" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><CompanyCreation /></div></PageTransition>} />
           <Route path="/experts" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Experts /></div></PageTransition>} />
         </Routes>

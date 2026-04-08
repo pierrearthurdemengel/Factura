@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getCompany, updateCompany, getStripePortalUrl, type Company } from '../api/factura';
 import './AppLayout.css';
+
+// Onglets disponibles dans les parametres
+type SettingsTab = 'company' | 'customization' | 'reminders' | 'integrations';
 
 export default function Settings() {
   const { logout } = useAuth();
@@ -10,6 +13,18 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<SettingsTab>('company');
+
+  // Personnalisation
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [primaryColor, setPrimaryColor] = useState('#2563eb');
+  const [secondaryColor, setSecondaryColor] = useState('#1e40af');
+  const [footerText, setFooterText] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Relances
+  const [remindersEnabled, setRemindersEnabled] = useState(true);
+  const [reminderDelays, setReminderDelays] = useState({ first: '7', second: '30', formal: '60' });
 
   const [form, setForm] = useState({
     name: '', siren: '', siret: '', vatNumber: '', legalForm: '', nafCode: '',
@@ -73,13 +88,53 @@ export default function Settings() {
     </div>
   );
 
+  // Gestion de l'upload du logo
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Le logo ne doit pas depasser 2 Mo.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setLogoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  // Onglets de navigation
+  const tabs: { key: SettingsTab; label: string }[] = [
+    { key: 'company', label: 'Entreprise' },
+    { key: 'customization', label: 'Personnalisation' },
+    { key: 'reminders', label: 'Relances' },
+    { key: 'integrations', label: 'Integrations' },
+  ];
+
   return (
     <div className="app-container">
       <h1 className="app-page-title">Parametres</h1>
 
+      {/* Onglets */}
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', overflowX: 'auto' }}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            style={{
+              padding: '0.5rem 1rem', border: 'none', background: activeTab === tab.key ? 'var(--accent)' : 'transparent',
+              color: activeTab === tab.key ? '#fff' : 'var(--text)', borderRadius: '6px', cursor: 'pointer',
+              fontWeight: activeTab === tab.key ? 600 : 400, fontSize: '0.9rem', whiteSpace: 'nowrap',
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {message && <div style={{ color: '#22c55e', padding: '1rem', background: 'rgba(34,197,94,0.1)', borderRadius: '6px', marginBottom: '1rem' }}>{message}</div>}
       {error && <div style={{ color: '#ef4444', padding: '1rem', background: 'rgba(239,68,68,0.1)', borderRadius: '6px', marginBottom: '1rem' }}>{error}</div>}
 
+      {/* Onglet Entreprise */}
+      {activeTab === 'company' && (
       <form onSubmit={handleSave}>
         <h2 className="app-section-title" style={{ marginTop: 0 }}>Informations entreprise</h2>
 
@@ -179,7 +234,6 @@ export default function Settings() {
             {saving ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
-      </form>
 
       <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
         <h2 className="app-section-title" style={{ marginTop: 0 }}>Abonnement</h2>
@@ -188,6 +242,7 @@ export default function Settings() {
           Le plan Pro (14,90 EUR/mois HT) offre des factures illimitees et l'acces aux exports avances.
         </p>
         <button
+          type="button"
           onClick={async () => {
             try {
               const res = await getStripePortalUrl();
@@ -204,10 +259,295 @@ export default function Settings() {
       </div>
 
       <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
-        <button onClick={logout} className="app-btn-outline-danger">
+        <button type="button" onClick={logout} className="app-btn-outline-danger">
           Se deconnecter
         </button>
       </div>
+      </form>
+      )}
+
+      {/* Onglet Personnalisation */}
+      {activeTab === 'customization' && (
+        <div>
+          <h2 className="app-section-title" style={{ marginTop: 0 }}>Personnalisation des factures</h2>
+          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+            Personnalisez l'apparence de vos factures PDF avec votre logo, vos couleurs et votre pied de page.
+          </p>
+
+          {/* Upload logo */}
+          <div className="app-form-group" style={{ marginBottom: '2rem' }}>
+            <label className="app-label">Logo de l'entreprise</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  width: 120, height: 120, border: '2px dashed var(--border)', borderRadius: '8px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                  background: logoPreview ? `url(${logoPreview}) center/contain no-repeat` : 'var(--surface)',
+                  color: 'var(--text)', fontSize: '0.8rem', textAlign: 'center',
+                  transition: 'border-color 0.2s',
+                }}
+              >
+                {!logoPreview && <span>Cliquez ou<br/>deposez un<br/>fichier</span>}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/svg+xml"
+                onChange={handleLogoUpload}
+                style={{ display: 'none' }}
+              />
+              <div style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
+                <p style={{ margin: 0 }}>PNG, JPG ou SVG</p>
+                <p style={{ margin: '0.25rem 0 0', opacity: 0.7 }}>Max 2 Mo, recommande : 400x200px</p>
+                {logoPreview && (
+                  <button
+                    onClick={() => setLogoPreview(null)}
+                    style={{ marginTop: '0.5rem', background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: 0, fontSize: '0.85rem' }}
+                  >
+                    Supprimer le logo
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Couleurs */}
+          <div className="app-form-row" style={{ marginBottom: '2rem' }}>
+            <div className="app-form-group">
+              <label className="app-label">Couleur primaire</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="color"
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  style={{ width: 40, height: 40, border: 'none', borderRadius: '6px', cursor: 'pointer', padding: 0 }}
+                />
+                <input
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  className="app-input"
+                  style={{ width: 100 }}
+                  maxLength={7}
+                />
+              </div>
+            </div>
+            <div className="app-form-group">
+              <label className="app-label">Couleur secondaire</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="color"
+                  value={secondaryColor}
+                  onChange={(e) => setSecondaryColor(e.target.value)}
+                  style={{ width: 40, height: 40, border: 'none', borderRadius: '6px', cursor: 'pointer', padding: 0 }}
+                />
+                <input
+                  value={secondaryColor}
+                  onChange={(e) => setSecondaryColor(e.target.value)}
+                  className="app-input"
+                  style={{ width: 100 }}
+                  maxLength={7}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Pied de page */}
+          <div className="app-form-group" style={{ marginBottom: '2rem' }}>
+            <label className="app-label">Pied de page des factures</label>
+            <textarea
+              value={footerText}
+              onChange={(e) => setFooterText(e.target.value)}
+              className="app-input"
+              rows={3}
+              placeholder="Ex: Merci pour votre confiance. Paiement par virement sous 30 jours."
+              style={{ resize: 'vertical' }}
+            />
+          </div>
+
+          {/* Previsualisation */}
+          <div style={{ marginBottom: '2rem' }}>
+            <label className="app-label">Previsualisation</label>
+            <div style={{
+              border: '1px solid var(--border)', borderRadius: '8px', padding: '1.5rem',
+              background: '#fff', color: '#000', maxWidth: 500,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                <div>
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo" style={{ maxHeight: 50, maxWidth: 150 }} />
+                  ) : (
+                    <div style={{ width: 100, height: 30, background: '#e5e7eb', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: '#9ca3af' }}>Logo</div>
+                  )}
+                </div>
+                <div style={{ textAlign: 'right', fontSize: '0.8rem', color: '#6b7280' }}>
+                  <div style={{ fontWeight: 700, color: primaryColor, fontSize: '1rem' }}>FACTURE</div>
+                  <div>FA-2026-0001</div>
+                  <div>08/04/2026</div>
+                </div>
+              </div>
+              <div style={{ height: 1, background: primaryColor, margin: '0.5rem 0 1rem' }} />
+              <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Prestation de developpement</span>
+                  <span style={{ fontWeight: 600, color: secondaryColor }}>1 200,00 EUR</span>
+                </div>
+              </div>
+              {footerText && (
+                <div style={{ marginTop: '1rem', paddingTop: '0.5rem', borderTop: '1px solid #e5e7eb', fontSize: '0.7rem', color: '#9ca3af' }}>
+                  {footerText}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <button
+            className="app-btn-primary"
+            onClick={() => setMessage('Personnalisation enregistree.')}
+          >
+            Enregistrer la personnalisation
+          </button>
+        </div>
+      )}
+
+      {/* Onglet Relances */}
+      {activeTab === 'reminders' && (
+        <div>
+          <h2 className="app-section-title" style={{ marginTop: 0 }}>Relances automatiques</h2>
+          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+            Configurez les relances envoyees automatiquement lorsqu'une facture n'est pas payee a echeance.
+          </p>
+
+          {/* Activation */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+            <button
+              onClick={() => setRemindersEnabled(!remindersEnabled)}
+              style={{
+                width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer',
+                background: remindersEnabled ? 'var(--accent)' : 'var(--border)',
+                position: 'relative', transition: 'background 0.2s',
+              }}
+            >
+              <span style={{
+                width: 18, height: 18, borderRadius: '50%', background: '#fff', position: 'absolute',
+                top: 3, left: remindersEnabled ? 23 : 3, transition: 'left 0.2s',
+              }} />
+            </button>
+            <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>
+              {remindersEnabled ? 'Relances activees' : 'Relances desactivees'}
+            </span>
+          </div>
+
+          {remindersEnabled && (
+            <>
+              {/* Delais */}
+              <div className="app-form-row" style={{ marginBottom: '2rem' }}>
+                <div className="app-form-group">
+                  <label className="app-label">1re relance (jours apres echeance)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="90"
+                    value={reminderDelays.first}
+                    onChange={(e) => setReminderDelays({ ...reminderDelays, first: e.target.value })}
+                    className="app-input"
+                  />
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>Ton amical</span>
+                </div>
+                <div className="app-form-group">
+                  <label className="app-label">2e relance (jours)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="90"
+                    value={reminderDelays.second}
+                    onChange={(e) => setReminderDelays({ ...reminderDelays, second: e.target.value })}
+                    className="app-input"
+                  />
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>Ton ferme</span>
+                </div>
+                <div className="app-form-group">
+                  <label className="app-label">Mise en demeure (jours)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="180"
+                    value={reminderDelays.formal}
+                    onChange={(e) => setReminderDelays({ ...reminderDelays, formal: e.target.value })}
+                    className="app-input"
+                  />
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>Ton formel</span>
+                </div>
+              </div>
+
+              {/* Apercu chronologique */}
+              <div style={{ marginBottom: '2rem' }}>
+                <label className="app-label">Chronologie des relances</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.85rem' }}>
+                  <span style={{ background: 'var(--accent-bg)', color: 'var(--accent)', padding: '4px 10px', borderRadius: '1rem', fontWeight: 600 }}>
+                    Echeance
+                  </span>
+                  <span style={{ color: 'var(--text)' }}>→</span>
+                  <span style={{ background: 'rgba(234, 179, 8, 0.15)', color: '#ca8a04', padding: '4px 10px', borderRadius: '1rem', fontWeight: 600 }}>
+                    J+{reminderDelays.first} Relance 1
+                  </span>
+                  <span style={{ color: 'var(--text)' }}>→</span>
+                  <span style={{ background: 'rgba(249, 115, 22, 0.15)', color: '#ea580c', padding: '4px 10px', borderRadius: '1rem', fontWeight: 600 }}>
+                    J+{reminderDelays.second} Relance 2
+                  </span>
+                  <span style={{ color: 'var(--text)' }}>→</span>
+                  <span style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#dc2626', padding: '4px 10px', borderRadius: '1rem', fontWeight: 600 }}>
+                    J+{reminderDelays.formal} Mise en demeure
+                  </span>
+                </div>
+              </div>
+
+              <button
+                className="app-btn-primary"
+                onClick={() => setMessage('Parametres de relance enregistres.')}
+              >
+                Enregistrer les relances
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Onglet Integrations */}
+      {activeTab === 'integrations' && (
+        <div>
+          <h2 className="app-section-title" style={{ marginTop: 0 }}>Integrations</h2>
+          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+            Connectez Factura a vos outils et services externes.
+          </p>
+
+          {[
+            { name: 'Chorus Pro', desc: 'Transmission de factures au secteur public', status: 'Connecte', connected: true },
+            { name: 'Stripe', desc: 'Paiement en ligne et gestion d\'abonnement', status: 'Connecte', connected: true },
+            { name: 'GoCardless', desc: 'Synchronisation bancaire (Open Banking)', status: 'A configurer', connected: false },
+            { name: 'Zapier', desc: 'Automatisation avec 5000+ applications', status: 'Bientot disponible', connected: false },
+            { name: 'Pennylane', desc: 'Export automatique des ecritures comptables', status: 'Bientot disponible', connected: false },
+          ].map((integration) => (
+            <div
+              key={integration.name}
+              className="app-card"
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}
+            >
+              <div>
+                <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.95rem' }}>{integration.name}</div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.25rem' }}>{integration.desc}</div>
+              </div>
+              <div style={{
+                padding: '4px 12px', borderRadius: '1rem', fontSize: '0.8rem', fontWeight: 600,
+                background: integration.connected ? 'rgba(34,197,94,0.1)' : 'rgba(156,163,175,0.1)',
+                color: integration.connected ? '#22c55e' : 'var(--text)',
+              }}>
+                {integration.status}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
