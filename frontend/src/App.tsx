@@ -29,6 +29,8 @@ import Pricing from './pages/Pricing';
 import AdminHub from './pages/AdminHub';
 import Accounting from './pages/Accounting';
 import Declarations from './pages/Declarations';
+import Banking from './pages/Banking';
+import Simulators from './pages/Simulators';
 
 // Route protegee : redirige vers /login si non authentifie
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -178,6 +180,8 @@ function AnimatedAppCore() {
           <Route path="/admin-hub" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AdminHub /></div></PageTransition></ProtectedRoute>} />
           <Route path="/accounting" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Accounting /></div></PageTransition></ProtectedRoute>} />
           <Route path="/declarations" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Declarations /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/banking" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Banking /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/simulators" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Simulators /></div></PageTransition></ProtectedRoute>} />
           <Route path="/creer-entreprise" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><CompanyCreation /></div></PageTransition>} />
           <Route path="/experts" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Experts /></div></PageTransition>} />
         </Routes>
