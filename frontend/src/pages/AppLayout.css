@@ -46,6 +46,28 @@
   }
 }
 
+@media (max-width: 639px) {
+  .app-container {
+    padding: 1rem;
+  }
+
+  .app-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-form-row {
+    flex-direction: column;
+  }
+
+  .app-form-row > .app-form-group {
+    min-width: 100%;
+  }
+
+  .app-table {
+    min-width: 500px;
+  }
+}
+
 .app-card {
   padding: clamp(1rem, 2.5vw, 1.5rem);
   border: 1px solid var(--border);

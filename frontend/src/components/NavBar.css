@@ -1,0 +1,207 @@
+/* Navigation principale responsive */
+.navbar {
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  background: var(--bg);
+  position: relative;
+  z-index: 100;
+}
+
+.navbar-brand {
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--text-h);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Barre de recherche */
+.navbar-search {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: transparent;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.navbar-search:hover {
+  border-color: var(--accent);
+}
+
+.navbar-search kbd {
+  background: var(--social-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  color: var(--text-h);
+  font-family: inherit;
+  border: 1px solid var(--border);
+}
+
+/* Bouton icone (theme) */
+.navbar-icon-btn {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.navbar-icon-btn:hover {
+  background: var(--social-bg);
+}
+
+/* Liens desktop */
+.navbar-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.navbar-link {
+  color: var(--text-h);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: opacity 0.2s;
+}
+
+.navbar-link:hover {
+  opacity: 0.7;
+}
+
+/* Hamburger masque sur desktop */
+.navbar-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 110;
+}
+
+.navbar-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text-h);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.navbar-hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.navbar-hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar-hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Menu mobile masque par defaut */
+.navbar-mobile-menu {
+  display: none;
+}
+
+/* Responsive mobile < 640px */
+@media (max-width: 639px) {
+  .navbar {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+
+  .navbar-search {
+    display: none;
+  }
+
+  .navbar-links {
+    display: none;
+  }
+
+  .navbar-hamburger {
+    display: flex;
+    margin-left: auto;
+  }
+
+  .navbar-icon-btn {
+    margin-left: auto;
+  }
+
+  .navbar-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    z-index: 105;
+    padding: 80px 24px 24px;
+    gap: 0;
+    animation: slideDown 0.25s ease-out;
+  }
+
+  .navbar-mobile-link {
+    display: block;
+    padding: 16px 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-h);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    width: 100%;
+    text-align: left;
+  }
+
+  .navbar-mobile-link:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Tablette : garder les liens visibles mais reduire l'espacement */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .navbar {
+    gap: 16px;
+  }
+
+  .navbar-search span {
+    display: none;
+  }
+
+  .navbar-search kbd {
+    display: none;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
