@@ -15,6 +15,7 @@ framework:
 
         routing:
             App\Message\TransmitInvoiceToPdpMessage: async
+            App\Message\SendReminderMessage: async
 
 when@test:
     framework:
