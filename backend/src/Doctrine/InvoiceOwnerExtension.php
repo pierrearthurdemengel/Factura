@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Operation;
 use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\Product;
+use App\Entity\Quote;
 use App\Entity\User;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -60,7 +61,7 @@ class InvoiceOwnerExtension implements QueryCollectionExtensionInterface, QueryI
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
 
-        if (Invoice::class === $resourceClass) {
+        if (Invoice::class === $resourceClass || Quote::class === $resourceClass) {
             $queryBuilder
                 ->andWhere(sprintf('%s.seller = :company', $rootAlias))
                 ->setParameter('company', $company);
