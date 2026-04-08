@@ -31,6 +31,10 @@ services:
             $chorusProTechLogin: '%env(CHORUS_PRO_TECH_LOGIN)%'
             $chorusProTechPassword: '%env(CHORUS_PRO_TECH_PASSWORD)%'
 
+    App\Controller\CompanyLogoController:
+        arguments:
+            $uploadDir: '%kernel.project_dir%/var/uploads/logos'
+
     App\Service\Invoice\InvoiceArchiver:
         arguments:
             $s3Bucket: '%env(S3_BUCKET)%'

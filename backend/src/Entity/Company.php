@@ -102,6 +102,23 @@ class Company
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Client::class, cascade: ['persist', 'remove'])]
     private Collection $clients;
 
+    // Personnalisation PDF
+    #[ORM\Column(length: 500, nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
+    private ?string $logoPath = null;
+
+    #[ORM\Column(length: 7, nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
+    private ?string $primaryColor = null;
+
+    #[ORM\Column(length: 7, nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
+    private ?string $secondaryColor = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
+    private ?string $customFooter = null;
+
     // Compteur de sequence pour la numerotation des factures
     #[ORM\Column(nullable: true)]
     private ?int $lastInvoiceNumber = null;
@@ -337,6 +354,54 @@ class Company
     public function setLastInvoiceYear(?int $lastInvoiceYear): static
     {
         $this->lastInvoiceYear = $lastInvoiceYear;
+
+        return $this;
+    }
+
+    public function getLogoPath(): ?string
+    {
+        return $this->logoPath;
+    }
+
+    public function setLogoPath(?string $logoPath): static
+    {
+        $this->logoPath = $logoPath;
+
+        return $this;
+    }
+
+    public function getPrimaryColor(): ?string
+    {
+        return $this->primaryColor;
+    }
+
+    public function setPrimaryColor(?string $primaryColor): static
+    {
+        $this->primaryColor = $primaryColor;
+
+        return $this;
+    }
+
+    public function getSecondaryColor(): ?string
+    {
+        return $this->secondaryColor;
+    }
+
+    public function setSecondaryColor(?string $secondaryColor): static
+    {
+        $this->secondaryColor = $secondaryColor;
+
+        return $this;
+    }
+
+    public function getCustomFooter(): ?string
+    {
+        return $this->customFooter;
+    }
+
+    public function setCustomFooter(?string $customFooter): static
+    {
+        $this->customFooter = $customFooter;
 
         return $this;
     }
