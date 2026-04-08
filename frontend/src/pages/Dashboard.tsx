@@ -98,11 +98,12 @@ export default function Dashboard() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showConsolidated, setShowConsolidated] = useState(false);
 
   // Widget Layout Order
   const [widgets, setWidgets] = useState<string[]>(() => {
     const saved = localStorage.getItem('factura-dashboard-layout');
-    return saved ? JSON.parse(saved) : ['kpi-month', 'kpi-revenue', 'kpi-pending', 'chart-revenue', 'list-recent', 'list-feed'];
+    return saved ? JSON.parse(saved) : ['kpi-month', 'kpi-revenue', 'kpi-pending', 'kpi-treasury', 'chart-revenue', 'list-recent', 'list-feed'];
   });
 
   const sensors = useSensors(
@@ -199,7 +200,20 @@ export default function Dashboard() {
         .app-dashboard-root .app-card:hover .widget-drag-handle { opacity: 1; }
       `}</style>
       
-      <h1 className="app-page-title">Tableau de bord</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.5rem' }}>
+        <h1 className="app-page-title" style={{ margin: 0 }}>Tableau de bord</h1>
+        <button
+          onClick={() => setShowConsolidated(!showConsolidated)}
+          style={{
+            padding: '4px 12px', borderRadius: '1rem', border: '1px solid var(--border)',
+            background: showConsolidated ? 'var(--accent)' : 'var(--surface)',
+            color: showConsolidated ? '#fff' : 'var(--text)', fontSize: '0.8rem',
+            cursor: 'pointer', fontWeight: 500,
+          }}
+        >
+          {showConsolidated ? 'Vue consolidee' : 'Entreprise active'}
+        </button>
+      </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={widgets} strategy={rectSortingStrategy}>
@@ -245,6 +259,27 @@ export default function Dashboard() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
                         <p className="app-card-value" style={{ margin: 0 }}>{pending.length}</p>
                         <Sparkline data={[0, 2, 1, 4, pending.length]} color="#f59e0b" />
+                      </div>
+                    </div>
+                  </SortableWidget>
+                );
+              }
+              if (wId === 'kpi-treasury') {
+                // Tresorerie predictive : CA en attente - charges estimees
+                const pendingAmount = pending.reduce((s, inv) => s + parseFloat(inv.totalIncludingTax), 0);
+                const estimatedTreasury = pendingAmount * 0.85; // Estimation nette apres charges
+                return (
+                  <SortableWidget key={wId} id={wId} className="widget-kpi">
+                    <div className="app-card" style={{ width: '100%' }}>
+                      <h3 className="app-card-title">Tresorerie previsionnelle</h3>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
+                        <div>
+                          <p className="app-card-value" style={{ margin: 0 }}>{estimatedTreasury.toFixed(0)} &euro;</p>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text)', marginTop: '4px' }}>
+                            {pending.length} facture(s) en attente
+                          </div>
+                        </div>
+                        <Sparkline data={[pendingAmount * 0.6, pendingAmount * 0.7, pendingAmount * 0.8, estimatedTreasury]} color="#8b5cf6" />
                       </div>
                     </div>
                   </SortableWidget>

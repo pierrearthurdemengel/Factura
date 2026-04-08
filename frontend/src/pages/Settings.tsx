@@ -4,7 +4,7 @@ import { getCompany, updateCompany, getStripePortalUrl, type Company } from '../
 import './AppLayout.css';
 
 // Onglets disponibles dans les parametres
-type SettingsTab = 'company' | 'customization' | 'reminders' | 'integrations';
+type SettingsTab = 'company' | 'customization' | 'reminders' | 'integrations' | 'factoring';
 
 export default function Settings() {
   const { logout } = useAuth();
@@ -107,6 +107,7 @@ export default function Settings() {
     { key: 'customization', label: 'Personnalisation' },
     { key: 'reminders', label: 'Relances' },
     { key: 'integrations', label: 'Integrations' },
+    { key: 'factoring', label: 'Affacturage' },
   ];
 
   return (
@@ -546,6 +547,48 @@ export default function Settings() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Onglet Affacturage */}
+      {activeTab === 'factoring' && (
+        <div style={{ maxWidth: 600 }}>
+          <h2 className="app-section-title" style={{ marginTop: 0 }}>Affacturage</h2>
+          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.6 }}>
+            L'affacturage permet de recevoir le paiement de vos factures avant leur echeance,
+            moyennant une commission. Vous pouvez activer ou desactiver cette fonctionnalite ici.
+          </p>
+
+          <div className="app-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>Activer l'affacturage</span>
+              <label style={{ position: 'relative', display: 'inline-block', width: 44, height: 24, cursor: 'pointer' }}>
+                <input type="checkbox" defaultChecked style={{ opacity: 0, width: 0, height: 0 }} />
+                <span style={{
+                  position: 'absolute', inset: 0, borderRadius: '12px',
+                  background: 'var(--accent)', transition: 'background 0.2s',
+                }}>
+                  <span style={{
+                    position: 'absolute', left: '22px', top: '2px',
+                    width: 20, height: 20, borderRadius: '50%', background: '#fff',
+                    transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }} />
+                </span>
+              </label>
+            </div>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text)', margin: 0 }}>
+              Lorsque l'affacturage est active, un bouton "Recevoir le paiement maintenant" apparait
+              sur les factures en attente de paiement. Commission standard : 5%.
+            </p>
+          </div>
+
+          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-h)', marginBottom: '1rem' }}>Historique des financements</h3>
+          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text)' }}>
+            <p style={{ fontSize: '0.9rem' }}>Aucun financement demande pour le moment.</p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.5rem' }}>
+              Les demandes de financement et leur statut apparaitront ici.
+            </p>
+          </div>
         </div>
       )}
     </div>
