@@ -35,6 +35,12 @@ import Declarations from './pages/Declarations';
 import Banking from './pages/Banking';
 import Simulators from './pages/Simulators';
 import Unpaid from './pages/Unpaid';
+import AccountantPortal from './pages/AccountantPortal';
+import ApiSettings from './pages/ApiSettings';
+import AssistantPage from './pages/AssistantPage';
+import ClientPortal from './pages/ClientPortal';
+import Benchmarks from './pages/Benchmarks';
+import AutopilotConfig from './pages/AutopilotConfig';
 
 // Route protegee : redirige vers /login si non authentifie
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -269,6 +275,12 @@ function AnimatedAppCore() {
           <Route path="/banking" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Banking /></div></PageTransition></ProtectedRoute>} />
           <Route path="/unpaid" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Unpaid /></div></PageTransition></ProtectedRoute>} />
           <Route path="/simulators" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Simulators /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/accountant" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AccountantPortal /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/api-settings" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ApiSettings /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/assistant" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AssistantPage /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/benchmarks" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Benchmarks /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/autopilot" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AutopilotConfig /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/portal/:token" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ClientPortal /></div></PageTransition>} />
           <Route path="/creer-entreprise" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><CompanyCreation /></div></PageTransition>} />
           <Route path="/experts" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Experts /></div></PageTransition>} />
         </Routes>
