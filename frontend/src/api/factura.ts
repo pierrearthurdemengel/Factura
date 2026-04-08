@@ -50,6 +50,7 @@ export interface Invoice {
   legalMention: string | null;
   paymentTerms: string | null;
   pdpReference: string | null;
+  sourceQuote: { id: string; number: string | null } | null;
   createdAt: string;
 }
 
@@ -200,6 +201,59 @@ export interface InvoiceEvent {
 // Recupere les evenements PAF d'une facture
 export const getInvoiceEvents = async (id: string) => {
   return api.get<InvoiceEvent[]>(`/invoices/${id}/events`);
+};
+
+// Types pour les devis
+export interface Quote {
+  '@id': string;
+  id: string;
+  number: string | null;
+  status: string;
+  issueDate: string;
+  validUntil: string | null;
+  totalExcludingTax: string;
+  totalTax: string;
+  totalIncludingTax: string;
+  buyer: Client;
+  seller: Company;
+  lines: QuoteLine[];
+  legalMention: string | null;
+  paymentTerms: string | null;
+  invoiceId: string | null;
+  createdAt: string;
+}
+
+export interface QuoteLine {
+  id: string;
+  position: number;
+  description: string;
+  quantity: string;
+  unit: string;
+  unitPriceExcludingTax: string;
+  vatRate: string;
+  lineAmount: string;
+  vatAmount: string;
+}
+
+// Fonctions API devis
+export const getQuotes = async (params?: Record<string, string>) => {
+  return api.get<{ 'hydra:member': Quote[] }>('/quotes', { params });
+};
+
+export const getQuote = async (id: string) => {
+  return api.get<Quote>(`/quotes/${id}`);
+};
+
+export const createQuote = async (data: Record<string, unknown>) => {
+  return api.post<Quote>('/quotes', data);
+};
+
+export const sendQuote = async (id: string) => {
+  return api.post<Quote>(`/quotes/${id}/send`);
+};
+
+export const convertQuoteToInvoice = async (id: string) => {
+  return api.post<Invoice>(`/quotes/${id}/convert`);
 };
 
 // Retourne l'URL du portail de facturation Stripe
