@@ -56,3 +56,7 @@ services:
             $minAmountCents: '%env(int:FACTORING_MIN_AMOUNT_CENTS)%'
             $minClientScore: '%env(int:FACTORING_MIN_CLIENT_SCORE)%'
             $commissionBasisPoints: '%env(int:FACTORING_COMMISSION_BASIS_POINTS)%'
+
+    App\Service\Assistant\LlmClient:
+        arguments:
+            $anthropicApiKey: '%env(default::ANTHROPIC_API_KEY)%'
