@@ -1634,7 +1634,7 @@ PHASE 8 — Plateforme (mois 18+, selon opportunites)
 - react-dropzone ^14.0 (upload drag & drop)
 - react-colorful ^5.0 (color picker personnalisation PDF)
 
-### Services externes (optimises)
+### Services externes (optimisés)
 - GoCardless Bank Account Data (Open Banking, ~0.03 EUR/connexion/mois)
 - Tesseract OCR (open source, embarque dans le container Fly.io)
 - API Claude Haiku/Sonnet (OCR structuration + assistant IA, ~0.004 EUR/question)

@@ -21,7 +21,7 @@ export function useLocale() {
 }
 
 // Detecte la langue preferee du navigateur
-function detectBrowserLocale(): string {
+function detectBrowserLocale(): (typeof SUPPORTED_LOCALES)[number]["code"] {
   const browserLang = navigator.language.split('-')[0];
   const supported = SUPPORTED_LOCALES.map(l => l.code);
   return supported.includes(browserLang) ? browserLang : 'fr';

@@ -155,7 +155,7 @@ export default function Benchmarks() {
 
   // Gestion du changement de secteur
   const handleSectorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSector(e.target.value);
+    setSector(e.target.value as typeof sector);
   };
 
   // Squelette de chargement
