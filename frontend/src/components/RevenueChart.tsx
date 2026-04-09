@@ -14,6 +14,27 @@ interface RevenueChartProps {
   invoices: Invoice[];
 }
 
+// Tooltip personnalise pour le graphique de chiffre d'affaires
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number }[]; label?: string }) {
+  if (active && payload && payload.length) {
+    return (
+      <div style={{
+        background: 'var(--bg, #fff)',
+        border: '1px solid var(--border)',
+        padding: '12px',
+        borderRadius: '8px',
+        boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15)'
+      }}>
+        <p style={{ margin: '0 0 4px', fontWeight: 600, color: 'var(--text-h)' }}>{label}</p>
+        <p style={{ margin: 0, color: 'var(--accent, #10b981)', fontWeight: 600 }}>
+          {payload[0].value.toFixed(2)} EUR HT
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
 export default function RevenueChart({ invoices }: RevenueChartProps) {
   const data = useMemo(() => {
     // Generate last 6 months layout
@@ -46,27 +67,6 @@ export default function RevenueChart({ invoices }: RevenueChartProps) {
 
     return Object.values(months).sort((a, b) => a.sortKey - b.sortKey);
   }, [invoices]);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div style={{
-          background: 'var(--bg, #fff)',
-          border: '1px solid var(--border)',
-          padding: '12px',
-          borderRadius: '8px',
-          boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15)'
-        }}>
-          <p style={{ margin: '0 0 4px', fontWeight: 600, color: 'var(--text-h)' }}>{label}</p>
-          <p style={{ margin: 0, color: 'var(--accent, #10b981)', fontWeight: 600 }}>
-            {payload[0].value.toFixed(2)} EUR HT
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div style={{ width: '100%', height: 350, marginTop: '20px' }}>

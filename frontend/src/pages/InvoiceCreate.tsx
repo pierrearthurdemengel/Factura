@@ -28,7 +28,7 @@ function SortableLineItem({ id, children }: { id: string, children: React.ReactN
     opacity: isDragging ? 0.8 : 1,
     boxShadow: isDragging ? '0 10px 25px rgba(0,0,0,0.1)' : 'none',
     zIndex: isDragging ? 100 : 1,
-    position: 'relative' as any,
+    position: 'relative' as const,
     marginBottom: '1rem', 
     padding: '0', 
     display: 'flex',

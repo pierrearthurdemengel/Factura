@@ -12,22 +12,14 @@ export default function CommandMenu({ isOpen, onClose }: { isOpen: boolean, onCl
 
   useEffect(() => {
     if (isOpen) {
-      setQuery('');
-      // Pre-fetch invoices so that search is instant
+      setQuery(''); // eslint-disable-line react-hooks/set-state-in-effect
       getInvoices({ itemsPerPage: '50' })
         .then(res => setInvoices(res.data['hydra:member']))
         .catch(() => {});
-      
+
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleAction = (path: string) => {
-    navigate(path);
-    onClose();
-  };
 
   const fuse = useMemo(() => new Fuse(invoices, {
     keys: [
@@ -42,6 +34,13 @@ export default function CommandMenu({ isOpen, onClose }: { isOpen: boolean, onCl
   const filteredInvoices = query.trim().length > 0
     ? fuse.search(query).map(res => res.item)
     : [];
+
+  if (!isOpen) return null;
+
+  const handleAction = (path: string) => {
+    navigate(path);
+    onClose();
+  };
 
   return (
     <div className="command-overlay" onClick={onClose}>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // Configuration de theming envoyee par le parent via postMessage
 interface EmbedTheme {
@@ -25,18 +25,12 @@ const defaultTheme: EmbedTheme = {
  * Envoie des evenements au parent (navigation, actions).
  */
 export default function EmbedWrapper({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<EmbedTheme>(defaultTheme);
-  const [isEmbed, setIsEmbed] = useState(false);
+  // Determine le mode embed depuis les parametres URL (ne change pas apres init)
+  const isEmbed = useMemo(() => new URLSearchParams(window.location.search).get('embed') === '1', []);
 
-  useEffect(() => {
-    // Detecter si on est en mode embed via le parametre URL
+  const [theme, setTheme] = useState<EmbedTheme>(() => {
+    if (!isEmbed) return defaultTheme;
     const params = new URLSearchParams(window.location.search);
-    const embedMode = params.get('embed') === '1';
-    setIsEmbed(embedMode);
-
-    if (!embedMode) return;
-
-    // Appliquer le theming depuis les parametres URL
     const urlTheme: Partial<EmbedTheme> = {};
     const pc = params.get('primaryColor');
     if (pc && /^#[0-9a-fA-F]{6}$/.test(pc)) urlTheme.primaryColor = pc;
@@ -44,8 +38,14 @@ export default function EmbedWrapper({ children }: { children: React.ReactNode }
     if (bg && /^#[0-9a-fA-F]{6}$/.test(bg)) urlTheme.backgroundColor = bg;
     const tc = params.get('textColor');
     if (tc && /^#[0-9a-fA-F]{6}$/.test(tc)) urlTheme.textColor = tc;
+    return { ...defaultTheme, ...urlTheme };
+  });
 
-    setTheme({ ...defaultTheme, ...urlTheme });
+  useEffect(() => {
+    if (!isEmbed) return;
+
+    // Notifier le parent que l'iframe est prete
+    window.parent.postMessage({ type: 'mfp:ready' }, '*');
 
     // Ecouter les messages du parent pour le theming dynamique
     const handleMessage = (event: MessageEvent) => {
@@ -55,12 +55,8 @@ export default function EmbedWrapper({ children }: { children: React.ReactNode }
     };
 
     window.addEventListener('message', handleMessage);
-
-    // Notifier le parent que l'iframe est prete
-    window.parent.postMessage({ type: 'mfp:ready' }, '*');
-
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [isEmbed]);
 
   if (!isEmbed) {
     return <>{children}</>;

@@ -13,7 +13,7 @@ export default function VoiceAssistant() {
   const audio = useAudio();
 
   useEffect(() => {
-    // @ts-ignore
+    // @ts-expect-error - API Web Speech non standard selon les navigateurs
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return;
 
@@ -31,7 +31,7 @@ export default function VoiceAssistant() {
       audio.playPop(); // Haptic feedback
     };
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: Event & { resultIndex: number; results: SpeechRecognitionResultList }) => {
       let interim = '';
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
@@ -68,7 +68,7 @@ export default function VoiceAssistant() {
         e.preventDefault();
         if (!isSpaceDown) {
           isSpaceDown = true;
-          try { recognition.start(); } catch {}
+          try { recognition.start(); } catch { /* deja en cours */ }
         }
       }
     };
@@ -80,7 +80,7 @@ export default function VoiceAssistant() {
         if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return;
         
         isSpaceDown = false;
-        try { recognition.stop(); } catch {}
+        try { recognition.stop(); } catch { /* deja en cours */ }
       }
     };
 

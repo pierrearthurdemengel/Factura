@@ -106,7 +106,7 @@ class BenchmarkServiceTest extends TestCase
         $repo = $this->createMock(EntityRepository::class);
         $repo->method('findBy')
             ->with(
-                $this->callback(fn (array $criteria) => $criteria['sector'] === '62'),
+                $this->callback(fn (array $criteria) => '62' === $criteria['sector']),
                 $this->anything(),
             )
             ->willReturn([]);

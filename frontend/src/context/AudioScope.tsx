@@ -1,5 +1,11 @@
 import { createContext, useContext, useEffect, useRef } from 'react';
 
+declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext;
+  }
+}
+
 interface AudioContextType {
   playPop: () => void;
   playTick: () => void;
@@ -15,7 +21,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     // Initialize AudioContext on first user interaction to bypass autoplay policies
     const initAudio = () => {
       if (!audioCtx.current) {
-        audioCtx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        audioCtx.current = new (window.AudioContext || window.webkitAudioContext!)();
       }
     };
     window.addEventListener('mousedown', initAudio, { once: true });

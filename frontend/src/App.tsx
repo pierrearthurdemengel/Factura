@@ -75,7 +75,7 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
 
   // Fermer le menu mobile lors d'un changement de page
   useEffect(() => {
-    setMobileMenuOpen(false);
+    setMobileMenuOpen(false); // eslint-disable-line react-hooks/set-state-in-effect
   }, [location.pathname]);
 
   // Charger les entreprises de l'utilisateur

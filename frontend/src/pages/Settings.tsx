@@ -54,6 +54,13 @@ export default function Settings() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Charger les factures pour l'onglet facturation
+  useEffect(() => {
+    if (activeTab === 'billing') {
+      getInvoices().then(res => setBillingInvoices(res.data['hydra:member'])).catch(() => setBillingInvoices([]));
+    }
+  }, [activeTab]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -114,13 +121,6 @@ export default function Settings() {
     { key: 'factoring', label: 'Affacturage' },
     { key: 'billing', label: 'Facturation' },
   ];
-
-  // Charger les factures pour l'onglet facturation
-  useEffect(() => {
-    if (activeTab === 'billing') {
-      getInvoices().then(res => setBillingInvoices(res.data['hydra:member'])).catch(() => setBillingInvoices([]));
-    }
-  }, [activeTab]);
 
   // Calcul du montant facture cette annee
   const currentYear = new Date().getFullYear();

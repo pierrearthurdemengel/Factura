@@ -105,7 +105,7 @@ export default function ClientList() {
 
   // Filtrage et tri
   const filteredClients = useMemo(() => {
-    let result = clients.filter(c =>
+    const result = clients.filter(c =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       (c.siren && c.siren.includes(search)) ||
       c.city.toLowerCase().includes(search.toLowerCase())
