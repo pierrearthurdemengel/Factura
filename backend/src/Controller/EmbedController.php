@@ -60,7 +60,7 @@ class EmbedController extends AbstractController
         $response = new Response('', Response::HTTP_OK, [
             'Content-Type' => 'text/html',
             'X-Frame-Options' => 'ALLOWALL',
-            'Content-Security-Policy' => "frame-ancestors *",
+            'Content-Security-Policy' => 'frame-ancestors *',
             'Referrer-Policy' => 'no-referrer-when-downgrade',
         ]);
 
@@ -108,7 +108,7 @@ class EmbedController extends AbstractController
         }
 
         // Filtrage basique pour eviter les injections
-        if (filter_var($url, \FILTER_VALIDATE_URL) === false) {
+        if (false === filter_var($url, \FILTER_VALIDATE_URL)) {
             return '';
         }
 
