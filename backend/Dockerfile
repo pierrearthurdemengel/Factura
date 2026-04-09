@@ -3,6 +3,8 @@ FROM php:8.3-fpm-alpine
 # Dépendances système + extensions PHP
 RUN apk add --no-cache \
     postgresql-dev \
+    postgresql-client \
+    aws-cli \
     icu-dev \
     libzip-dev \
     zip \
@@ -36,6 +38,7 @@ COPY docker/nginx/fly.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/messenger-worker.sh /var/www/html/docker/messenger-worker.sh
 RUN chmod +x /var/www/html/docker/messenger-worker.sh
+RUN chmod +x /var/www/html/docker/backup-db.sh
 
 # Optimisation OPcache pour la production (ajuste pour 256 Mo)
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
