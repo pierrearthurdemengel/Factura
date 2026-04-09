@@ -22,9 +22,9 @@ export function useLocale() {
 
 // Detecte la langue preferee du navigateur
 function detectBrowserLocale(): (typeof SUPPORTED_LOCALES)[number]["code"] {
-  const browserLang = navigator.language.split('-')[0];
+  const browserLang = navigator.language.split("-")[0];
   const supported = SUPPORTED_LOCALES.map(l => l.code);
-  return supported.includes(browserLang) ? browserLang : 'fr';
+  return (supported as readonly string[]).includes(browserLang) ? (browserLang as (typeof SUPPORTED_LOCALES)[number]["code"]) : "fr";
 }
 
 // Fournisseur d'internationalisation pour l'application
