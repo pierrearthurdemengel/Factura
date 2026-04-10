@@ -360,11 +360,20 @@ export default function Landing() {
 
                 {/* Statut */}
                 <div className="lp-mockup-footer">
-                  <div className="lp-mockup-status">
-                    <IconCheckCircle />
-                    Transmise à Chorus Pro
+                  <div className="lp-mockup-footer-left">
+                    <div className="lp-mockup-status">
+                      <IconCheckCircle />
+                      Transmise à Chorus Pro
+                    </div>
+                    <span className="lp-mockup-payment">Échéance : 11 mai 2026</span>
                   </div>
-                  <span className="lp-mockup-payment">Échéance : 11 mai 2026</span>
+                  <div className="lp-mockup-dgfip" title="Conforme aux exigences de la DGFiP — Art. 290 du CGI">
+                    <IconShield />
+                    <span className="lp-mockup-dgfip-text">
+                      <span className="lp-mockup-dgfip-label">Conforme exigences</span>
+                      <span className="lp-mockup-dgfip-name">DGFiP · Art. 290 CGI</span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

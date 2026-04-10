@@ -604,6 +604,12 @@
   margin-top: auto;
   padding-top: 0.5rem;
   border-top: 1px solid var(--lp-gray-100);
+  gap: 0.5rem;
+}
+.lp-mockup-footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
 }
 .lp-mockup-status {
   display: flex;
@@ -616,6 +622,42 @@
 .lp-mockup-payment {
   font-size: 0.55rem;
   color: var(--lp-gray-400);
+}
+
+/* Badge DGFiP */
+.lp-mockup-dgfip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.45rem;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.lp-mockup-dgfip .lp-icon {
+  width: 14px;
+  height: 14px;
+  color: #60a5fa;
+  flex-shrink: 0;
+}
+.lp-mockup-dgfip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  line-height: 1.2;
+}
+.lp-mockup-dgfip-label {
+  font-size: 0.45rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.lp-mockup-dgfip-name {
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Hero social proof */
