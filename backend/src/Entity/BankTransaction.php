@@ -33,7 +33,7 @@ class BankTransaction
     #[ORM\JoinColumn(nullable: false)]
     private BankAccount $bankAccount;
 
-    // Identifiant externe de la transaction chez GoCardless
+    // Identifiant externe de la transaction chez le provider
     #[ORM\Column(length: 255, unique: true)]
     private string $externalTransactionId;
 

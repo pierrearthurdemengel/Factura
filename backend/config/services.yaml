@@ -60,3 +60,19 @@ services:
     App\Service\Assistant\LlmClient:
         arguments:
             $anthropicApiKey: '%env(default::ANTHROPIC_API_KEY)%'
+
+    # Providers Open Banking
+    App\Banking\Provider\YapilyProvider:
+        arguments:
+            $yapilyAppId: '%env(YAPILY_APP_ID)%'
+            $yapilyAppSecret: '%env(YAPILY_APP_SECRET)%'
+
+    App\Banking\Provider\BridgeProvider:
+        arguments:
+            $bridgeClientId: '%env(BRIDGE_CLIENT_ID)%'
+            $bridgeClientSecret: '%env(BRIDGE_CLIENT_SECRET)%'
+
+    App\Banking\BankProviderRegistry:
+        arguments:
+            $providers: !tagged_iterator app.bank_provider
+            $providerPriority: ['yapily', 'bridge']

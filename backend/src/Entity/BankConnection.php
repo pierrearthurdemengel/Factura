@@ -13,9 +13,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * Connexion bancaire Open Banking via GoCardless Bank Account Data.
+ * Connexion bancaire Open Banking (Yapily, Bridge, etc.).
  *
- * Stocke les tokens d'acces et le statut de la connexion.
+ * Stocke les tokens d'acces, le provider utilise et le statut de la connexion.
  * Chaque connexion peut avoir plusieurs comptes bancaires associes.
  */
 #[ORM\Entity]
@@ -47,7 +47,12 @@ class BankConnection
     #[ORM\JoinColumn(nullable: false)]
     private Company $company;
 
-    // Identifiant de la banque chez GoCardless (ex: SANDBOXFINANCE_SFIN0000)
+    // Nom du provider Open Banking utilise (ex: 'yapily', 'bridge')
+    #[ORM\Column(length: 50, options: ['default' => 'yapily'])]
+    #[Groups(['bank_connection:read'])]
+    private string $providerName = 'yapily';
+
+    // Identifiant de la banque chez le provider (ex: SANDBOXFINANCE_SFIN0000)
     #[ORM\Column(length: 100)]
     #[Groups(['bank_connection:read'])]
     private string $bankId;
@@ -57,15 +62,15 @@ class BankConnection
     #[Groups(['bank_connection:read'])]
     private string $bankName;
 
-    // Identifiant de la requisition GoCardless
+    // Identifiant de l'autorisation PSD2 chez le provider
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $requisitionId = null;
 
-    // Token d'acces GoCardless (chiffre en BDD en production)
+    // Token d'acces du provider (chiffre en BDD en production)
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $accessToken = null;
 
-    // Token de rafraichissement
+    // Token de rafraichissement du provider
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $refreshToken = null;
 
@@ -105,6 +110,18 @@ class BankConnection
     public function setCompany(Company $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getProviderName(): string
+    {
+        return $this->providerName;
+    }
+
+    public function setProviderName(string $providerName): static
+    {
+        $this->providerName = $providerName;
 
         return $this;
     }
