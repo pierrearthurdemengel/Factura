@@ -1,0 +1,4 @@
+# Forcer LF pour les scripts et fichiers de configuration serveur
+*.sh text eol=lf
+*.conf text eol=lf
+Dockerfile text eol=lf
