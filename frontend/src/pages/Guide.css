@@ -30,64 +30,7 @@
   vertical-align: middle;
 }
 
-/* ═══════════════════════════════════════════
-   NAVBAR
-   ═══════════════════════════════════════════ */
-.guide-nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-.guide-nav.scrolled {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.02);
-}
-.guide-nav-logo {
-  font-size: 1.25rem;
-  font-weight: 800;
-  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6 0%, #6366f1 100%));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.guide-nav-links {
-  display: none;
-  gap: 2rem;
-  align-items: center;
-}
-.guide-nav-link {
-  color: var(--lp-gray-500, #64748b);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-.guide-nav-link:hover { color: var(--lp-gray-900, #0f172a); }
-.guide-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-left: auto;
-}
-.guide-nav-actions .lp-btn { font-size: 0.85rem; padding: 0.55rem 1.25rem; }
-.guide-nav-login {
-  display: none;
-  color: var(--lp-gray-500, #64748b);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-.guide-nav-login:hover { color: var(--lp-gray-900, #0f172a); }
+/* Navbar — uses shared lp-nav* classes from Landing.css */
 
 /* ═══════════════════════════════════════════
    HERO
@@ -749,10 +692,6 @@
    DESKTOP (1024px+)
    ═══════════════════════════════════════════ */
 @media (min-width: 1024px) {
-  .guide-nav { padding: 0.75rem 2.5rem; }
-  .guide-nav-links { display: flex; }
-  .guide-nav-login { display: block; }
-
   .guide-hero { padding: 5rem 2.5rem 4rem; }
   .guide-hero-title { font-size: 2.75rem; }
   .guide-hero-subtitle { font-size: 1.2rem; }
@@ -831,7 +770,7 @@
   .guide-table { font-size: 0.8rem; }
   .guide-table th, .guide-table td { padding: 0.5rem 0.75rem; }
 
-  .guide-nav-actions .lp-btn { font-size: 0.75rem; padding: 0.45rem 0.9rem; }
+  .lp-nav-actions .lp-btn { font-size: 0.75rem; padding: 0.45rem 0.9rem; }
 }
 
 /* ═══════════════════════════════════════════
@@ -846,7 +785,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .guide-nav,
+  .lp-nav,
   .guide-toc-link,
   .guide-callout,
   .guide a {
@@ -858,7 +797,8 @@
    PRINT
    ═══════════════════════════════════════════ */
 @media print {
-  .guide-nav,
+  .lp-nav,
+  .lp-mobile-menu,
   .guide-toc,
   .guide-toc-toggle,
   .guide-cta-block,

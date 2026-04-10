@@ -257,6 +257,7 @@ export default function Guide() {
   const [tocOpen, setTocOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('');
   const [navScrolled, setNavScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   /* ─── Inject Schema.org JSON-LD ─── */
@@ -328,19 +329,35 @@ export default function Guide() {
       {/* ═══════════════════════════════════════════
           NAVBAR
           ═══════════════════════════════════════════ */}
-      <nav className={`guide-nav${navScrolled ? ' scrolled' : ''}`} aria-label="Navigation principale">
-        <Link to="/" className="guide-nav-logo">Ma Facture Pro</Link>
-        <div className="guide-nav-links">
-          <Link to="/" className="guide-nav-link">Accueil</Link>
-          <a href="#partie-1" className="guide-nav-link">La réforme</a>
-          <a href="#partie-2" className="guide-nav-link">Les formats</a>
-          <a href="#partie-6" className="guide-nav-link">Questions pratiques</a>
+      <nav className={`lp-nav${navScrolled ? ' scrolled' : ''}`} aria-label="Navigation principale">
+        <Link to="/" className="lp-nav-logo" style={{ textDecoration: 'none' }}>Ma Facture Pro</Link>
+        <div className="lp-nav-links">
+          <Link to="/" className="lp-nav-link">Accueil</Link>
+          <a href="#partie-1" className="lp-nav-link">La réforme</a>
+          <a href="#partie-2" className="lp-nav-link">Les formats</a>
+          <a href="#partie-6" className="lp-nav-link">Questions pratiques</a>
         </div>
-        <div className="guide-nav-actions">
-          <Link to="/login" className="guide-nav-login">Connexion</Link>
+        <div className="lp-nav-actions">
+          <Link to="/login" className="lp-nav-login">Connexion</Link>
           <Link to="/register" className="lp-btn lp-btn-primary">Créer mon compte gratuit</Link>
         </div>
+        <button className={`lp-hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen}>
+          <span /><span /><span />
+        </button>
       </nav>
+
+      {menuOpen && (
+        <div className="lp-mobile-menu" role="dialog" aria-label="Menu de navigation">
+          <Link to="/" className="lp-mobile-link" onClick={() => setMenuOpen(false)}>Accueil</Link>
+          <a href="#partie-1" className="lp-mobile-link" onClick={() => setMenuOpen(false)}>La réforme</a>
+          <a href="#partie-2" className="lp-mobile-link" onClick={() => setMenuOpen(false)}>Les formats</a>
+          <a href="#partie-6" className="lp-mobile-link" onClick={() => setMenuOpen(false)}>Questions pratiques</a>
+          <Link to="/login" className="lp-mobile-link" onClick={() => setMenuOpen(false)}>Connexion</Link>
+          <div className="lp-mobile-cta">
+            <Link to="/register" className="lp-btn lp-btn-primary" style={{ width: '100%' }} onClick={() => setMenuOpen(false)}>Créer mon compte gratuit</Link>
+          </div>
+        </div>
+      )}
 
       {/* ═══════════════════════════════════════════
           HERO
