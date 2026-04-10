@@ -37,8 +37,15 @@ COPY docker/nginx/fly.conf /etc/nginx/http.d/default.conf
 # Configuration supervisord (Nginx + PHP-FPM + Messenger dans un seul container)
 COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/messenger-worker.sh /var/www/html/docker/messenger-worker.sh
-RUN chmod +x /var/www/html/docker/messenger-worker.sh
-RUN chmod +x /var/www/html/docker/backup-db.sh
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /var/www/html/docker/messenger-worker.sh \
+    /var/www/html/docker/backup-db.sh \
+    /usr/local/bin/entrypoint.sh
+
+# Logs PHP vers stderr pour visibilite dans fly logs
+RUN echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/conf.d/zz-logging.ini \
+    && echo "log_errors = On" >> /usr/local/etc/php/conf.d/zz-logging.ini \
+    && echo "display_errors = Off" >> /usr/local/etc/php/conf.d/zz-logging.ini
 
 # Optimisation OPcache pour la production (ajuste pour 256 Mo)
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
@@ -53,4 +60,5 @@ RUN echo "[www]" > /usr/local/etc/php-fpm.d/zz-fly.conf \
 
 EXPOSE 8080
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
