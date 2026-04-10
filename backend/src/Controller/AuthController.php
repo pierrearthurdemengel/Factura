@@ -28,6 +28,19 @@ class AuthController extends AbstractController
     }
 
     /**
+     * Point d'entree pour l'authentification JSON.
+     *
+     * Cette route est interceptee par le firewall json_login de Symfony
+     * avant que le controller ne soit atteint. Le corps de la methode
+     * n'est jamais execute.
+     */
+    #[Route('/api/auth/login', name: 'api_auth_login', methods: ['POST'])]
+    public function login(): never
+    {
+        throw new \LogicException('Cette route est geree par le firewall json_login.');
+    }
+
+    /**
      * Inscription d'un nouvel utilisateur avec creation de son entreprise.
      */
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
