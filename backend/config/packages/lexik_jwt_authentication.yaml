@@ -5,4 +5,4 @@ lexik_jwt_authentication:
     # Duree de vie courte : 15 minutes
     token_ttl: 900
     # Identifiant utilisateur dans le payload (claim du JWT)
-    user_id_claim: email
+    user_id_claim: sub
