@@ -257,7 +257,7 @@ export default function Landing() {
                 Candidat au label DGFiP « Solution compatible »
               </div>
               <h1 className="reveal reveal-d1">
-                Facturation électronique conforme.<br />Dès aujourd'hui. Dès 0 €.
+                Facturation électronique conforme.<br />Gratuit dès maintenant
               </h1>
               <p className="lp-hero-sub reveal reveal-d2">
                 Générez vos factures Factur-X, UBL et CII en quelques clics.
@@ -433,7 +433,7 @@ export default function Landing() {
         {/* ───── 9. COMPARISON ───── */}
         <section className="lp-compare">
           <div className="lp-compare-inner">
-            <h2 className="reveal">Ce que les autres ne font pas (encore)</h2>
+            <h2 className="reveal">Nous proposons une solution complète</h2>
             <div className="reveal reveal-d1">
               <table className="lp-compare-table" role="table">
                 <thead>
@@ -465,7 +465,7 @@ export default function Landing() {
         {/* ───── 10. PROFILES ───── */}
         <section className="lp-profiles">
           <div className="lp-profiles-inner">
-            <h2 className="reveal">Quelle que soit votre situation, vous êtes concerné</h2>
+            <h2 className="reveal">Connecté en toute situation</h2>
             <div className="lp-profiles-grid">
               {profiles.map((p, i) => (
                 <Link to="/register" key={i} className={`lp-profile-card reveal reveal-d${Math.min(i + 1, 5)}`}>
@@ -549,18 +549,42 @@ export default function Landing() {
             </div>
 
             <div className="lp-pricing-extras reveal reveal-d4">
-              <div className="lp-pricing-extra">
-                <strong><IconLandmark /> Vous êtes expert-comptable ?</strong>
-                Plan Cabinet : 79 €/mois + 2 €/client actif au-delà de 20 clients.
-                Un cabinet de 150 clients : 339 €/mois — soit 2,26 €/client.
-                Portail multi-clients · Export FEC groupé · White-label · Utilisateurs illimités.
-                <br /><a href="mailto:contact@mafacturepro.fr">Demander une démo Cabinet →</a>
+              <div className="lp-pricing-extra-card">
+                <div className="lp-pricing-extra-icon"><IconLandmark /></div>
+                <h3>Vous êtes expert-comptable ?</h3>
+                <div className="lp-pricing-extra-price">
+                  <span className="lp-pricing-extra-val">79</span>
+                  <span className="lp-pricing-extra-unit"> €/mois</span>
+                </div>
+                <p className="lp-pricing-extra-detail">+ 2 €/client actif au-delà de 20 clients</p>
+                <div className="lp-pricing-extra-example">
+                  <span>150 clients</span>
+                  <span className="lp-pricing-extra-arrow">→</span>
+                  <span><strong>339 €/mois</strong> soit 2,26 €/client</span>
+                </div>
+                <ul className="lp-pricing-extra-features">
+                  <li><span className="check"><IconCheck /></span>Portail multi-clients</li>
+                  <li><span className="check"><IconCheck /></span>Export FEC groupé</li>
+                  <li><span className="check"><IconCheck /></span>White-label</li>
+                  <li><span className="check"><IconCheck /></span>Utilisateurs illimités</li>
+                </ul>
+                <a href="mailto:contact@mafacturepro.fr" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>Demander une démo Cabinet →</a>
               </div>
-              <div className="lp-pricing-extra">
-                <strong><IconLightbulb /> Vous préférez payer au succès ?</strong>
-                Plan Succès Partagé : 0 € fixe + 0,1 % de votre CA facturé au-delà de 50 000 €/an. Plafonné à 49 €/mois.
-                Exemple : vous facturez 80 000 €/an → vous payez 30 €/an (soit 2,50 €/mois).
-                <br /><a href="mailto:contact@mafacturepro.fr">Simuler mon prix →</a>
+              <div className="lp-pricing-extra-card">
+                <div className="lp-pricing-extra-icon lp-pricing-extra-icon--success"><IconLightbulb /></div>
+                <h3>Vous préférez payer au succès ?</h3>
+                <div className="lp-pricing-extra-price">
+                  <span className="lp-pricing-extra-val">0</span>
+                  <span className="lp-pricing-extra-unit"> € fixe</span>
+                </div>
+                <p className="lp-pricing-extra-detail">+ 0,1 % de votre CA facturé au-delà de 50 000 €/an</p>
+                <div className="lp-pricing-extra-cap">Plafonné à 49 €/mois</div>
+                <div className="lp-pricing-extra-example">
+                  <span>CA 80 000 €/an</span>
+                  <span className="lp-pricing-extra-arrow">→</span>
+                  <span><strong>30 €/an</strong> soit 2,50 €/mois</span>
+                </div>
+                <a href="mailto:contact@mafacturepro.fr" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>Simuler mon prix →</a>
               </div>
             </div>
           </div>
