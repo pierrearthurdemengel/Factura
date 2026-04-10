@@ -368,12 +368,12 @@ export default function Landing() {
               </div>
               <div className="lp-step-card reveal reveal-d2">
                 <div className="lp-step-num">02</div>
-                <h3>Créez votre première facture</h3>
+                <h3>Créez votre facture</h3>
                 <p>Ajoutez votre client, vos lignes de prestation. Ma Facture Pro calcule la TVA, génère le Factur-X, l'UBL et le CII automatiquement. Vous n'avez rien à configurer.</p>
               </div>
               <div className="lp-step-card reveal reveal-d3">
                 <div className="lp-step-num">03</div>
-                <h3>Envoyez — on s'occupe du reste</h3>
+                <h3>On s'occupe du reste</h3>
                 <p>Un clic sur « Envoyer ». Votre facture est transmise à Chorus Pro, archivée 10 ans en France, et tracée dans votre piste d'audit fiable. Votre client la reçoit instantanément.</p>
               </div>
             </div>
@@ -548,43 +548,64 @@ export default function Landing() {
               </div>
             </div>
 
-            <div className="lp-pricing-extras reveal reveal-d4">
-              <div className="lp-pricing-extra-card">
-                <div className="lp-pricing-extra-icon"><IconLandmark /></div>
+            {/* Cabinet — dark card */}
+            <div className="lp-pricing-alt lp-pricing-alt--cabinet reveal reveal-d4">
+              <div className="lp-pricing-alt-content">
+                <div className="lp-pricing-alt-badge">Plan Cabinet</div>
                 <h3>Vous êtes expert-comptable ?</h3>
-                <div className="lp-pricing-extra-price">
-                  <span className="lp-pricing-extra-val">79</span>
-                  <span className="lp-pricing-extra-unit"> €/mois</span>
-                </div>
-                <p className="lp-pricing-extra-detail">+ 2 €/client actif au-delà de 20 clients</p>
-                <div className="lp-pricing-extra-example">
-                  <span>150 clients</span>
-                  <span className="lp-pricing-extra-arrow">→</span>
-                  <span><strong>339 €/mois</strong> soit 2,26 €/client</span>
-                </div>
-                <ul className="lp-pricing-extra-features">
-                  <li><span className="check"><IconCheck /></span>Portail multi-clients</li>
-                  <li><span className="check"><IconCheck /></span>Export FEC groupé</li>
-                  <li><span className="check"><IconCheck /></span>White-label</li>
-                  <li><span className="check"><IconCheck /></span>Utilisateurs illimités</li>
+                <p className="lp-pricing-alt-desc">
+                  Gérez tous vos clients depuis un seul portail. Export FEC groupé, white-label, utilisateurs illimités.
+                </p>
+                <ul className="lp-pricing-alt-perks">
+                  <li><IconCheck /> Portail multi-clients</li>
+                  <li><IconCheck /> Export FEC groupé</li>
+                  <li><IconCheck /> White-label</li>
+                  <li><IconCheck /> Utilisateurs illimités</li>
                 </ul>
-                <a href="mailto:contact@mafacturepro.fr" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>Demander une démo Cabinet →</a>
+                <a href="mailto:contact@mafacturepro.fr" className="lp-btn lp-btn-white">Demander une démo Cabinet →</a>
               </div>
-              <div className="lp-pricing-extra-card">
-                <div className="lp-pricing-extra-icon lp-pricing-extra-icon--success"><IconLightbulb /></div>
+              <div className="lp-pricing-alt-aside">
+                <div className="lp-pricing-alt-price-block">
+                  <span className="lp-pricing-alt-val">79</span>
+                  <span className="lp-pricing-alt-unit">€/mois</span>
+                </div>
+                <p className="lp-pricing-alt-sub">+ 2 €/client actif au-delà de 20</p>
+                <div className="lp-pricing-alt-sim">
+                  <div className="lp-pricing-alt-sim-row">
+                    <span>150 clients</span>
+                    <span className="lp-pricing-alt-sim-arrow">→</span>
+                    <strong>339 €/mois</strong>
+                  </div>
+                  <span className="lp-pricing-alt-sim-note">soit 2,26 €/client</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Succès — gradient border card */}
+            <div className="lp-pricing-alt lp-pricing-alt--success reveal reveal-d5">
+              <div className="lp-pricing-alt-content">
+                <div className="lp-pricing-alt-badge lp-pricing-alt-badge--success">Plan Succès Partagé</div>
                 <h3>Vous préférez payer au succès ?</h3>
-                <div className="lp-pricing-extra-price">
-                  <span className="lp-pricing-extra-val">0</span>
-                  <span className="lp-pricing-extra-unit"> € fixe</span>
+                <p className="lp-pricing-alt-desc">
+                  Zéro frais fixe. Vous ne payez qu'un micro-pourcentage de votre CA facturé — plafonné pour rester prévisible.
+                </p>
+                <div className="lp-pricing-alt-cap"><IconShield /> Plafonné à 49 €/mois</div>
+                <a href="mailto:contact@mafacturepro.fr" className="lp-btn lp-btn-primary">Simuler mon prix →</a>
+              </div>
+              <div className="lp-pricing-alt-aside">
+                <div className="lp-pricing-alt-price-block">
+                  <span className="lp-pricing-alt-val">0</span>
+                  <span className="lp-pricing-alt-unit">€ fixe</span>
                 </div>
-                <p className="lp-pricing-extra-detail">+ 0,1 % de votre CA facturé au-delà de 50 000 €/an</p>
-                <div className="lp-pricing-extra-cap">Plafonné à 49 €/mois</div>
-                <div className="lp-pricing-extra-example">
-                  <span>CA 80 000 €/an</span>
-                  <span className="lp-pricing-extra-arrow">→</span>
-                  <span><strong>30 €/an</strong> soit 2,50 €/mois</span>
+                <p className="lp-pricing-alt-sub">+ 0,1 % du CA au-delà de 50 000 €/an</p>
+                <div className="lp-pricing-alt-sim">
+                  <div className="lp-pricing-alt-sim-row">
+                    <span>CA 80 000 €/an</span>
+                    <span className="lp-pricing-alt-sim-arrow">→</span>
+                    <strong>30 €/an</strong>
+                  </div>
+                  <span className="lp-pricing-alt-sim-note">soit 2,50 €/mois</span>
                 </div>
-                <a href="mailto:contact@mafacturepro.fr" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>Simuler mon prix →</a>
               </div>
             </div>
           </div>
