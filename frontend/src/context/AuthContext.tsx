@@ -1,30 +1,54 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { login as apiLogin } from '../api/factura';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
+import {
+  login as apiLogin,
+  logout as apiLogout,
+  getMe,
+  type UserProfile,
+} from '../api/factura';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   token: string | null;
+  user: UserProfile | null;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 // Fournisseur du contexte d'authentification.
-// Le JWT est stocke en memoire (sessionStorage), le refresh token sera en cookie httpOnly.
+// Le JWT est stocke en memoire (sessionStorage), le refresh token est en cookie httpOnly.
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(
     sessionStorage.getItem('jwt_token'),
   );
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  // Charger le profil utilisateur a l'initialisation si un token existe
+  useEffect(() => {
+    if (token && !user) {
+      getMe()
+        .then((res) => setUser(res.data))
+        .catch(() => {
+          // Token invalide ou expire — le refresh automatique dans l'intercepteur
+          // va tenter un renouvellement. Si ca echoue, l'utilisateur sera redirige.
+        });
+    }
+  }, [token, user]);
 
   const login = useCallback(async (email: string, password: string) => {
     const jwt = await apiLogin(email, password);
     setToken(jwt);
+
+    // Charger le profil utilisateur apres connexion
+    const res = await getMe();
+    setUser(res.data);
   }, []);
 
-  const logout = useCallback(() => {
-    sessionStorage.removeItem('jwt_token');
+  const logout = useCallback(async () => {
+    await apiLogout();
     setToken(null);
+    setUser(null);
   }, []);
 
   return (
@@ -32,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         isAuthenticated: token !== null,
         token,
+        user,
         login,
         logout,
       }}
