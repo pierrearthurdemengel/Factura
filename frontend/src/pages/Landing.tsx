@@ -278,26 +278,93 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Mockup */}
+            {/* Mockup facture réaliste */}
             <div className="lp-hero-visual reveal reveal-d2">
               <div className="lp-hero-mockup-bar">
                 <span className="lp-hero-mockup-dot" style={{ background: '#ef4444' }} />
                 <span className="lp-hero-mockup-dot" style={{ background: '#f59e0b' }} />
                 <span className="lp-hero-mockup-dot" style={{ background: '#22c55e' }} />
+                <span className="lp-mockup-bar-title">Facture — Ma Facture Pro</span>
               </div>
               <div className="lp-hero-mockup-content">
-                <div className="lp-mockup-header">
-                  <span className="lp-mockup-id">FA-2026-0001</span>
-                  <span className="lp-mockup-badge-fx"><IconCheck /> Factur-X</span>
+                {/* En-tête facture */}
+                <div className="lp-mockup-top">
+                  <div className="lp-mockup-brand">
+                    <span className="lp-mockup-brand-logo">MFP</span>
+                    <div className="lp-mockup-brand-info">
+                      <span className="lp-mockup-company">Studio Créatif</span>
+                      <span className="lp-mockup-small">12 rue des Lilas, 75011 Paris</span>
+                    </div>
+                  </div>
+                  <div className="lp-mockup-meta">
+                    <span className="lp-mockup-id">FA-2026-0042</span>
+                    <span className="lp-mockup-date">11 avril 2026</span>
+                    <span className="lp-mockup-badge-fx"><IconCheck /> Factur-X</span>
+                  </div>
                 </div>
-                <div className="lp-mockup-lines">
-                  <div className="lp-mockup-line" style={{ width: '85%' }} />
-                  <div className="lp-mockup-line" style={{ width: '60%' }} />
-                  <div className="lp-mockup-line" style={{ width: '70%' }} />
+
+                {/* Client */}
+                <div className="lp-mockup-client">
+                  <span className="lp-mockup-label">Client</span>
+                  <span className="lp-mockup-client-name">Agence Horizon SARL</span>
+                  <span className="lp-mockup-small">45 avenue Montaigne, 75008 Paris</span>
                 </div>
-                <div className="lp-mockup-status">
-                  <IconCheckCircle />
-                  Transmise à Chorus Pro
+
+                {/* Lignes de facture */}
+                <table className="lp-mockup-table">
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Qté</th>
+                      <th>PU HT</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Développement site vitrine</td>
+                      <td>1</td>
+                      <td>2 400 €</td>
+                      <td>2 400 €</td>
+                    </tr>
+                    <tr>
+                      <td>Identité visuelle &amp; logo</td>
+                      <td>1</td>
+                      <td>800 €</td>
+                      <td>800 €</td>
+                    </tr>
+                    <tr>
+                      <td>Hébergement annuel</td>
+                      <td>12</td>
+                      <td>15 €</td>
+                      <td>180 €</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                {/* Totaux */}
+                <div className="lp-mockup-totals">
+                  <div className="lp-mockup-total-row">
+                    <span>Sous-total HT</span>
+                    <span>3 380,00 €</span>
+                  </div>
+                  <div className="lp-mockup-total-row">
+                    <span>TVA 20 %</span>
+                    <span>676,00 €</span>
+                  </div>
+                  <div className="lp-mockup-total-row lp-mockup-total-final">
+                    <span>Total TTC</span>
+                    <span>4 056,00 €</span>
+                  </div>
+                </div>
+
+                {/* Statut */}
+                <div className="lp-mockup-footer">
+                  <div className="lp-mockup-status">
+                    <IconCheckCircle />
+                    Transmise à Chorus Pro
+                  </div>
+                  <span className="lp-mockup-payment">Échéance : 11 mai 2026</span>
                 </div>
               </div>
             </div>
