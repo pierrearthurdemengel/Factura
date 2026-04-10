@@ -4,5 +4,5 @@ lexik_jwt_authentication:
     pass_phrase: '%env(JWT_PASSPHRASE)%'
     # Duree de vie courte : 15 minutes
     token_ttl: 900
-    # Identifiant utilisateur dans le payload
-    user_identity_field: email
+    # Identifiant utilisateur dans le payload (claim du JWT)
+    user_id_claim: email
