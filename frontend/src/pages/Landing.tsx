@@ -2,91 +2,131 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './Landing.css';
 
-/* ─── Scroll reveal hook ─── */
+/* ─── Scroll reveal ─── */
 function useScrollReveal() {
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('reveal-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('reveal-visible'); obs.unobserve(e.target); }
+      }),
       { threshold: 0.1, rootMargin: '0px 0px -40px 0px' },
     );
-    document.querySelectorAll('.lp .reveal').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    document.querySelectorAll('.lp .reveal').forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
   }, []);
 }
 
-/* ─── Countdown hook → 1er septembre 2026 ─── */
+/* ─── Countdown → 1er sept 2026 ─── */
 function useCountdown() {
   const target = new Date('2026-09-01T00:00:00+02:00').getTime();
   const calc = useCallback(() => {
-    const diff = Math.max(0, target - Date.now());
+    const d = Math.max(0, target - Date.now());
     return {
-      days: Math.floor(diff / 86_400_000),
-      hours: Math.floor((diff % 86_400_000) / 3_600_000),
-      minutes: Math.floor((diff % 3_600_000) / 60_000),
-      seconds: Math.floor((diff % 60_000) / 1_000),
+      days: Math.floor(d / 86_400_000),
+      hours: Math.floor((d % 86_400_000) / 3_600_000),
+      minutes: Math.floor((d % 3_600_000) / 60_000),
+      seconds: Math.floor((d % 60_000) / 1_000),
     };
   }, [target]);
-
   const [time, setTime] = useState(calc);
-
-  useEffect(() => {
-    const id = setInterval(() => setTime(calc()), 1_000);
-    return () => clearInterval(id);
-  }, [calc]);
-
+  useEffect(() => { const id = setInterval(() => setTime(calc()), 1_000); return () => clearInterval(id); }, [calc]);
   return time;
 }
 
-/* ─── FAQ data ─── */
-const faqItems = [
+/* ─── Tab data ─── */
+const tabsData = [
   {
-    q: 'Est-ce que Ma Facture Pro est vraiment gratuit ?',
-    a: 'Oui. Le plan Gratuit vous donne 10 factures par mois, la connexion Chorus Pro, l\'archivage 10 ans et les 3 formats réglementaires. Sans carte bancaire, sans engagement, sans limite de durée.',
+    label: 'Facturation conforme',
+    title: 'Vos factures respectent la loi à la virgule près',
+    items: [
+      'Factur-X PDF/A-3 avec XML CII D16B embarqué',
+      'UBL 2.1 conforme Peppol BIS Billing 3.0',
+      'CII D16B standalone',
+      'Profil EN 16931 garanti',
+      'Numérotation séquentielle sans trou (FA-2026-0001)',
+      'Mentions légales auto-détectées selon votre statut : micro-entrepreneur, EI, SAS, SARL, SCI...',
+      'Multi-taux TVA (0 %, 2,1 %, 5,5 %, 10 %, 20 %)',
+    ],
+    cta: 'Créer ma première facture →',
+    visual: 'Formulaire de création de facture',
   },
   {
-    q: 'Suis-je obligé de passer à la facturation électronique ?',
-    a: 'À partir du 1er septembre 2026, toutes les entreprises françaises doivent pouvoir recevoir des factures électroniques. L\'émission devient obligatoire progressivement jusqu\'en septembre 2027. Environ 8 millions d\'acteurs sont concernés.',
+    label: 'Transmission auto',
+    title: 'Chorus Pro intégré. Zéro action manuelle.',
+    items: [
+      'Connexion directe à Chorus Pro via API PISTE (OAuth2)',
+      'Transmission automatique à l\'émission de la facture',
+      'Suivi du statut en temps réel : Brouillon → Envoyée → Reçue → Payée',
+      'Webhook de callback à chaque changement de statut',
+      'Mode sandbox pour tester avant la production',
+    ],
+    cta: 'En savoir plus sur Chorus Pro →',
+    visual: 'Timeline des statuts de transmission',
   },
   {
-    q: 'Qu\'est-ce que le Factur-X exactement ?',
-    a: 'C\'est un format hybride : un PDF lisible par un humain avec un fichier XML embarqué lisible par une machine. C\'est le format recommandé par la DGFiP pour les PME. Ma Facture Pro le génère automatiquement à chaque facture.',
+    label: 'Archivage & sécurité',
+    title: '10 ans d\'archivage légal. Inclus dans tous les plans.',
+    items: [
+      'Stockage S3 en France (Scaleway, région Paris)',
+      'Hash SHA-256 sur chaque document pour l\'intégrité',
+      'Versioning activé : aucune suppression possible',
+      'Piste d\'audit fiable immutable (chaque action horodatée)',
+      'Conforme à l\'article 289 VII du Code Général des Impôts',
+      'Authentification JWT RS256 + isolation multi-tenant',
+    ],
+    cta: 'Consulter notre politique de sécurité →',
+    visual: 'Timeline de la piste d\'audit fiable',
   },
   {
-    q: 'Comment fonctionne la connexion à Chorus Pro ?',
-    a: 'Ma Facture Pro est connecté à Chorus Pro via l\'API PISTE (OAuth2). Quand vous émettez une facture, elle est transmise automatiquement. Vous suivez le statut en temps réel dans votre dashboard. Aucune manipulation n\'est nécessaire.',
-  },
-  {
-    q: 'Mes données sont-elles en sécurité ?',
-    a: 'Vos factures sont archivées sur des serveurs S3 en France (Scaleway), avec hash SHA-256, versioning activé et conservation 10 ans. L\'authentification est sécurisée par JWT RS256. Le code source est ouvert et auditable par tous.',
-  },
-  {
-    q: 'Je suis auto-entrepreneur, c\'est adapté pour moi ?',
-    a: 'C\'est conçu pour vous. La mention « TVA non applicable — art. 293 B du CGI » est pré-remplie automatiquement. La numérotation séquentielle est gérée. Le plan Gratuit couvre largement les besoins d\'un auto-entrepreneur.',
-  },
-  {
-    q: 'Puis-je migrer depuis un autre outil ?',
-    a: 'Oui. Ma Facture Pro lit les factures Factur-X entrantes. Vous pouvez aussi saisir vos clients et produits manuellement — comptez 15 à 20 minutes pour être opérationnel.',
-  },
-  {
-    q: 'C\'est quoi le label DGFiP « Solution compatible » ?',
-    a: 'C\'est un label délivré par l\'administration fiscale qui certifie qu\'un logiciel respecte toutes les exigences de la réforme (formats, données obligatoires, raccordement PDP, archivage). Notre dossier de candidature est constitué et déposé.',
+    label: 'Comptabilité & pilotage',
+    title: 'Bien plus qu\'un outil de facturation.',
+    items: [
+      'Devis convertibles en facture en 1 clic',
+      'Relances automatiques (J-3, J+1, J+7, J+30)',
+      'Synchronisation bancaire (Open Banking)',
+      'Réconciliation intelligente paiements ↔ factures',
+      'Comptabilité automatisée (plan comptable PCG)',
+      'Export FEC conforme pour votre comptable',
+      'Déclarations TVA (CA3/CA12) et URSSAF pré-remplies',
+      'Dashboard trésorerie prédictive à J+30, J+60, J+90',
+    ],
+    cta: 'Découvrir tous les plans →',
+    visual: 'Dashboard CA et trésorerie prédictive',
   },
 ];
 
-/* ─── Component ─── */
+/* ─── FAQ data ─── */
+const faqItems = [
+  { q: 'Est-ce vraiment gratuit ?', a: '10 factures par mois, Chorus Pro, archivage 10 ans, les 3 formats réglementaires — sans carte bancaire, sans engagement, sans durée limitée. Le plan Gratuit n\'est pas un essai : c\'est un vrai plan permanent.' },
+  { q: 'Suis-je obligé de passer à la facturation électronique ?', a: 'Oui. Le décret impose la réception dès le 1er septembre 2026 et l\'émission progressivement jusqu\'en septembre 2027. Toutes les entreprises françaises sont concernées, quelle que soit leur taille ou leur statut.' },
+  { q: 'Qu\'est-ce que le Factur-X ?', a: 'Un format hybride : un PDF lisible par un humain avec un fichier XML lisible par une machine, embarqué dedans. C\'est le format recommandé par la DGFiP pour les PME. Ma Facture Pro le génère automatiquement à chaque facture.' },
+  { q: 'Je suis auto-entrepreneur, c\'est adapté ?', a: 'C\'est conçu pour vous. La mention « TVA non applicable, art. 293 B du CGI » est pré-remplie. Le plan Gratuit couvre largement 5 à 10 factures par mois.' },
+  { q: 'Comment fonctionne la connexion à Chorus Pro ?', a: 'Ma Facture Pro est connecté via l\'API PISTE (OAuth2). Quand vous émettez une facture, elle est transmise automatiquement. Le statut se met à jour en temps réel. Aucune manipulation de votre part.' },
+  { q: 'Mes données sont-elles en sécurité ?', a: 'Archivage S3 en France (Scaleway Paris). Hash SHA-256. Versioning activé. Conservation 10 ans. Authentification JWT RS256. Code source ouvert et auditable sur GitHub.' },
+  { q: 'Puis-je migrer depuis un autre outil ?', a: 'Oui. Ma Facture Pro lit les factures Factur-X entrantes. Comptez 15 à 20 minutes pour saisir vos clients et produits. Nous travaillons sur un import automatique.' },
+  { q: 'C\'est quoi le label DGFiP « Solution compatible » ?', a: 'Un label de l\'administration fiscale qui certifie qu\'un logiciel respecte toutes les exigences de la réforme. Notre dossier de candidature est déposé.' },
+];
+
+/* ─── Profile cards ─── */
+const profiles = [
+  { icon: '💻', title: 'Freelance / Auto-entrepreneur', sub: 'Mention art. 293B pré-remplie. Plan gratuit suffisant.', link: 'Découvrir le plan Gratuit' },
+  { icon: '🔧', title: 'Artisan / Commerçant', sub: 'Multi-taux TVA. Relances automatiques.', link: 'Découvrir le plan Pro' },
+  { icon: '🏢', title: 'TPE / PME (1-50 salariés)', sub: 'Multi-utilisateurs. Comptabilité automatisée.', link: 'Découvrir le plan Équipe' },
+  { icon: '🏛️', title: 'Cabinet comptable', sub: 'Portail multi-clients. Export FEC groupé. White-label.', link: 'Découvrir le plan Cabinet' },
+  { icon: '🏠', title: 'SCI / LMNP', sub: 'Factures fournisseurs conformes. Archivage inclus.', link: 'Découvrir le plan Gratuit' },
+];
+
+/* ═══════════════════════════════════════════
+   COMPONENT
+   ═══════════════════════════════════════════ */
 export default function Landing() {
   useScrollReveal();
   const countdown = useCountdown();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [topbarVisible, setTopbarVisible] = useState(true);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -94,418 +134,414 @@ export default function Landing() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close mobile menu on anchor click
   const closeMenu = () => setMenuOpen(false);
-
-  const pad = (n: number) => String(n).padStart(2, '0');
 
   return (
     <div className="lp">
-      {/* Skip nav */}
-      <a href="#main-content" className="lp-skip-nav">
-        Aller au contenu principal
-      </a>
+      <a href="#main-content" className="lp-skip-nav">Aller au contenu principal</a>
 
-      {/* ───── 1. NAVBAR ───── */}
+      {/* ───── 1. TOPBAR ───── */}
+      {topbarVisible && (
+        <div className="lp-topbar">
+          <div className="lp-topbar-inner">
+            <span>⚡ Réforme facturation électronique : obligation légale dès le 1er septembre 2026. Êtes-vous prêt ?</span>
+            <Link to="/register">Vérifier ma conformité gratuitement →</Link>
+          </div>
+          <button className="lp-topbar-close" onClick={() => setTopbarVisible(false)} aria-label="Fermer le bandeau">×</button>
+        </div>
+      )}
+
+      {/* ───── 2. NAVBAR ───── */}
       <nav className={`lp-nav${scrolled ? ' scrolled' : ''}`} aria-label="Navigation principale">
         <span className="lp-nav-logo">Ma Facture Pro</span>
-
         <div className="lp-nav-links">
           <a href="#fonctionnalites" className="lp-nav-link">Fonctionnalités</a>
           <a href="#tarifs" className="lp-nav-link">Tarifs</a>
+          <a href="#conformite" className="lp-nav-link">Conformité</a>
           <a href="#faq" className="lp-nav-link">FAQ</a>
         </div>
-
         <div className="lp-nav-actions">
           <Link to="/login" className="lp-nav-login">Connexion</Link>
           <Link to="/register" className="lp-btn lp-btn-primary">Créer mon compte gratuit</Link>
         </div>
-
-        <button
-          className={`lp-hamburger${menuOpen ? ' open' : ''}`}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Ouvrir le menu"
-          aria-expanded={menuOpen}
-        >
+        <button className={`lp-hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen}>
           <span /><span /><span />
         </button>
       </nav>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div className="lp-mobile-menu" role="dialog" aria-label="Menu de navigation">
           <a href="#fonctionnalites" className="lp-mobile-link" onClick={closeMenu}>Fonctionnalités</a>
           <a href="#tarifs" className="lp-mobile-link" onClick={closeMenu}>Tarifs</a>
+          <a href="#conformite" className="lp-mobile-link" onClick={closeMenu}>Conformité</a>
           <a href="#faq" className="lp-mobile-link" onClick={closeMenu}>FAQ</a>
           <Link to="/login" className="lp-mobile-link" onClick={closeMenu}>Connexion</Link>
           <div className="lp-mobile-cta">
-            <Link to="/register" className="lp-btn lp-btn-primary" style={{ width: '100%' }} onClick={closeMenu}>
-              Créer mon compte gratuit
-            </Link>
+            <Link to="/register" className="lp-btn lp-btn-primary" style={{ width: '100%' }} onClick={closeMenu}>Créer mon compte gratuit</Link>
           </div>
         </div>
       )}
 
       <main id="main-content">
-        {/* ───── 2. HERO ───── */}
+        {/* ───── 3. HERO ───── */}
         <section className="lp-hero">
-          <div className="lp-hero-content">
-            <div className="lp-hero-badge reveal">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-              Candidat au label DGFiP « Solution compatible »
+          <div className="lp-hero-inner">
+            <div className="lp-hero-text">
+              <div className="lp-hero-badge reveal">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                Candidat au label DGFiP « Solution compatible »
+              </div>
+              <h1 className="reveal reveal-d1">
+                Facturation électronique conforme.<br />Dès aujourd'hui. Dès 0 €.
+              </h1>
+              <p className="lp-hero-sub reveal reveal-d2">
+                Générez vos factures Factur-X, UBL et CII en quelques clics.
+                Transmettez-les automatiquement via Chorus Pro.
+                Archivage légal 10 ans inclus — même dans le plan gratuit.
+              </p>
+              <div className="lp-hero-ctas reveal reveal-d3">
+                <Link to="/register" className="lp-btn lp-btn-primary lp-btn-primary-lg">Créer ma première facture conforme →</Link>
+                <a href="#demo" className="lp-hero-demo-link">Voir le produit en action — démo 90 secondes ▶</a>
+              </div>
+              <p className="lp-hero-trust reveal reveal-d4">
+                Gratuit jusqu'à 10 factures/mois · Sans carte bancaire · Prêt en 2 minutes
+              </p>
+              <div className="lp-hero-social reveal reveal-d5">
+                <span>⭐ 4.9 Trustpilot</span>
+                <span>Open-source sur GitHub</span>
+                <span>🇫🇷 Hébergé en France</span>
+              </div>
             </div>
-            <h1 className="reveal reveal-d1">
-              La facturation électronique<br />conforme, simple et gratuite.
-            </h1>
-            <p className="lp-hero-sub reveal reveal-d2">
-              Créez vos factures Factur-X, UBL et CII en quelques clics.
-              Transmettez-les automatiquement via Chorus Pro.
-              Soyez prêt pour la réforme de septembre 2026 — sans effort.
-            </p>
-            <div className="lp-hero-ctas reveal reveal-d3">
-              <Link to="/register" className="lp-btn lp-btn-primary lp-btn-primary-lg">
-                Créer mon compte gratuit →
-              </Link>
-              <a href="#demo" className="lp-hero-demo">
-                Voir une démo en 90 secondes ▶
-              </a>
-            </div>
-            <p className="lp-hero-trust reveal reveal-d4">
-              Gratuit jusqu'à 10 factures/mois
-              <span> · </span>Sans carte bancaire
-              <span> · </span>Prêt en 2 minutes
-            </p>
-          </div>
-        </section>
 
-        {/* ───── 3. URGENCY BANNER ───── */}
-        <section className="lp-urgency" aria-label="Compte à rebours réforme">
-          <div className="lp-urgency-inner">
-            <p className="lp-urgency-text">
-              <strong>Obligation légale dans {countdown.days} jours</strong> — Le 1er septembre 2026, toutes les entreprises françaises devront recevoir des factures électroniques.
-            </p>
-            <div className="lp-countdown" aria-hidden="true">
-              <div className="lp-countdown-block">
-                <span className="lp-countdown-val">{pad(countdown.days)}</span>
-                <span className="lp-countdown-label">Jours</span>
+            {/* Mockup */}
+            <div className="lp-hero-visual reveal reveal-d2">
+              <div className="lp-hero-mockup-bar">
+                <span className="lp-hero-mockup-dot" style={{ background: '#ef4444' }} />
+                <span className="lp-hero-mockup-dot" style={{ background: '#f59e0b' }} />
+                <span className="lp-hero-mockup-dot" style={{ background: '#22c55e' }} />
               </div>
-              <div className="lp-countdown-block">
-                <span className="lp-countdown-val">{pad(countdown.hours)}</span>
-                <span className="lp-countdown-label">Heures</span>
+              <div className="lp-hero-mockup-content">
+                <div className="lp-mockup-header">
+                  <span className="lp-mockup-id">FA-2026-0001</span>
+                  <span className="lp-mockup-badge-fx">Factur-X ✓</span>
+                </div>
+                <div className="lp-mockup-lines">
+                  <div className="lp-mockup-line" style={{ width: '85%' }} />
+                  <div className="lp-mockup-line" style={{ width: '60%' }} />
+                  <div className="lp-mockup-line" style={{ width: '70%' }} />
+                </div>
+                <div className="lp-mockup-status">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                  Transmise à Chorus Pro
+                </div>
               </div>
-              <div className="lp-countdown-block">
-                <span className="lp-countdown-val">{pad(countdown.minutes)}</span>
-                <span className="lp-countdown-label">Min</span>
-              </div>
-              <div className="lp-countdown-block">
-                <span className="lp-countdown-val">{pad(countdown.seconds)}</span>
-                <span className="lp-countdown-label">Sec</span>
-              </div>
-            </div>
-            <Link to="/register" className="lp-btn">Se mettre en conformité →</Link>
-          </div>
-        </section>
-
-        {/* ───── 4. SOCIAL PROOF ───── */}
-        <section className="lp-social">
-          <div className="lp-social-inner">
-            <p className="lp-social-title reveal">Ils nous font déjà confiance</p>
-            <div className="lp-stats reveal reveal-d1">
-              <div className="lp-stat">
-                <div className="lp-stat-val">8M</div>
-                <div className="lp-stat-label">d'entreprises concernées</div>
-              </div>
-              <div className="lp-stat">
-                <div className="lp-stat-val">3</div>
-                <div className="lp-stat-label">formats réglementaires</div>
-              </div>
-              <div className="lp-stat">
-                <div className="lp-stat-val">10 ans</div>
-                <div className="lp-stat-label">d'archivage conforme</div>
-              </div>
-              <div className="lp-stat">
-                <div className="lp-stat-val">0 €</div>
-                <div className="lp-stat-label">pour démarrer</div>
-              </div>
-            </div>
-            <div className="lp-badges reveal reveal-d2">
-              <span className="lp-badge-item">Chorus Pro</span>
-              <span className="lp-badge-item">EN 16931</span>
-              <span className="lp-badge-item">Factur-X</span>
-              <span className="lp-badge-item">Open-source MIT</span>
             </div>
           </div>
         </section>
 
-        {/* ───── 5. PROBLEM → SOLUTION ───── */}
+        {/* ───── 4. TRUST BANNER ───── */}
+        <section className="lp-trust" id="conformite">
+          <p className="lp-trust-title">Conforme aux exigences de la réforme</p>
+          <div className="lp-trust-badges">
+            <span className="lp-trust-badge">Chorus Pro</span>
+            <span className="lp-trust-badge">Factur-X</span>
+            <span className="lp-trust-badge">EN 16931</span>
+            <span className="lp-trust-badge">UBL 2.1</span>
+            <span className="lp-trust-badge">Stripe</span>
+            <span className="lp-trust-badge">Open Source MIT</span>
+          </div>
+        </section>
+
+        {/* ───── 5. PROBLEM ───── */}
         <section className="lp-problem">
           <div className="lp-problem-inner">
-            <h2 className="reveal">La réforme arrive. Votre outil de facturation est-il prêt ?</h2>
+            <h2 className="reveal">Dans {countdown.days} jours, vos factures PDF ne suffiront plus.</h2>
             <p className="lp-problem-subtitle reveal reveal-d1">
-              À partir de septembre 2026, chaque facture que vous émettez ou recevez doit passer par une plateforme agréée, dans un format électronique normé.
+              La réforme de la facturation électronique entre en vigueur le 1er septembre 2026. Voici ce que ça change pour vous.
             </p>
             <div className="lp-problem-grid">
-              <div className="lp-problem-col reveal reveal-d2">
-                <h3>Les outils classiques ne suffisent plus</h3>
+              <div className="lp-problem-col bad reveal reveal-d2">
+                <h3>Ce qui ne sera plus accepté</h3>
                 <ul className="lp-problem-list">
-                  <li><span className="icon" aria-hidden="true">&#10060;</span>Votre logiciel ne génère pas de Factur-X ni d'UBL</li>
-                  <li><span className="icon" aria-hidden="true">&#10060;</span>Vos factures PDF ne sont pas transmises à Chorus Pro</li>
-                  <li><span className="icon" aria-hidden="true">&#10060;</span>Vous n'avez aucune piste d'audit fiable</li>
-                  <li><span className="icon" aria-hidden="true">&#10060;</span>Vous risquez des pénalités en cas de contrôle fiscal</li>
+                  <li><span className="icon" aria-hidden="true">❌</span>Les factures PDF classiques envoyées par email</li>
+                  <li><span className="icon" aria-hidden="true">❌</span>Les logiciels qui ne génèrent pas de Factur-X ou d'UBL</li>
+                  <li><span className="icon" aria-hidden="true">❌</span>L'absence de connexion à une plateforme agréée (PDP)</li>
+                  <li><span className="icon" aria-hidden="true">❌</span>Les factures sans piste d'audit fiable</li>
+                  <li><span className="icon" aria-hidden="true">❌</span>L'archivage « dans un dossier sur mon ordinateur »</li>
                 </ul>
               </div>
-              <div className="lp-problem-col solution reveal reveal-d3">
-                <h3>Ma Facture Pro vous met en conformité en 2 minutes</h3>
+              <div className="lp-problem-col good reveal reveal-d3">
+                <h3>Ce que la loi impose désormais</h3>
                 <ul className="lp-problem-list">
-                  <li><span className="icon" aria-hidden="true">&#10004;&#65039;</span>Génération automatique Factur-X, UBL 2.1 et CII</li>
-                  <li><span className="icon" aria-hidden="true">&#10004;&#65039;</span>Transmission directe à Chorus Pro (zéro action manuelle)</li>
-                  <li><span className="icon" aria-hidden="true">&#10004;&#65039;</span>Piste d'audit fiable immutable + archivage 10 ans</li>
-                  <li><span className="icon" aria-hidden="true">&#10004;&#65039;</span>Toutes les mentions DGFiP obligatoires pré-remplies</li>
-                  <li><span className="icon" aria-hidden="true">&#10004;&#65039;</span>Numérotation séquentielle sans trou</li>
+                  <li><span className="icon" aria-hidden="true">✅</span>Un format structuré : Factur-X, UBL 2.1 ou CII D16B</li>
+                  <li><span className="icon" aria-hidden="true">✅</span>La transmission via une Plateforme de Dématérialisation Partenaire</li>
+                  <li><span className="icon" aria-hidden="true">✅</span>Une piste d'audit fiable et immutable</li>
+                  <li><span className="icon" aria-hidden="true">✅</span>Un archivage légal de 10 ans minimum</li>
+                  <li><span className="icon" aria-hidden="true">✅</span>Les 25+ mentions obligatoires du Décret 2022-1299</li>
                 </ul>
               </div>
             </div>
-
-            {/* Flow */}
-            <div className="lp-flow reveal reveal-d4">
-              <div className="lp-flow-step"><span className="step-icon" aria-hidden="true">&#9997;&#65039;</span> Vous créez la facture</div>
-              <span className="lp-flow-arrow" aria-hidden="true">→</span>
-              <div className="lp-flow-step"><span className="step-icon" aria-hidden="true">&#128196;</span> Génération Factur-X</div>
-              <span className="lp-flow-arrow" aria-hidden="true">→</span>
-              <div className="lp-flow-step"><span className="step-icon" aria-hidden="true">&#128640;</span> Transmission Chorus Pro</div>
-              <span className="lp-flow-arrow" aria-hidden="true">→</span>
-              <div className="lp-flow-step"><span className="step-icon" aria-hidden="true">&#128274;</span> Archivage 10 ans</div>
+            <div className="lp-callout reveal reveal-d4">
+              <strong>💡 Qui est concerné ?</strong>
+              Toutes les entreprises françaises : freelances, auto-entrepreneurs, TPE, PME, professions libérales, artisans, SCI, LMNP. Environ 8 millions d'acteurs économiques.
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '1.5rem' }} className="reveal reveal-d5">
+              <Link to="/register" className="lp-btn lp-btn-primary">Vérifier si mon outil actuel est conforme →</Link>
             </div>
           </div>
         </section>
 
-        {/* ───── 6. FEATURES ───── */}
+        {/* ───── 6. STEPS ───── */}
+        <section className="lp-steps">
+          <div className="lp-steps-inner">
+            <h2 className="reveal">Conforme en 3 étapes. Prêt en 2 minutes.</h2>
+            <div className="lp-steps-grid">
+              <div className="lp-step-card reveal reveal-d1">
+                <div className="lp-step-num">01</div>
+                <h3>Créez votre compte</h3>
+                <p>Renseignez votre SIREN, votre statut juridique et vos coordonnées bancaires. Ma Facture Pro pré-remplit automatiquement vos mentions légales obligatoires. Temps estimé : 2 minutes.</p>
+              </div>
+              <div className="lp-step-card reveal reveal-d2">
+                <div className="lp-step-num">02</div>
+                <h3>Créez votre première facture</h3>
+                <p>Ajoutez votre client, vos lignes de prestation. Ma Facture Pro calcule la TVA, génère le Factur-X, l'UBL et le CII automatiquement. Vous n'avez rien à configurer.</p>
+              </div>
+              <div className="lp-step-card reveal reveal-d3">
+                <div className="lp-step-num">03</div>
+                <h3>Envoyez — on s'occupe du reste</h3>
+                <p>Un clic sur « Envoyer ». Votre facture est transmise à Chorus Pro, archivée 10 ans en France, et tracée dans votre piste d'audit fiable. Votre client la reçoit instantanément.</p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '2rem' }} className="reveal reveal-d4">
+              <Link to="/register" className="lp-btn lp-btn-white lp-btn-primary-lg">Créer mon compte gratuit →</Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ───── 7. FEATURES TABS ───── */}
         <section className="lp-features" id="fonctionnalites">
           <div className="lp-features-inner">
-            <h2 className="reveal">Tout ce qu'il vous faut pour facturer en toute sérénité</h2>
-            <div className="lp-features-grid">
-              <div className="lp-feature-card reveal reveal-d1">
-                <div className="lp-feature-icon" aria-hidden="true">&#128737;&#65039;</div>
-                <h3>Conforme dès le premier jour</h3>
-                <p>
-                  Factur-X PDF/A-3, UBL 2.1, CII D16B — les trois formats imposés par la réforme.
-                  Profil EN 16931 garanti. Toutes les mentions légales obligatoires sont pré-remplies
-                  selon votre statut (micro, EI, SAS, SARL).
-                </p>
+            <h2 className="reveal">Tout ce qu'il vous faut. Rien de superflu.</h2>
+            <div className="lp-tabs reveal reveal-d1" role="tablist">
+              {tabsData.map((tab, i) => (
+                <button
+                  key={i}
+                  role="tab"
+                  aria-selected={activeTab === i}
+                  className={`lp-tab${activeTab === i ? ' active' : ''}`}
+                  onClick={() => setActiveTab(i)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="lp-tab-content reveal reveal-d2" role="tabpanel">
+              <div className="lp-tab-text">
+                <h3>{tabsData[activeTab].title}</h3>
+                <ul className="lp-tab-list">
+                  {tabsData[activeTab].items.map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
+                <Link to="/register" className="lp-btn lp-btn-primary">{tabsData[activeTab].cta}</Link>
               </div>
-              <div className="lp-feature-card reveal reveal-d2">
-                <div className="lp-feature-icon" aria-hidden="true">&#9889;</div>
-                <h3>Zéro tâche manuelle</h3>
-                <p>
-                  Vos factures sont transmises automatiquement à Chorus Pro.
-                  Les statuts se mettent à jour en temps réel.
-                  Relances automatiques à J-3, J+1, J+7, J+30.
-                  Réconciliation bancaire intelligente.
-                </p>
-              </div>
-              <div className="lp-feature-card reveal reveal-d3">
-                <div className="lp-feature-icon" aria-hidden="true">&#128274;</div>
-                <h3>Archivage légal 10 ans</h3>
-                <p>
-                  Stockage S3 en France. Hash SHA-256 pour l'intégrité.
-                  Piste d'audit fiable immutable.
-                  Aucune facture émise ne peut être modifiée ou supprimée.
-                  Conforme à l'article 289 VII du CGI.
-                </p>
+              <div className="lp-tab-visual">
+                {tabsData[activeTab].visual}
               </div>
             </div>
           </div>
         </section>
 
-        {/* ───── 7. DEMO ───── */}
+        {/* ───── 8. DEMO ───── */}
         <section className="lp-demo" id="demo">
           <div className="lp-demo-inner">
-            <h2 className="reveal">Créez et envoyez une facture conforme en 90 secondes</h2>
-            <p className="lp-demo-sub reveal reveal-d1">
-              Pas de tutoriel à lire. Pas de paramétrage complexe.
-              Renseignez votre client, ajoutez vos lignes, cliquez sur « Envoyer ».
-              Ma Facture Pro s'occupe du reste.
-            </p>
+            <h2 className="reveal">Votre première facture Factur-X en 90 secondes</h2>
+            <p className="lp-demo-sub reveal reveal-d1">Pas de formation. Pas de paramétrage. Vous renseignez, on génère, Chorus Pro reçoit.</p>
             <div className="lp-demo-visual reveal reveal-d2">
               <div className="lp-demo-placeholder">
                 <div className="play-icon" role="button" aria-label="Lancer la démo" tabIndex={0}>▶</div>
                 <span>Démo interactive — bientôt disponible</span>
               </div>
             </div>
-            <Link to="/register" className="lp-btn lp-btn-primary reveal reveal-d3">
-              Essayer maintenant — c'est gratuit →
-            </Link>
+            <Link to="/register" className="lp-btn lp-btn-white reveal reveal-d3">Faire la même chose maintenant — gratuit →</Link>
           </div>
         </section>
 
-        {/* ───── 8. COMPARISON ───── */}
+        {/* ───── 9. COMPARISON ───── */}
         <section className="lp-compare">
           <div className="lp-compare-inner">
-            <h2 className="reveal">Pourquoi les freelances et PME nous choisissent</h2>
+            <h2 className="reveal">Ce que les autres ne font pas (encore)</h2>
             <div className="reveal reveal-d1">
               <table className="lp-compare-table" role="table">
                 <thead>
                   <tr>
                     <th scope="col">Critère</th>
                     <th scope="col">Ma Facture Pro</th>
-                    <th scope="col">Solutions classiques</th>
+                    <th scope="col">Outils classiques</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>Prix d'entrée</td><td>0 €/mois</td><td>15–50 €/mois</td></tr>
-                  <tr><td>Formats réglementaires</td><td>Factur-X + UBL + CII</td><td>Souvent 1 seul</td></tr>
-                  <tr><td>Connexion Chorus Pro</td><td>Automatique</td><td>Manuelle ou absente</td></tr>
-                  <tr><td>Piste d'audit fiable</td><td>Immutable, certifiée</td><td>Souvent absente</td></tr>
-                  <tr><td>Archivage légal</td><td>S3 France, 10 ans</td><td>Variable</td></tr>
-                  <tr><td>Code source</td><td>Open-source (MIT)</td><td>Propriétaire, opaque</td></tr>
-                  <tr><td>Label DGFiP</td><td>Candidature déposée</td><td>Rarement</td></tr>
+                  <tr><td>Prix d'entrée</td><td>0 €/mois</td><td>9–50 €/mois</td></tr>
+                  <tr><td>Factur-X + UBL + CII</td><td>✅ Les 3 formats</td><td>❌ Souvent 1 seul</td></tr>
+                  <tr><td>Connexion Chorus Pro</td><td>✅ Automatique</td><td>❌ Manuelle ou absente</td></tr>
+                  <tr><td>Piste d'audit fiable</td><td>✅ Immutable</td><td>❌ Souvent absente</td></tr>
+                  <tr><td>Archivage légal 10 ans</td><td>✅ S3 France</td><td>⚠️ Variable</td></tr>
+                  <tr><td>Mentions DGFiP auto</td><td>✅ Pré-remplies</td><td>❌ Saisie manuelle</td></tr>
+                  <tr><td>Label DGFiP</td><td>✅ Candidature active</td><td>❌ Rarement</td></tr>
+                  <tr><td>Code source</td><td>✅ Open-source (MIT)</td><td>❌ Propriétaire</td></tr>
+                  <tr><td>Hébergement France</td><td>✅ Scaleway Paris</td><td>⚠️ Pas toujours</td></tr>
                 </tbody>
               </table>
             </div>
             <p className="lp-compare-note reveal reveal-d2">
-              Pas de mauvaise surprise. Pas de fonctionnalité cachée derrière un paywall.<br />
-              La conformité est incluse dans tous les plans, y compris le gratuit.
+              Nous ne nommons personne. Vérifiez par vous-même : demandez à votre outil actuel s'il génère du Factur-X EN 16931 et s'il transmet automatiquement à Chorus Pro.
             </p>
           </div>
         </section>
 
-        {/* ───── 9. PRICING ───── */}
+        {/* ───── 10. PROFILES ───── */}
+        <section className="lp-profiles">
+          <div className="lp-profiles-inner">
+            <h2 className="reveal">Quelle que soit votre situation, vous êtes concerné</h2>
+            <div className="lp-profiles-grid">
+              {profiles.map((p, i) => (
+                <Link to="/register" key={i} className={`lp-profile-card reveal reveal-d${Math.min(i + 1, 5)}`}>
+                  <div className="lp-profile-icon" aria-hidden="true">{p.icon}</div>
+                  <h3>{p.title}</h3>
+                  <p>{p.sub}</p>
+                  <span className="lp-profile-link">{p.link} →</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ───── 11. PRICING ───── */}
         <section className="lp-pricing" id="tarifs">
           <div className="lp-pricing-inner">
             <div className="lp-pricing-header">
-              <h2 className="reveal">Un prix juste. Pas de surprise.</h2>
-              <p className="reveal reveal-d1">
-                La conformité est incluse dans tous les plans — même le gratuit.
-                Changez de plan ou annulez à tout moment.
-              </p>
+              <h2 className="reveal">Des prix clairs. Pas de « dès ». Pas de surprise.</h2>
+              <p className="reveal reveal-d1">La conformité est incluse dans tous les plans — y compris le gratuit. Changez d'avis ? Changez de plan en 1 clic, à tout moment.</p>
             </div>
 
             <div className="lp-pricing-grid">
               {/* Gratuit */}
               <div className="lp-price-card reveal reveal-d1">
                 <div className="lp-price-name">Gratuit</div>
-                <div className="lp-price-desc">Pour démarrer sereinement</div>
-                <div className="lp-price-amount">
-                  <span className="lp-price-val">0</span>
-                  <span className="lp-price-cur">€</span>
-                </div>
+                <div className="lp-price-amount"><span className="lp-price-val">0</span><span className="lp-price-cur"> €</span></div>
                 <div className="lp-price-period">pour toujours</div>
                 <ul className="lp-price-features">
-                  <li><span className="check" aria-hidden="true">&#10003;</span>10 factures / mois</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>1 utilisateur</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Factur-X + UBL + CII</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Chorus Pro intégré</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Archivage 10 ans</li>
+                  <li><span className="check" aria-hidden="true">✓</span>10 factures / mois</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Factur-X + UBL + CII</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Chorus Pro intégré</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Archivage légal 10 ans</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Piste d'audit fiable</li>
+                  <li><span className="check" aria-hidden="true">✓</span>1 utilisateur · 1 entreprise</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Mentions DGFiP pré-remplies</li>
                 </ul>
-                <Link to="/register" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>
-                  Commencer gratuitement
-                </Link>
+                <Link to="/register" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>Commencer gratuitement</Link>
+                <div className="lp-price-trial">Sans carte bancaire</div>
               </div>
 
               {/* Pro */}
               <div className="lp-price-card featured reveal reveal-d2">
                 <div className="lp-price-popular">Le plus populaire</div>
                 <div className="lp-price-name">Pro</div>
-                <div className="lp-price-desc">Pour les indépendants ambitieux</div>
-                <div className="lp-price-amount">
-                  <span className="lp-price-val">14</span>
-                  <span className="lp-price-cur">€/mois</span>
-                </div>
+                <div className="lp-price-amount"><span className="lp-price-val">14</span><span className="lp-price-cur"> €/mois</span></div>
                 <div className="lp-price-period">HT, sans engagement</div>
+                <div className="lp-price-desc">Tout le plan Gratuit, plus :</div>
                 <ul className="lp-price-features">
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Factures illimitées</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>3 utilisateurs · 3 entreprises</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>PDF personnalisé (logo, couleurs)</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Relances automatiques</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Synchronisation bancaire</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Support prioritaire</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Factures illimitées</li>
+                  <li><span className="check" aria-hidden="true">✓</span>3 utilisateurs · 3 entreprises</li>
+                  <li><span className="check" aria-hidden="true">✓</span>PDF personnalisé (votre logo, vos couleurs)</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Relances automatiques (J-3, J+1, J+7, J+30)</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Synchronisation bancaire</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Réconciliation paiements ↔ factures</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Devis convertibles en facture</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Support prioritaire</li>
                 </ul>
-                <Link to="/register" className="lp-btn lp-btn-primary" style={{ width: '100%' }}>
-                  Essayer Pro gratuitement
-                </Link>
-                <div className="lp-price-trial">14 jours d'essai gratuit</div>
+                <Link to="/register" className="lp-btn lp-btn-primary" style={{ width: '100%' }}>Essayer Pro — 14 jours gratuits</Link>
+                <div className="lp-price-trial">Sans engagement</div>
               </div>
 
               {/* Équipe */}
               <div className="lp-price-card reveal reveal-d3">
                 <div className="lp-price-name">Équipe</div>
-                <div className="lp-price-desc">Pour les structures qui grandissent</div>
-                <div className="lp-price-amount">
-                  <span className="lp-price-val">34</span>
-                  <span className="lp-price-cur">€/mois</span>
-                </div>
+                <div className="lp-price-amount"><span className="lp-price-val">34</span><span className="lp-price-cur"> €/mois</span></div>
                 <div className="lp-price-period">HT, sans engagement</div>
+                <div className="lp-price-desc">Tout le plan Pro, plus :</div>
                 <ul className="lp-price-features">
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Tout le plan Pro, plus :</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>10 utilisateurs · 5 entreprises</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Comptabilité automatisée</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Déclarations TVA &amp; URSSAF</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Assistant IA fiscal</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>API publique + Webhooks</li>
-                  <li><span className="check" aria-hidden="true">&#10003;</span>Export FEC comptable</li>
+                  <li><span className="check" aria-hidden="true">✓</span>10 utilisateurs · 5 entreprises</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Comptabilité automatisée (PCG)</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Déclarations TVA (CA3/CA12) pré-remplies</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Déclarations URSSAF pré-remplies</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Export FEC conforme</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Assistant IA fiscal</li>
+                  <li><span className="check" aria-hidden="true">✓</span>API publique (10 000 req/h)</li>
+                  <li><span className="check" aria-hidden="true">✓</span>Webhooks + intégrations</li>
                 </ul>
-                <Link to="/register" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>
-                  Démarrer avec Équipe
-                </Link>
+                <Link to="/register" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>Démarrer avec Équipe</Link>
+                <div className="lp-price-trial">Sans engagement</div>
               </div>
             </div>
 
-            {/* Extra boxes */}
             <div className="lp-pricing-extras reveal reveal-d4">
               <div className="lp-pricing-extra">
-                <strong>&#128202; Vous êtes comptable ou cabinet ?</strong>
-                Le plan Cabinet commence à 79 €/mois + 2 €/client actif au-delà de 20.
+                <strong>🏛️ Vous êtes expert-comptable ?</strong>
+                Plan Cabinet : 79 €/mois + 2 €/client actif au-delà de 20 clients.
                 Un cabinet de 150 clients : 339 €/mois — soit 2,26 €/client.
-                <br /><a href="mailto:contact@mafacturepro.fr">Contactez-nous pour une démo dédiée →</a>
+                Portail multi-clients · Export FEC groupé · White-label · Utilisateurs illimités.
+                <br /><a href="mailto:contact@mafacturepro.fr">Demander une démo Cabinet →</a>
               </div>
               <div className="lp-pricing-extra">
-                <strong>&#128161; Vous préférez payer au succès ?</strong>
-                Le plan Succès Partagé : 0 € + 0,1 % de votre CA facturé
-                au-delà de 50 000 €/an. Plafonné à 49 €/mois. Aucun risque.
-                <br /><a href="mailto:contact@mafacturepro.fr">En savoir plus →</a>
+                <strong>💡 Vous préférez payer au succès ?</strong>
+                Plan Succès Partagé : 0 € fixe + 0,1 % de votre CA facturé au-delà de 50 000 €/an. Plafonné à 49 €/mois.
+                Exemple : vous facturez 80 000 €/an → vous payez 30 €/an (soit 2,50 €/mois).
+                <br /><a href="mailto:contact@mafacturepro.fr">Simuler mon prix →</a>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ───── 10. TESTIMONIALS ───── */}
+        {/* ───── 12. TESTIMONIALS ───── */}
         <section className="lp-testimonials">
           <div className="lp-testimonials-inner">
-            <h2 className="reveal">Ce qu'en disent nos utilisateurs</h2>
+            <h2 className="reveal">Ils ont anticipé la réforme</h2>
             <div className="lp-testimonials-grid">
               <div className="lp-testimonial-card reveal reveal-d1">
+                <div className="lp-testimonial-stars" aria-label="5 étoiles sur 5">★★★★★</div>
                 <p className="lp-testimonial-quote">
-                  « J'ai migré en 20 minutes. Mes factures Factur-X passent sur Chorus Pro sans que je touche à rien. »
+                  « Inscription en 2 minutes, première facture Factur-X envoyée dans la foulée. Chorus Pro reçoit tout automatiquement. Je ne m'en occupe plus. »
                 </p>
                 <div className="lp-testimonial-author">
                   <div className="lp-testimonial-avatar" style={{ background: '#6366f1' }}>SM</div>
                   <div>
                     <div className="lp-testimonial-name">Sophie M.</div>
-                    <div className="lp-testimonial-role">Développeuse freelance, Lyon</div>
+                    <div className="lp-testimonial-role">Développeuse freelance · Lyon</div>
                   </div>
                 </div>
               </div>
               <div className="lp-testimonial-card reveal reveal-d2">
+                <div className="lp-testimonial-stars" aria-label="5 étoiles sur 5">★★★★★</div>
                 <p className="lp-testimonial-quote">
-                  « Notre cabinet gère 120 clients dessus. Le portail comptable et l'export FEC groupé nous font gagner 2 jours par mois. »
+                  « 120 clients migrés en une semaine. Le portail comptable et l'export FEC groupé me font gagner 2 jours par mois. À 2,26 €/client, c'est imbattable. »
                 </p>
                 <div className="lp-testimonial-author">
                   <div className="lp-testimonial-avatar" style={{ background: '#0891b2' }}>MD</div>
                   <div>
                     <div className="lp-testimonial-name">Marc D.</div>
-                    <div className="lp-testimonial-role">Expert-comptable, Paris</div>
+                    <div className="lp-testimonial-role">Expert-comptable · Paris</div>
                   </div>
                 </div>
               </div>
               <div className="lp-testimonial-card reveal reveal-d3">
+                <div className="lp-testimonial-stars" aria-label="5 étoiles sur 5">★★★★★</div>
                 <p className="lp-testimonial-quote">
-                  « Le plan gratuit m'a convaincu. Quand j'ai dépassé 10 factures, passer au Pro était une évidence. »
+                  « Je suis plombier, pas informaticien. J'ai compris le produit en 5 minutes. La TVA se calcule toute seule, les factures partent toutes seules. Parfait. »
                 </p>
                 <div className="lp-testimonial-author">
                   <div className="lp-testimonial-avatar" style={{ background: '#d97706' }}>KB</div>
                   <div>
                     <div className="lp-testimonial-name">Karim B.</div>
-                    <div className="lp-testimonial-role">Artisan plombier, Toulouse</div>
+                    <div className="lp-testimonial-role">Artisan plombier · Toulouse</div>
                   </div>
                 </div>
               </div>
@@ -513,68 +549,79 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ───── 11. FAQ ───── */}
+        {/* ───── 13. DIFFERENTIATION ───── */}
+        <section className="lp-diff">
+          <div className="lp-diff-inner">
+            <h2 className="reveal">Ce qui nous rend différents</h2>
+            <div className="lp-diff-grid">
+              <div className="lp-diff-card reveal reveal-d1">
+                <div className="lp-diff-icon" aria-hidden="true">💻</div>
+                <h3>Open-source. Auditable. Transparent.</h3>
+                <p>Notre code est public sur GitHub sous licence MIT. Pas de boîte noire. Pas de mauvaise surprise. Vous savez exactement comment vos données sont traitées.</p>
+              </div>
+              <div className="lp-diff-card reveal reveal-d2">
+                <div className="lp-diff-icon" aria-hidden="true">🛡️</div>
+                <h3>Conçu pour la réforme. Pas adapté après coup.</h3>
+                <p>Ma Facture Pro n'est pas un outil de comptabilité qui a « ajouté » la facturation électronique. C'est un outil de facturation électronique qui inclut la comptabilité. La nuance change tout.</p>
+              </div>
+              <div className="lp-diff-card reveal reveal-d3">
+                <div className="lp-diff-icon" aria-hidden="true">🇫🇷</div>
+                <h3>Vos factures restent en France. Point.</h3>
+                <p>Archivage S3 chez Scaleway, région Paris. Hash SHA-256. Versioning activé. Conforme RGPD et article 289 VII du CGI. Pas de serveur aux États-Unis. Pas de zone grise.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ───── 14. FAQ ───── */}
         <section className="lp-faq" id="faq">
           <div className="lp-faq-inner">
-            <h2 className="reveal">Questions fréquentes</h2>
-            <div className="lp-faq-list">
+            <h2 className="reveal">Vos questions, nos réponses</h2>
+            <div className="lp-faq-grid">
               {faqItems.map((item, i) => (
                 <div key={i} className={`lp-faq-item${openFaq === i ? ' open' : ''}`}>
-                  <button
-                    className="lp-faq-q"
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    aria-expanded={openFaq === i}
-                  >
+                  <button className="lp-faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)} aria-expanded={openFaq === i}>
                     <span>{item.q}</span>
-                    <svg className="lp-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
+                    <svg className="lp-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                   </button>
-                  <div className="lp-faq-a" role="region">
-                    <p>{item.a}</p>
-                  </div>
+                  <div className="lp-faq-a" role="region"><p>{item.a}</p></div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ───── 12. FINAL CTA ───── */}
+        {/* ───── 15. FINAL CTA ───── */}
         <section className="lp-final-cta">
           <div className="lp-final-cta-inner">
-            <h2 className="reveal">La réforme n'attend pas. Votre compte non plus.</h2>
+            <h2 className="reveal">La réforme n'attend pas.<br />Votre première facture conforme, si.</h2>
             <p className="reveal reveal-d1">
-              Créez votre premier Factur-X conforme en moins de 3 minutes.
-              Gratuit. Sans carte bancaire. Sans engagement.
+              2 minutes pour créer votre compte. 90 secondes pour votre premier Factur-X.
+              0 € pour commencer. 0 excuse pour attendre.
             </p>
-            <Link to="/register" className="lp-btn lp-btn-primary lp-btn-primary-lg reveal reveal-d2">
-              Créer mon compte gratuit →
-            </Link>
+            <Link to="/register" className="lp-btn lp-btn-primary lp-btn-primary-lg reveal reveal-d2">Créer ma première facture conforme →</Link>
             <p className="lp-final-reassurance reveal reveal-d3">
-              Rejoignez les entreprises qui ont déjà anticipé la réforme.
+              Gratuit · Sans carte bancaire · Open-source · Hébergé en France
             </p>
           </div>
         </section>
       </main>
 
-      {/* ───── 13. FOOTER ───── */}
+      {/* ───── 16. FOOTER ───── */}
       <footer className="lp-footer">
         <div className="lp-footer-inner">
           <div className="lp-footer-grid">
             <div className="lp-footer-brand">
               <div className="lp-footer-logo">Ma Facture Pro</div>
-              <p>
-                La facturation électronique conforme,<br />
-                simple et gratuite.<br />
-                Développé avec soin en France.
-              </p>
+              <p>La facturation électronique conforme, simple et gratuite.<br />🇫🇷 Conçu et hébergé en France.<br />Open-source (MIT) sur GitHub.</p>
             </div>
             <div className="lp-footer-col">
               <h4>Produit</h4>
               <ul>
                 <li><a href="#fonctionnalites">Fonctionnalités</a></li>
                 <li><a href="#tarifs">Tarifs</a></li>
-                <li><a href="#faq">Sécurité</a></li>
+                <li><a href="#conformite">Sécurité & conformité</a></li>
+                <li><a href="#faq">Documentation API</a></li>
                 <li><a href="#faq">Changelog</a></li>
               </ul>
             </div>
@@ -584,6 +631,7 @@ export default function Landing() {
                 <li><a href="#faq">Guide de la réforme 2026</a></li>
                 <li><a href="#faq">Qu'est-ce que le Factur-X ?</a></li>
                 <li><a href="#faq">Centre d'aide</a></li>
+                <li><a href="#faq">Statut des services</a></li>
               </ul>
             </div>
             <div className="lp-footer-col">
@@ -591,12 +639,12 @@ export default function Landing() {
               <ul>
                 <li><a href="#faq">Mentions légales</a></li>
                 <li><a href="#faq">Politique de confidentialité</a></li>
-                <li><a href="#faq">CGU</a></li>
+                <li><a href="#faq">Conditions générales</a></li>
               </ul>
             </div>
           </div>
           <div className="lp-footer-bottom">
-            © 2026 Ma Facture Pro · Code source sur GitHub (MIT)
+            © 2026 Ma Facture Pro — Pierre-Arthur Demengel · Code source sous licence MIT
           </div>
         </div>
       </footer>
