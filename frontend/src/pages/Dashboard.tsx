@@ -66,11 +66,13 @@ function SortableWidget({ id, className, children }: { id: string, className: st
     opacity: isDragging ? 0.4 : 1,
     zIndex: isDragging ? 10 : 1,
     cursor: isDragging ? 'grabbing' : 'auto',
+    display: 'flex',
+    flexDirection: 'column',
   };
 
   return (
     <div ref={setNodeRef} style={style} className={className}>
-      <div style={{ outline: 'none', height: '100%', width: '100%', position: 'relative' }}>
+      <div style={{ outline: 'none', flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', width: '100%' }}>
         {/* Poignee magnetique de glissement (Drag Handle) pour re-organiser */}
         <div 
           {...attributes} 
@@ -289,7 +291,7 @@ export default function Dashboard() {
                 return (
                   <SortableWidget key={wId} id={wId} className="widget-full">
                     <div className="app-card" style={{ width: '100%' }}>
-                      <h3 className="app-section-title" style={{ margin: '0 0 1rem' }}>Evolution du CA (HT)</h3>
+                      <h3 className="app-card-title" style={{ marginBottom: '1rem' }}>Evolution du CA (HT)</h3>
                       <RevenueChart invoices={invoices} />
                     </div>
                   </SortableWidget>
@@ -298,8 +300,8 @@ export default function Dashboard() {
               if (wId === 'list-recent') {
                 return (
                   <SortableWidget key={wId} id={wId} className="widget-wide">
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-                      <h2 className="app-section-title" style={{ margin: '0 0 1rem 0' }}>Dernieres factures</h2>
+                    <div className="app-card" style={{ width: '100%' }}>
+                      <h3 className="app-card-title" style={{ marginBottom: '1rem' }}>Dernieres factures</h3>
                       {invoices.length === 0 ? (
                         <div style={{flex: 1}}>
                           <EmptyState 
@@ -343,8 +345,8 @@ export default function Dashboard() {
               if (wId === 'list-feed') {
                 return (
                   <SortableWidget key={wId} id={wId} className="widget-narrow">
-                    <div className="app-card" style={{ padding: '1.5rem', width: '100%', height: '100%' }}>
-                      <h2 className="app-section-title" style={{ margin: '0 0 1rem 0' }}>Fil d'actualite</h2>
+                    <div className="app-card" style={{ width: '100%' }}>
+                      <h3 className="app-card-title" style={{ marginBottom: '1rem' }}>Fil d'actualite</h3>
                       {activities.length === 0 ? (
                         <p style={{ color: 'var(--l-gray)', fontStyle: 'italic', fontSize: '0.9rem' }}>Aucune activite recente.</p>
                       ) : (

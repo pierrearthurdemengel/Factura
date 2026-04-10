@@ -10,22 +10,22 @@ export default function CustomCursor() {
   const springY = useSpring(cursorY, { stiffness: 800, damping: 35 });
 
   useEffect(() => {
-    const moveCursor = (e: MouseEvent) => {
+    const moveCursor = (e: PointerEvent) => {
       cursorX.set(e.clientX - 10);
       cursorY.set(e.clientY - 10);
       
       const target = e.target as HTMLElement;
       // Detect interactive elements to trigger magnetic inflation
-      if (target.closest('button, a, input, select, textarea, .app-card, [data-magnetic]')) {
+      if (target.closest('button, a, input, select, textarea, .app-card, [data-magnetic], .widget-drag-handle')) {
         setIsHovering(true);
       } else {
         setIsHovering(false);
       }
     };
 
-    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('pointermove', moveCursor as any);
     return () => {
-       window.removeEventListener('mousemove', moveCursor);
+       window.removeEventListener('pointermove', moveCursor as any);
     };
   }, [cursorX, cursorY]);
 

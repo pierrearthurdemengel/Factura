@@ -3,6 +3,9 @@ CLAUDE.md
 SPEC-FACTURA.md
 SUIVI-FACTURA.md
 PROMPT-FACTURA.md
+.claude/
+.mcp.json
+setup-claude.sh
 
 # Variables d'environnement
 .env.local

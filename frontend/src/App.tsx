@@ -12,8 +12,7 @@ import CommandMenu from './components/CommandMenu';
 import FloatingActionButton from './components/FloatingActionButton';
 import VoiceAssistant from './components/VoiceAssistant';
 import AmbientBackground from './components/AmbientBackground';
-import CustomCursor from './components/CustomCursor';
-import CollaboratorCursor from './components/CollaboratorCursor';
+
 import './components/NavBar.css';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
@@ -288,8 +287,6 @@ function AnimatedAppCore() {
 
   return (
     <>
-      <CustomCursor />
-      <CollaboratorCursor />
       <AmbientBackground />
       <VoiceAssistant />
       {location.pathname !== '/invoices/new' && (

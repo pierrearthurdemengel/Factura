@@ -33,6 +33,71 @@ function useCountdown() {
   return time;
 }
 
+/* ═══════════════════════════════════════════
+   SVG ICONS (Lucide-style)
+   ═══════════════════════════════════════════ */
+function IconZap() {
+  return <svg className="lp-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>;
+}
+function IconStarFilled() {
+  return <svg className="lp-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>;
+}
+function IconFlag() {
+  return <svg className="lp-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" /></svg>;
+}
+function IconXCircle() {
+  return <svg className="lp-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>;
+}
+function IconCheckCircle() {
+  return <svg className="lp-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>;
+}
+function IconLightbulb() {
+  return <svg className="lp-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18h6" /><path d="M10 22h4" /><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" /></svg>;
+}
+function IconPlay() {
+  return <svg className="lp-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3" /></svg>;
+}
+function IconCheck() {
+  return <svg className="lp-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>;
+}
+function IconAlertTriangle() {
+  return <svg className="lp-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>;
+}
+function IconLaptop() {
+  return <svg className="lp-icon-lg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16" /></svg>;
+}
+function IconTool() {
+  return <svg className="lp-icon-lg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>;
+}
+function IconBuilding() {
+  return <svg className="lp-icon-lg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2" ry="2" /><path d="M9 22v-4h6v4" /><path d="M8 6h.01" /><path d="M16 6h.01" /><path d="M12 6h.01" /><path d="M8 10h.01" /><path d="M16 10h.01" /><path d="M12 10h.01" /><path d="M8 14h.01" /><path d="M16 14h.01" /><path d="M12 14h.01" /></svg>;
+}
+function IconLandmark() {
+  return <svg className="lp-icon-lg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="3" x2="21" y1="22" y2="22" /><line x1="6" x2="6" y1="18" y2="11" /><line x1="10" x2="10" y1="18" y2="11" /><line x1="14" x2="14" y1="18" y2="11" /><line x1="18" x2="18" y1="18" y2="11" /><polygon points="12 2 20 7 4 7" /><line x1="2" x2="22" y1="18" y2="18" /></svg>;
+}
+function IconHome() {
+  return <svg className="lp-icon-lg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>;
+}
+function IconCode() {
+  return <svg className="lp-icon-lg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>;
+}
+function IconShield() {
+  return <svg className="lp-icon-lg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>;
+}
+function IconGithub() {
+  return <svg className="lp-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>;
+}
+
+function StarRating() {
+  return (
+    <div className="lp-testimonial-stars" aria-label="5 étoiles sur 5">
+      {Array.from({ length: 5 }, (_, i) => (
+        <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+      ))}
+    </div>
+  );
+}
+
 /* ─── Tab data ─── */
 const tabsData = [
   {
@@ -109,11 +174,11 @@ const faqItems = [
 
 /* ─── Profile cards ─── */
 const profiles = [
-  { icon: '💻', title: 'Freelance / Auto-entrepreneur', sub: 'Mention art. 293B pré-remplie. Plan gratuit suffisant.', link: 'Découvrir le plan Gratuit' },
-  { icon: '🔧', title: 'Artisan / Commerçant', sub: 'Multi-taux TVA. Relances automatiques.', link: 'Découvrir le plan Pro' },
-  { icon: '🏢', title: 'TPE / PME (1-50 salariés)', sub: 'Multi-utilisateurs. Comptabilité automatisée.', link: 'Découvrir le plan Équipe' },
-  { icon: '🏛️', title: 'Cabinet comptable', sub: 'Portail multi-clients. Export FEC groupé. White-label.', link: 'Découvrir le plan Cabinet' },
-  { icon: '🏠', title: 'SCI / LMNP', sub: 'Factures fournisseurs conformes. Archivage inclus.', link: 'Découvrir le plan Gratuit' },
+  { icon: <IconLaptop />, title: 'Freelance / Auto-entrepreneur', sub: 'Mention art. 293B pré-remplie. Plan gratuit suffisant.', link: 'Découvrir le plan Gratuit' },
+  { icon: <IconTool />, title: 'Artisan / Commerçant', sub: 'Multi-taux TVA. Relances automatiques.', link: 'Découvrir le plan Pro' },
+  { icon: <IconBuilding />, title: 'TPE / PME (1-50 salariés)', sub: 'Multi-utilisateurs. Comptabilité automatisée.', link: 'Découvrir le plan Équipe' },
+  { icon: <IconLandmark />, title: 'Cabinet comptable', sub: 'Portail multi-clients. Export FEC groupé. White-label.', link: 'Découvrir le plan Cabinet' },
+  { icon: <IconHome />, title: 'SCI / LMNP', sub: 'Factures fournisseurs conformes. Archivage inclus.', link: 'Découvrir le plan Gratuit' },
 ];
 
 /* ═══════════════════════════════════════════
@@ -144,7 +209,7 @@ export default function Landing() {
       {topbarVisible && (
         <div className="lp-topbar">
           <div className="lp-topbar-inner">
-            <span>⚡ Réforme facturation électronique : obligation légale dès le 1er septembre 2026. Êtes-vous prêt ?</span>
+            <span><IconZap /> Réforme facturation électronique : obligation légale dès le 1er septembre 2026. Êtes-vous prêt ?</span>
             <Link to="/register">Vérifier ma conformité gratuitement →</Link>
           </div>
           <button className="lp-topbar-close" onClick={() => setTopbarVisible(false)} aria-label="Fermer le bandeau">×</button>
@@ -188,7 +253,7 @@ export default function Landing() {
           <div className="lp-hero-inner">
             <div className="lp-hero-text">
               <div className="lp-hero-badge reveal">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                <IconCheckCircle />
                 Candidat au label DGFiP « Solution compatible »
               </div>
               <h1 className="reveal reveal-d1">
@@ -201,15 +266,15 @@ export default function Landing() {
               </p>
               <div className="lp-hero-ctas reveal reveal-d3">
                 <Link to="/register" className="lp-btn lp-btn-primary lp-btn-primary-lg">Créer ma première facture conforme →</Link>
-                <a href="#demo" className="lp-hero-demo-link">Voir le produit en action — démo 90 secondes ▶</a>
+                <a href="#demo" className="lp-hero-demo-link"><IconPlay /> Voir le produit en action — démo 90 secondes</a>
               </div>
               <p className="lp-hero-trust reveal reveal-d4">
                 Gratuit jusqu'à 10 factures/mois · Sans carte bancaire · Prêt en 2 minutes
               </p>
               <div className="lp-hero-social reveal reveal-d5">
-                <span>⭐ 4.9 Trustpilot</span>
-                <span>Open-source sur GitHub</span>
-                <span>🇫🇷 Hébergé en France</span>
+                <span><IconStarFilled /> 4.9 Trustpilot</span>
+                <span><IconGithub /> Open-source sur GitHub</span>
+                <span><IconFlag /> Hébergé en France</span>
               </div>
             </div>
 
@@ -223,7 +288,7 @@ export default function Landing() {
               <div className="lp-hero-mockup-content">
                 <div className="lp-mockup-header">
                   <span className="lp-mockup-id">FA-2026-0001</span>
-                  <span className="lp-mockup-badge-fx">Factur-X ✓</span>
+                  <span className="lp-mockup-badge-fx"><IconCheck /> Factur-X</span>
                 </div>
                 <div className="lp-mockup-lines">
                   <div className="lp-mockup-line" style={{ width: '85%' }} />
@@ -231,7 +296,7 @@ export default function Landing() {
                   <div className="lp-mockup-line" style={{ width: '70%' }} />
                 </div>
                 <div className="lp-mockup-status">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                  <IconCheckCircle />
                   Transmise à Chorus Pro
                 </div>
               </div>
@@ -263,26 +328,26 @@ export default function Landing() {
               <div className="lp-problem-col bad reveal reveal-d2">
                 <h3>Ce qui ne sera plus accepté</h3>
                 <ul className="lp-problem-list">
-                  <li><span className="icon" aria-hidden="true">❌</span>Les factures PDF classiques envoyées par email</li>
-                  <li><span className="icon" aria-hidden="true">❌</span>Les logiciels qui ne génèrent pas de Factur-X ou d'UBL</li>
-                  <li><span className="icon" aria-hidden="true">❌</span>L'absence de connexion à une plateforme agréée (PDP)</li>
-                  <li><span className="icon" aria-hidden="true">❌</span>Les factures sans piste d'audit fiable</li>
-                  <li><span className="icon" aria-hidden="true">❌</span>L'archivage « dans un dossier sur mon ordinateur »</li>
+                  <li><span className="icon icon-red"><IconXCircle /></span>Les factures PDF classiques envoyées par email</li>
+                  <li><span className="icon icon-red"><IconXCircle /></span>Les logiciels qui ne génèrent pas de Factur-X ou d'UBL</li>
+                  <li><span className="icon icon-red"><IconXCircle /></span>L'absence de connexion à une plateforme agréée (PDP)</li>
+                  <li><span className="icon icon-red"><IconXCircle /></span>Les factures sans piste d'audit fiable</li>
+                  <li><span className="icon icon-red"><IconXCircle /></span>L'archivage « dans un dossier sur mon ordinateur »</li>
                 </ul>
               </div>
               <div className="lp-problem-col good reveal reveal-d3">
                 <h3>Ce que la loi impose désormais</h3>
                 <ul className="lp-problem-list">
-                  <li><span className="icon" aria-hidden="true">✅</span>Un format structuré : Factur-X, UBL 2.1 ou CII D16B</li>
-                  <li><span className="icon" aria-hidden="true">✅</span>La transmission via une Plateforme de Dématérialisation Partenaire</li>
-                  <li><span className="icon" aria-hidden="true">✅</span>Une piste d'audit fiable et immutable</li>
-                  <li><span className="icon" aria-hidden="true">✅</span>Un archivage légal de 10 ans minimum</li>
-                  <li><span className="icon" aria-hidden="true">✅</span>Les 25+ mentions obligatoires du Décret 2022-1299</li>
+                  <li><span className="icon icon-green"><IconCheckCircle /></span>Un format structuré : Factur-X, UBL 2.1 ou CII D16B</li>
+                  <li><span className="icon icon-green"><IconCheckCircle /></span>La transmission via une Plateforme de Dématérialisation Partenaire</li>
+                  <li><span className="icon icon-green"><IconCheckCircle /></span>Une piste d'audit fiable et immutable</li>
+                  <li><span className="icon icon-green"><IconCheckCircle /></span>Un archivage légal de 10 ans minimum</li>
+                  <li><span className="icon icon-green"><IconCheckCircle /></span>Les 25+ mentions obligatoires du Décret 2022-1299</li>
                 </ul>
               </div>
             </div>
             <div className="lp-callout reveal reveal-d4">
-              <strong>💡 Qui est concerné ?</strong>
+              <strong><IconLightbulb /> Qui est concerné ?</strong>
               Toutes les entreprises françaises : freelances, auto-entrepreneurs, TPE, PME, professions libérales, artisans, SCI, LMNP. Environ 8 millions d'acteurs économiques.
             </div>
             <div style={{ textAlign: 'center', marginTop: '1.5rem' }} className="reveal reveal-d5">
@@ -357,7 +422,7 @@ export default function Landing() {
             <p className="lp-demo-sub reveal reveal-d1">Pas de formation. Pas de paramétrage. Vous renseignez, on génère, Chorus Pro reçoit.</p>
             <div className="lp-demo-visual reveal reveal-d2">
               <div className="lp-demo-placeholder">
-                <div className="play-icon" role="button" aria-label="Lancer la démo" tabIndex={0}>▶</div>
+                <div className="play-icon" role="button" aria-label="Lancer la démo" tabIndex={0}><IconPlay /></div>
                 <span>Démo interactive — bientôt disponible</span>
               </div>
             </div>
@@ -380,14 +445,14 @@ export default function Landing() {
                 </thead>
                 <tbody>
                   <tr><td>Prix d'entrée</td><td>0 €/mois</td><td>9–50 €/mois</td></tr>
-                  <tr><td>Factur-X + UBL + CII</td><td>✅ Les 3 formats</td><td>❌ Souvent 1 seul</td></tr>
-                  <tr><td>Connexion Chorus Pro</td><td>✅ Automatique</td><td>❌ Manuelle ou absente</td></tr>
-                  <tr><td>Piste d'audit fiable</td><td>✅ Immutable</td><td>❌ Souvent absente</td></tr>
-                  <tr><td>Archivage légal 10 ans</td><td>✅ S3 France</td><td>⚠️ Variable</td></tr>
-                  <tr><td>Mentions DGFiP auto</td><td>✅ Pré-remplies</td><td>❌ Saisie manuelle</td></tr>
-                  <tr><td>Label DGFiP</td><td>✅ Candidature active</td><td>❌ Rarement</td></tr>
-                  <tr><td>Code source</td><td>✅ Open-source (MIT)</td><td>❌ Propriétaire</td></tr>
-                  <tr><td>Hébergement France</td><td>✅ Scaleway Paris</td><td>⚠️ Pas toujours</td></tr>
+                  <tr><td>Factur-X + UBL + CII</td><td><span className="lp-status-yes"><IconCheckCircle /> Les 3 formats</span></td><td><span className="lp-status-no"><IconXCircle /> Souvent 1 seul</span></td></tr>
+                  <tr><td>Connexion Chorus Pro</td><td><span className="lp-status-yes"><IconCheckCircle /> Automatique</span></td><td><span className="lp-status-no"><IconXCircle /> Manuelle ou absente</span></td></tr>
+                  <tr><td>Piste d'audit fiable</td><td><span className="lp-status-yes"><IconCheckCircle /> Immutable</span></td><td><span className="lp-status-no"><IconXCircle /> Souvent absente</span></td></tr>
+                  <tr><td>Archivage légal 10 ans</td><td><span className="lp-status-yes"><IconCheckCircle /> S3 France</span></td><td><span className="lp-status-warn"><IconAlertTriangle /> Variable</span></td></tr>
+                  <tr><td>Mentions DGFiP auto</td><td><span className="lp-status-yes"><IconCheckCircle /> Pré-remplies</span></td><td><span className="lp-status-no"><IconXCircle /> Saisie manuelle</span></td></tr>
+                  <tr><td>Label DGFiP</td><td><span className="lp-status-yes"><IconCheckCircle /> Candidature active</span></td><td><span className="lp-status-no"><IconXCircle /> Rarement</span></td></tr>
+                  <tr><td>Code source</td><td><span className="lp-status-yes"><IconCheckCircle /> Open-source (MIT)</span></td><td><span className="lp-status-no"><IconXCircle /> Propriétaire</span></td></tr>
+                  <tr><td>Hébergement France</td><td><span className="lp-status-yes"><IconCheckCircle /> Scaleway Paris</span></td><td><span className="lp-status-warn"><IconAlertTriangle /> Pas toujours</span></td></tr>
                 </tbody>
               </table>
             </div>
@@ -404,7 +469,7 @@ export default function Landing() {
             <div className="lp-profiles-grid">
               {profiles.map((p, i) => (
                 <Link to="/register" key={i} className={`lp-profile-card reveal reveal-d${Math.min(i + 1, 5)}`}>
-                  <div className="lp-profile-icon" aria-hidden="true">{p.icon}</div>
+                  <div className="lp-profile-icon">{p.icon}</div>
                   <h3>{p.title}</h3>
                   <p>{p.sub}</p>
                   <span className="lp-profile-link">{p.link} →</span>
@@ -429,13 +494,13 @@ export default function Landing() {
                 <div className="lp-price-amount"><span className="lp-price-val">0</span><span className="lp-price-cur"> €</span></div>
                 <div className="lp-price-period">pour toujours</div>
                 <ul className="lp-price-features">
-                  <li><span className="check" aria-hidden="true">✓</span>10 factures / mois</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Factur-X + UBL + CII</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Chorus Pro intégré</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Archivage légal 10 ans</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Piste d'audit fiable</li>
-                  <li><span className="check" aria-hidden="true">✓</span>1 utilisateur · 1 entreprise</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Mentions DGFiP pré-remplies</li>
+                  <li><span className="check"><IconCheck /></span>10 factures / mois</li>
+                  <li><span className="check"><IconCheck /></span>Factur-X + UBL + CII</li>
+                  <li><span className="check"><IconCheck /></span>Chorus Pro intégré</li>
+                  <li><span className="check"><IconCheck /></span>Archivage légal 10 ans</li>
+                  <li><span className="check"><IconCheck /></span>Piste d'audit fiable</li>
+                  <li><span className="check"><IconCheck /></span>1 utilisateur · 1 entreprise</li>
+                  <li><span className="check"><IconCheck /></span>Mentions DGFiP pré-remplies</li>
                 </ul>
                 <Link to="/register" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>Commencer gratuitement</Link>
                 <div className="lp-price-trial">Sans carte bancaire</div>
@@ -449,14 +514,14 @@ export default function Landing() {
                 <div className="lp-price-period">HT, sans engagement</div>
                 <div className="lp-price-desc">Tout le plan Gratuit, plus :</div>
                 <ul className="lp-price-features">
-                  <li><span className="check" aria-hidden="true">✓</span>Factures illimitées</li>
-                  <li><span className="check" aria-hidden="true">✓</span>3 utilisateurs · 3 entreprises</li>
-                  <li><span className="check" aria-hidden="true">✓</span>PDF personnalisé (votre logo, vos couleurs)</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Relances automatiques (J-3, J+1, J+7, J+30)</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Synchronisation bancaire</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Réconciliation paiements ↔ factures</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Devis convertibles en facture</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Support prioritaire</li>
+                  <li><span className="check"><IconCheck /></span>Factures illimitées</li>
+                  <li><span className="check"><IconCheck /></span>3 utilisateurs · 3 entreprises</li>
+                  <li><span className="check"><IconCheck /></span>PDF personnalisé (votre logo, vos couleurs)</li>
+                  <li><span className="check"><IconCheck /></span>Relances automatiques (J-3, J+1, J+7, J+30)</li>
+                  <li><span className="check"><IconCheck /></span>Synchronisation bancaire</li>
+                  <li><span className="check"><IconCheck /></span>Réconciliation paiements ↔ factures</li>
+                  <li><span className="check"><IconCheck /></span>Devis convertibles en facture</li>
+                  <li><span className="check"><IconCheck /></span>Support prioritaire</li>
                 </ul>
                 <Link to="/register" className="lp-btn lp-btn-primary" style={{ width: '100%' }}>Essayer Pro — 14 jours gratuits</Link>
                 <div className="lp-price-trial">Sans engagement</div>
@@ -469,14 +534,14 @@ export default function Landing() {
                 <div className="lp-price-period">HT, sans engagement</div>
                 <div className="lp-price-desc">Tout le plan Pro, plus :</div>
                 <ul className="lp-price-features">
-                  <li><span className="check" aria-hidden="true">✓</span>10 utilisateurs · 5 entreprises</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Comptabilité automatisée (PCG)</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Déclarations TVA (CA3/CA12) pré-remplies</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Déclarations URSSAF pré-remplies</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Export FEC conforme</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Assistant IA fiscal</li>
-                  <li><span className="check" aria-hidden="true">✓</span>API publique (10 000 req/h)</li>
-                  <li><span className="check" aria-hidden="true">✓</span>Webhooks + intégrations</li>
+                  <li><span className="check"><IconCheck /></span>10 utilisateurs · 5 entreprises</li>
+                  <li><span className="check"><IconCheck /></span>Comptabilité automatisée (PCG)</li>
+                  <li><span className="check"><IconCheck /></span>Déclarations TVA (CA3/CA12) pré-remplies</li>
+                  <li><span className="check"><IconCheck /></span>Déclarations URSSAF pré-remplies</li>
+                  <li><span className="check"><IconCheck /></span>Export FEC conforme</li>
+                  <li><span className="check"><IconCheck /></span>Assistant IA fiscal</li>
+                  <li><span className="check"><IconCheck /></span>API publique (10 000 req/h)</li>
+                  <li><span className="check"><IconCheck /></span>Webhooks + intégrations</li>
                 </ul>
                 <Link to="/register" className="lp-btn lp-btn-outline" style={{ width: '100%' }}>Démarrer avec Équipe</Link>
                 <div className="lp-price-trial">Sans engagement</div>
@@ -485,14 +550,14 @@ export default function Landing() {
 
             <div className="lp-pricing-extras reveal reveal-d4">
               <div className="lp-pricing-extra">
-                <strong>🏛️ Vous êtes expert-comptable ?</strong>
+                <strong><IconLandmark /> Vous êtes expert-comptable ?</strong>
                 Plan Cabinet : 79 €/mois + 2 €/client actif au-delà de 20 clients.
                 Un cabinet de 150 clients : 339 €/mois — soit 2,26 €/client.
                 Portail multi-clients · Export FEC groupé · White-label · Utilisateurs illimités.
                 <br /><a href="mailto:contact@mafacturepro.fr">Demander une démo Cabinet →</a>
               </div>
               <div className="lp-pricing-extra">
-                <strong>💡 Vous préférez payer au succès ?</strong>
+                <strong><IconLightbulb /> Vous préférez payer au succès ?</strong>
                 Plan Succès Partagé : 0 € fixe + 0,1 % de votre CA facturé au-delà de 50 000 €/an. Plafonné à 49 €/mois.
                 Exemple : vous facturez 80 000 €/an → vous payez 30 €/an (soit 2,50 €/mois).
                 <br /><a href="mailto:contact@mafacturepro.fr">Simuler mon prix →</a>
@@ -507,12 +572,12 @@ export default function Landing() {
             <h2 className="reveal">Ils ont anticipé la réforme</h2>
             <div className="lp-testimonials-grid">
               <div className="lp-testimonial-card reveal reveal-d1">
-                <div className="lp-testimonial-stars" aria-label="5 étoiles sur 5">★★★★★</div>
+                <StarRating />
                 <p className="lp-testimonial-quote">
                   « Inscription en 2 minutes, première facture Factur-X envoyée dans la foulée. Chorus Pro reçoit tout automatiquement. Je ne m'en occupe plus. »
                 </p>
                 <div className="lp-testimonial-author">
-                  <div className="lp-testimonial-avatar" style={{ background: '#6366f1' }}>SM</div>
+                  <div className="lp-testimonial-avatar" style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)' }}>SM</div>
                   <div>
                     <div className="lp-testimonial-name">Sophie M.</div>
                     <div className="lp-testimonial-role">Développeuse freelance · Lyon</div>
@@ -520,12 +585,12 @@ export default function Landing() {
                 </div>
               </div>
               <div className="lp-testimonial-card reveal reveal-d2">
-                <div className="lp-testimonial-stars" aria-label="5 étoiles sur 5">★★★★★</div>
+                <StarRating />
                 <p className="lp-testimonial-quote">
                   « 120 clients migrés en une semaine. Le portail comptable et l'export FEC groupé me font gagner 2 jours par mois. À 2,26 €/client, c'est imbattable. »
                 </p>
                 <div className="lp-testimonial-author">
-                  <div className="lp-testimonial-avatar" style={{ background: '#0891b2' }}>MD</div>
+                  <div className="lp-testimonial-avatar" style={{ background: 'linear-gradient(135deg, #0891b2, #22d3ee)' }}>MD</div>
                   <div>
                     <div className="lp-testimonial-name">Marc D.</div>
                     <div className="lp-testimonial-role">Expert-comptable · Paris</div>
@@ -533,12 +598,12 @@ export default function Landing() {
                 </div>
               </div>
               <div className="lp-testimonial-card reveal reveal-d3">
-                <div className="lp-testimonial-stars" aria-label="5 étoiles sur 5">★★★★★</div>
+                <StarRating />
                 <p className="lp-testimonial-quote">
                   « Je suis plombier, pas informaticien. J'ai compris le produit en 5 minutes. La TVA se calcule toute seule, les factures partent toutes seules. Parfait. »
                 </p>
                 <div className="lp-testimonial-author">
-                  <div className="lp-testimonial-avatar" style={{ background: '#d97706' }}>KB</div>
+                  <div className="lp-testimonial-avatar" style={{ background: 'linear-gradient(135deg, #d97706, #fbbf24)' }}>KB</div>
                   <div>
                     <div className="lp-testimonial-name">Karim B.</div>
                     <div className="lp-testimonial-role">Artisan plombier · Toulouse</div>
@@ -555,17 +620,17 @@ export default function Landing() {
             <h2 className="reveal">Ce qui nous rend différents</h2>
             <div className="lp-diff-grid">
               <div className="lp-diff-card reveal reveal-d1">
-                <div className="lp-diff-icon" aria-hidden="true">💻</div>
+                <div className="lp-diff-icon"><IconCode /></div>
                 <h3>Open-source. Auditable. Transparent.</h3>
                 <p>Notre code est public sur GitHub sous licence MIT. Pas de boîte noire. Pas de mauvaise surprise. Vous savez exactement comment vos données sont traitées.</p>
               </div>
               <div className="lp-diff-card reveal reveal-d2">
-                <div className="lp-diff-icon" aria-hidden="true">🛡️</div>
+                <div className="lp-diff-icon"><IconShield /></div>
                 <h3>Conçu pour la réforme. Pas adapté après coup.</h3>
                 <p>Ma Facture Pro n'est pas un outil de comptabilité qui a « ajouté » la facturation électronique. C'est un outil de facturation électronique qui inclut la comptabilité. La nuance change tout.</p>
               </div>
               <div className="lp-diff-card reveal reveal-d3">
-                <div className="lp-diff-icon" aria-hidden="true">🇫🇷</div>
+                <div className="lp-diff-icon"><IconFlag /></div>
                 <h3>Vos factures restent en France. Point.</h3>
                 <p>Archivage S3 chez Scaleway, région Paris. Hash SHA-256. Versioning activé. Conforme RGPD et article 289 VII du CGI. Pas de serveur aux États-Unis. Pas de zone grise.</p>
               </div>
@@ -613,7 +678,7 @@ export default function Landing() {
           <div className="lp-footer-grid">
             <div className="lp-footer-brand">
               <div className="lp-footer-logo">Ma Facture Pro</div>
-              <p>La facturation électronique conforme, simple et gratuite.<br />🇫🇷 Conçu et hébergé en France.<br />Open-source (MIT) sur GitHub.</p>
+              <p>La facturation électronique conforme, simple et gratuite.<br /><IconFlag /> Conçu et hébergé en France.<br />Open-source (MIT) sur GitHub.</p>
             </div>
             <div className="lp-footer-col">
               <h4>Produit</h4>
