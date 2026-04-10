@@ -45,6 +45,7 @@ import Network from './pages/Network';
 import OnboardingWizard from './pages/OnboardingWizard';
 import CameraScanner from './pages/CameraScanner';
 import ApiDocs from './pages/ApiDocs';
+import Guide from './pages/Guide';
 
 // Route protegee : redirige vers /login si non authentifie
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -328,6 +329,7 @@ function AnimatedAppCore() {
           <Route path="/scanner" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><CameraScanner /></div></PageTransition></ProtectedRoute>} />
           <Route path="/api-docs" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ApiDocs /></div></PageTransition></ProtectedRoute>} />
           <Route path="/experts" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Experts /></div></PageTransition>} />
+          <Route path="/guide" element={<PageTransition><Guide /></PageTransition>} />
         </Routes>
       </AnimatePresence>
     </>

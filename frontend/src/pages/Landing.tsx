@@ -738,7 +738,7 @@ export default function Landing() {
             <div className="lp-footer-col">
               <h4>Ressources</h4>
               <ul>
-                <li><a href="#faq">Guide de la réforme 2026</a></li>
+                <li><Link to="/guide">Guide de la réforme 2026</Link></li>
                 <li><a href="#faq">Qu'est-ce que le Factur-X ?</a></li>
                 <li><a href="#faq">Centre d'aide</a></li>
                 <li><a href="#faq">Statut des services</a></li>
