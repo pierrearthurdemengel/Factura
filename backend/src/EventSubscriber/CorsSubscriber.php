@@ -90,8 +90,8 @@ class CorsSubscriber implements EventSubscriberInterface
             return false;
         }
 
-        // En developpement, accepter localhost sur differents ports
-        // En production, l'origine sera configuree via variable d'environnement
+        // L'origine principale est configuree via CORS_ALLOW_ORIGIN
+        // Les origines localhost sont ajoutees pour le developpement local
         $allowed = [
             $this->allowedOrigin,
             'http://localhost:3000',
