@@ -29,7 +29,7 @@ class BankAccount
     #[ORM\JoinColumn(nullable: false)]
     private BankConnection $bankConnection;
 
-    // Identifiant du compte chez GoCardless
+    // Identifiant du compte chez le provider Open Banking
     #[ORM\Column(length: 255)]
     private string $externalAccountId;
 
