@@ -279,7 +279,7 @@ export default function Settings() {
       </div>
 
       <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
-        <button type="button" onClick={logout} className="app-btn-outline-danger">
+        <button type="button" onClick={() => { void logout(); }} className="app-btn-outline-danger">
           Se deconnecter
         </button>
       </div>

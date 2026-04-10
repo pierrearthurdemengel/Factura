@@ -9,9 +9,11 @@ const api = axios.create({
     'Content-Type': 'application/ld+json',
     Accept: 'application/ld+json',
   },
+  // Permet l'envoi des cookies httpOnly (refresh token)
+  withCredentials: true,
 });
 
-// Intercepteur pour ajouter le token JWT
+// Intercepteur pour ajouter le JWT d'acces
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem('jwt_token');
   if (token) {
@@ -20,14 +22,66 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Intercepteur pour gerer le refresh token
+// Verrou pour eviter les appels concurrents de refresh
+let isRefreshing = false;
+let refreshSubscribers: Array<(token: string) => void> = [];
+
+function onTokenRefreshed(newToken: string) {
+  refreshSubscribers.forEach((cb) => cb(newToken));
+  refreshSubscribers = [];
+}
+
+function addRefreshSubscriber(callback: (token: string) => void) {
+  refreshSubscribers.push(callback);
+}
+
+// Intercepteur pour gerer le renouvellement automatique du JWT
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      sessionStorage.removeItem('jwt_token');
-      window.location.href = '/login';
+    const originalRequest = error.config;
+
+    // Si 401 et pas deja en train de refresh, tenter un renouvellement
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/auth/login') &&
+      !originalRequest.url?.includes('/auth/refresh')
+    ) {
+      if (isRefreshing) {
+        // Si un refresh est deja en cours, mettre la requete en attente
+        return new Promise((resolve) => {
+          addRefreshSubscriber((newToken: string) => {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            resolve(api(originalRequest));
+          });
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Appeler l'endpoint de refresh (le cookie httpOnly est envoye automatiquement)
+        const response = await api.post('/auth/refresh');
+        const { token } = response.data;
+
+        sessionStorage.setItem('jwt_token', token);
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+
+        onTokenRefreshed(token);
+
+        return api(originalRequest);
+      } catch {
+        // Le refresh a echoue — deconnecter l'utilisateur
+        sessionStorage.removeItem('jwt_token');
+        window.location.href = '/login';
+        return Promise.reject(error);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     return Promise.reject(error);
   },
 );
@@ -97,12 +151,39 @@ export interface Company {
   defaultPdp: string | null;
 }
 
-// Fonctions API
+export interface UserProfile {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  roles: string[];
+}
+
+// Fonctions API — Authentification
 export const login = async (email: string, password: string) => {
-  const response = await api.post('/auth', { email, password });
+  const response = await api.post('/auth/login', { email, password });
   const { token } = response.data;
   sessionStorage.setItem('jwt_token', token);
   return token;
+};
+
+export const refreshToken = async (): Promise<string> => {
+  const response = await api.post('/auth/refresh');
+  const { token } = response.data;
+  sessionStorage.setItem('jwt_token', token);
+  return token;
+};
+
+export const logout = async () => {
+  try {
+    await api.post('/auth/logout');
+  } finally {
+    sessionStorage.removeItem('jwt_token');
+  }
+};
+
+export const getMe = async () => {
+  return api.get<UserProfile>('/me');
 };
 
 export const register = async (data: Record<string, string>) => {
@@ -150,7 +231,6 @@ export const createClient = async (data: Partial<Client>) => {
 };
 
 export const updateClient = async (id: string, data: Partial<Client>) => {
-  // Using patch or put depending on how the PHP API backend handles it. But put was used for updateCompany.
   return api.put<Client>(`/clients/${id}`, data);
 };
 

@@ -12,19 +12,31 @@ security:
         dev:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+
+        # Authentification JSON (login)
         login:
-            pattern: ^/api/auth$
+            pattern: ^/api/auth/login$
             stateless: true
             json_login:
-                check_path: /api/auth
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+                check_path: /api/auth/login
+                success_handler: App\Security\LoginSuccessHandler
+                failure_handler: App\Security\LoginFailureHandler
+
+        # Endpoints publics d'authentification (refresh, logout)
+        auth_public:
+            pattern: ^/api/auth/(refresh|logout)$
+            stateless: true
+            security: false
+
+        # API protegee par JWT
         api:
             pattern: ^/(api|mcp)
             stateless: true
             custom_authenticators:
                 - App\Security\OAuthTokenAuthenticator
             jwt: ~
+
+        # Firewall pour l'interface OAuth (formulaire de login)
         main:
             lazy: true
             form_login:
@@ -37,9 +49,10 @@ security:
                 path: /logout
 
     access_control:
-        - { path: ^/api/auth$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/refresh$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/logout$, roles: PUBLIC_ACCESS }
         - { path: ^/api/register$, roles: PUBLIC_ACCESS }
-        - { path: ^/api/token/refresh$, roles: PUBLIC_ACCESS }
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/\.well-known/, roles: PUBLIC_ACCESS }
         - { path: ^/oauth/, roles: PUBLIC_ACCESS }

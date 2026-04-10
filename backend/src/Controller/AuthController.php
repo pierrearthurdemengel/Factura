@@ -5,8 +5,12 @@ namespace App\Controller;
 use App\Entity\Company;
 use App\Entity\Subscription;
 use App\Entity\User;
+use App\Service\Auth\AuthTokenService;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +20,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AuthController extends AbstractController
 {
+    public function __construct(
+        private readonly AuthTokenService $authTokenService,
+        private readonly JWTTokenManagerInterface $jwtManager,
+        private readonly LoggerInterface $logger,
+    ) {
+    }
+
     /**
      * Inscription d'un nouvel utilisateur avec creation de son entreprise.
      */
@@ -76,6 +87,108 @@ class AuthController extends AbstractController
             ['message' => 'Compte cree avec succes.', 'userId' => $user->getId()?->toRfc4122()],
             Response::HTTP_CREATED,
         );
+    }
+
+    /**
+     * Renouvellement du JWT via le refresh token (cookie HTTP-only).
+     *
+     * Le refresh token est lu depuis le cookie, valide cote serveur,
+     * puis une rotation est appliquee : l'ancien token est revoque
+     * et un nouveau couple access/refresh est emis.
+     */
+    #[Route('/api/auth/refresh', name: 'api_auth_refresh', methods: ['POST'])]
+    public function refresh(Request $request): JsonResponse
+    {
+        $rawRefreshToken = $request->cookies->get('refresh_token');
+
+        if (null === $rawRefreshToken || '' === $rawRefreshToken) {
+            return new JsonResponse(
+                ['error' => 'Refresh token manquant.'],
+                Response::HTTP_UNAUTHORIZED,
+            );
+        }
+
+        $result = $this->authTokenService->rotateRefreshToken($rawRefreshToken, $request);
+
+        if (null === $result) {
+            $this->logger->warning('Tentative de refresh avec un token invalide', [
+                'ip' => $request->getClientIp(),
+            ]);
+
+            // Supprimer le cookie invalide
+            $response = new JsonResponse(
+                ['error' => 'Refresh token invalide ou expire.'],
+                Response::HTTP_UNAUTHORIZED,
+            );
+            $response->headers->clearCookie('refresh_token', '/api/auth');
+
+            return $response;
+        }
+
+        /** @var User $user */
+        $user = $result['user'];
+        $newRawRefreshToken = $result['newToken'];
+
+        // Nouveau JWT d'acces
+        $jwt = $this->jwtManager->create($user);
+
+        $response = new JsonResponse(['token' => $jwt]);
+
+        // Nouveau refresh token en cookie
+        $response->headers->setCookie(
+            Cookie::create('refresh_token')
+                ->withValue($newRawRefreshToken)
+                ->withExpires(new \DateTimeImmutable('+30 days'))
+                ->withPath('/api/auth')
+                ->withSecure(true)
+                ->withHttpOnly(true)
+                ->withSameSite('strict'),
+        );
+
+        return $response;
+    }
+
+    /**
+     * Deconnexion : revoque le refresh token et supprime le cookie.
+     */
+    #[Route('/api/auth/logout', name: 'api_auth_logout', methods: ['POST'])]
+    public function logout(Request $request): JsonResponse
+    {
+        $rawRefreshToken = $request->cookies->get('refresh_token');
+
+        if (null !== $rawRefreshToken && '' !== $rawRefreshToken) {
+            $this->authTokenService->revokeToken($rawRefreshToken);
+        }
+
+        $this->logger->info('Deconnexion', [
+            'ip' => $request->getClientIp(),
+        ]);
+
+        $response = new JsonResponse(['message' => 'Deconnecte.']);
+        $response->headers->clearCookie('refresh_token', '/api/auth');
+
+        return $response;
+    }
+
+    /**
+     * Retourne les informations de l'utilisateur connecte.
+     *
+     * Les donnees personnelles (email, nom, roles) ne sont plus dans le JWT.
+     * Ce endpoint est le seul moyen de les recuperer cote client.
+     */
+    #[Route('/api/me', name: 'api_me', methods: ['GET'])]
+    public function me(): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        return new JsonResponse([
+            'id' => $user->getId()?->toRfc4122(),
+            'email' => $user->getEmail(),
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
+            'roles' => $user->getRoles(),
+        ]);
     }
 
     #[Route('/health', name: 'health_check', methods: ['GET'])]
