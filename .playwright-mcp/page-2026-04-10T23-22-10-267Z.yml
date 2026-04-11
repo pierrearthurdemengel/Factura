@@ -1,0 +1,614 @@
+- generic [ref=e4]:
+  - link "Aller au contenu principal" [ref=e5] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - img [ref=e9]
+        - text: "Réforme facturation électronique : obligation légale dès le 1er septembre 2026. Êtes-vous prêt ?"
+      - link "Vérifier ma conformité gratuitement →" [ref=e11] [cursor=pointer]:
+        - /url: /register
+    - button "Fermer le bandeau" [ref=e12] [cursor=pointer]: ×
+  - navigation "Navigation principale" [ref=e13]:
+    - generic [ref=e14]: Ma Facture Pro
+    - link "Créer mon compte gratuit" [ref=e16] [cursor=pointer]:
+      - /url: /register
+    - button "Menu" [ref=e17] [cursor=pointer]
+  - main [ref=e21]:
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - img [ref=e26]
+          - text: Candidat au label DGFiP « Solution compatible »
+        - heading "Facturation électronique conforme. Gratuit dès maintenant" [level=1] [ref=e29]:
+          - text: Facturation électronique conforme.
+          - text: Gratuit dès maintenant
+        - paragraph [ref=e30]: Générez vos factures Factur-X, UBL et CII en quelques clics. Transmettez-les automatiquement via Chorus Pro. Archivage légal 10 ans inclus — même dans le plan gratuit.
+        - generic [ref=e31]:
+          - link "Créer ma première facture conforme →" [ref=e32] [cursor=pointer]:
+            - /url: /register
+          - link "Voir le produit en action — démo 90 secondes" [ref=e33] [cursor=pointer]:
+            - /url: "#demo"
+            - img [ref=e34]
+            - text: Voir le produit en action — démo 90 secondes
+        - paragraph [ref=e36]: Gratuit jusqu'à 10 factures/mois · Sans carte bancaire · Prêt en 2 minutes
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - img [ref=e39]
+            - text: 4.9 Trustpilot
+          - generic [ref=e41]:
+            - img [ref=e42]
+            - text: Open-source sur GitHub
+          - generic [ref=e45]:
+            - img [ref=e46]
+            - text: Hébergé en France
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]: FA-2026-0001
+          - generic [ref=e56]:
+            - img [ref=e57]
+            - text: Factur-X
+        - generic [ref=e63]:
+          - img [ref=e64]
+          - text: Transmise à Chorus Pro
+    - generic [ref=e67]:
+      - paragraph [ref=e68]: Conforme aux exigences de la réforme
+      - generic [ref=e69]:
+        - generic [ref=e70]: Chorus Pro
+        - generic [ref=e71]: Factur-X
+        - generic [ref=e72]: EN 16931
+        - generic [ref=e73]: UBL 2.1
+        - generic [ref=e74]: Stripe
+        - generic [ref=e75]: Open Source MIT
+    - generic [ref=e77]:
+      - heading "Dans 142 jours, vos factures PDF ne suffiront plus." [level=2] [ref=e78]
+      - paragraph [ref=e79]: La réforme de la facturation électronique entre en vigueur le 1er septembre 2026. Voici ce que ça change pour vous.
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - heading "Ce qui ne sera plus accepté" [level=3] [ref=e82]
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - img [ref=e86]
+              - text: Les factures PDF classiques envoyées par email
+            - listitem [ref=e90]:
+              - img [ref=e92]
+              - text: Les logiciels qui ne génèrent pas de Factur-X ou d'UBL
+            - listitem [ref=e96]:
+              - img [ref=e98]
+              - text: L'absence de connexion à une plateforme agréée (PDP)
+            - listitem [ref=e102]:
+              - img [ref=e104]
+              - text: Les factures sans piste d'audit fiable
+            - listitem [ref=e108]:
+              - img [ref=e110]
+              - text: L'archivage « dans un dossier sur mon ordinateur »
+        - generic [ref=e114]:
+          - heading "Ce que la loi impose désormais" [level=3] [ref=e115]
+          - list [ref=e116]:
+            - listitem [ref=e117]:
+              - img [ref=e119]
+              - text: "Un format structuré : Factur-X, UBL 2.1 ou CII D16B"
+            - listitem [ref=e122]:
+              - img [ref=e124]
+              - text: La transmission via une Plateforme de Dématérialisation Partenaire
+            - listitem [ref=e127]:
+              - img [ref=e129]
+              - text: Une piste d'audit fiable et immutable
+            - listitem [ref=e132]:
+              - img [ref=e134]
+              - text: Un archivage légal de 10 ans minimum
+            - listitem [ref=e137]:
+              - img [ref=e139]
+              - text: Les 25+ mentions obligatoires du Décret 2022-1299
+      - generic [ref=e142]:
+        - strong [ref=e143]:
+          - img [ref=e144]
+          - text: Qui est concerné ?
+        - text: "Toutes les entreprises françaises : freelances, auto-entrepreneurs, TPE, PME, professions libérales, artisans, SCI, LMNP. Environ 8 millions d'acteurs économiques."
+      - link "Vérifier si mon outil actuel est conforme →" [ref=e147] [cursor=pointer]:
+        - /url: /register
+    - generic [ref=e149]:
+      - heading "Conforme en 3 étapes. Prêt en 2 minutes." [level=2] [ref=e150]
+      - generic [ref=e151]:
+        - generic [ref=e152]:
+          - generic [ref=e153]: "01"
+          - heading "Créez votre compte" [level=3] [ref=e154]
+          - paragraph [ref=e155]: "Renseignez votre SIREN, votre statut juridique et vos coordonnées bancaires. Ma Facture Pro pré-remplit automatiquement vos mentions légales obligatoires. Temps estimé : 2 minutes."
+        - generic [ref=e156]:
+          - generic [ref=e157]: "02"
+          - heading "Créez votre facture" [level=3] [ref=e158]
+          - paragraph [ref=e159]: Ajoutez votre client, vos lignes de prestation. Ma Facture Pro calcule la TVA, génère le Factur-X, l'UBL et le CII automatiquement. Vous n'avez rien à configurer.
+        - generic [ref=e160]:
+          - generic [ref=e161]: "03"
+          - heading "On s'occupe du reste" [level=3] [ref=e162]
+          - paragraph [ref=e163]: Un clic sur « Envoyer ». Votre facture est transmise à Chorus Pro, archivée 10 ans en France, et tracée dans votre piste d'audit fiable. Votre client la reçoit instantanément.
+      - link "Créer mon compte gratuit →" [ref=e165] [cursor=pointer]:
+        - /url: /register
+    - generic [ref=e167]:
+      - heading "Tout ce qu'il vous faut. Rien de superflu." [level=2] [ref=e168]
+      - tablist [ref=e169]:
+        - tab "Facturation conforme" [selected] [ref=e170] [cursor=pointer]
+        - tab "Transmission auto" [ref=e171] [cursor=pointer]
+        - tab "Archivage & sécurité" [ref=e172] [cursor=pointer]
+        - tab "Comptabilité & pilotage" [ref=e173] [cursor=pointer]
+      - tabpanel [ref=e174]:
+        - generic [ref=e175]:
+          - heading "Vos factures respectent la loi à la virgule près" [level=3] [ref=e176]
+          - list [ref=e177]:
+            - listitem [ref=e178]: Factur-X PDF/A-3 avec XML CII D16B embarqué
+            - listitem [ref=e179]: UBL 2.1 conforme Peppol BIS Billing 3.0
+            - listitem [ref=e180]: CII D16B standalone
+            - listitem [ref=e181]: Profil EN 16931 garanti
+            - listitem [ref=e182]: Numérotation séquentielle sans trou (FA-2026-0001)
+            - listitem [ref=e183]: "Mentions légales auto-détectées selon votre statut : micro-entrepreneur, EI, SAS, SARL, SCI..."
+            - listitem [ref=e184]: Multi-taux TVA (0 %, 2,1 %, 5,5 %, 10 %, 20 %)
+          - link "Créer ma première facture →" [ref=e185] [cursor=pointer]:
+            - /url: /register
+        - generic [ref=e186]: Formulaire de création de facture
+    - generic [ref=e188]:
+      - heading "Votre première facture Factur-X en 90 secondes" [level=2] [ref=e189]
+      - paragraph [ref=e190]: Pas de formation. Pas de paramétrage. Vous renseignez, on génère, Chorus Pro reçoit.
+      - generic [ref=e192]:
+        - button "Lancer la démo" [ref=e193] [cursor=pointer]:
+          - img [ref=e194]
+        - generic [ref=e196]: Démo interactive — bientôt disponible
+      - link "Faire la même chose maintenant — gratuit →" [ref=e197] [cursor=pointer]:
+        - /url: /register
+    - generic [ref=e199]:
+      - heading "Nous proposons une solution complète" [level=2] [ref=e200]
+      - table [ref=e202]:
+        - rowgroup [ref=e203]:
+          - row "Critère Ma Facture Pro Outils classiques" [ref=e204]:
+            - columnheader "Critère" [ref=e205]
+            - columnheader "Ma Facture Pro" [ref=e206]
+            - columnheader "Outils classiques" [ref=e207]
+        - rowgroup [ref=e208]:
+          - row "Prix d'entrée 0 €/mois 9–50 €/mois" [ref=e209]:
+            - cell "Prix d'entrée" [ref=e210]
+            - cell "0 €/mois" [ref=e211]
+            - cell "9–50 €/mois" [ref=e212]
+          - row "Factur-X + UBL + CII Les 3 formats Souvent 1 seul" [ref=e213]:
+            - cell "Factur-X + UBL + CII" [ref=e214]
+            - cell "Les 3 formats" [ref=e215]:
+              - generic [ref=e216]:
+                - img [ref=e217]
+                - text: Les 3 formats
+            - cell "Souvent 1 seul" [ref=e220]:
+              - generic [ref=e221]:
+                - img [ref=e222]
+                - text: Souvent 1 seul
+          - row "Connexion Chorus Pro Automatique Manuelle ou absente" [ref=e226]:
+            - cell "Connexion Chorus Pro" [ref=e227]
+            - cell "Automatique" [ref=e228]:
+              - generic [ref=e229]:
+                - img [ref=e230]
+                - text: Automatique
+            - cell "Manuelle ou absente" [ref=e233]:
+              - generic [ref=e234]:
+                - img [ref=e235]
+                - text: Manuelle ou absente
+          - row "Piste d'audit fiable Immutable Souvent absente" [ref=e239]:
+            - cell "Piste d'audit fiable" [ref=e240]
+            - cell "Immutable" [ref=e241]:
+              - generic [ref=e242]:
+                - img [ref=e243]
+                - text: Immutable
+            - cell "Souvent absente" [ref=e246]:
+              - generic [ref=e247]:
+                - img [ref=e248]
+                - text: Souvent absente
+          - row "Archivage légal 10 ans S3 France Variable" [ref=e252]:
+            - cell "Archivage légal 10 ans" [ref=e253]
+            - cell "S3 France" [ref=e254]:
+              - generic [ref=e255]:
+                - img [ref=e256]
+                - text: S3 France
+            - cell "Variable" [ref=e259]:
+              - generic [ref=e260]:
+                - img [ref=e261]
+                - text: Variable
+          - row "Mentions DGFiP auto Pré-remplies Saisie manuelle" [ref=e263]:
+            - cell "Mentions DGFiP auto" [ref=e264]
+            - cell "Pré-remplies" [ref=e265]:
+              - generic [ref=e266]:
+                - img [ref=e267]
+                - text: Pré-remplies
+            - cell "Saisie manuelle" [ref=e270]:
+              - generic [ref=e271]:
+                - img [ref=e272]
+                - text: Saisie manuelle
+          - row "Label DGFiP Candidature active Rarement" [ref=e276]:
+            - cell "Label DGFiP" [ref=e277]
+            - cell "Candidature active" [ref=e278]:
+              - generic [ref=e279]:
+                - img [ref=e280]
+                - text: Candidature active
+            - cell "Rarement" [ref=e283]:
+              - generic [ref=e284]:
+                - img [ref=e285]
+                - text: Rarement
+          - row "Code source Open-source (MIT) Propriétaire" [ref=e289]:
+            - cell "Code source" [ref=e290]
+            - cell "Open-source (MIT)" [ref=e291]:
+              - generic [ref=e292]:
+                - img [ref=e293]
+                - text: Open-source (MIT)
+            - cell "Propriétaire" [ref=e296]:
+              - generic [ref=e297]:
+                - img [ref=e298]
+                - text: Propriétaire
+          - row "Hébergement France Scaleway Paris Pas toujours" [ref=e302]:
+            - cell "Hébergement France" [ref=e303]
+            - cell "Scaleway Paris" [ref=e304]:
+              - generic [ref=e305]:
+                - img [ref=e306]
+                - text: Scaleway Paris
+            - cell "Pas toujours" [ref=e309]:
+              - generic [ref=e310]:
+                - img [ref=e311]
+                - text: Pas toujours
+      - paragraph [ref=e313]: "Nous ne nommons personne. Vérifiez par vous-même : demandez à votre outil actuel s'il génère du Factur-X EN 16931 et s'il transmet automatiquement à Chorus Pro."
+    - generic [ref=e315]:
+      - heading "Connecté en toute situation" [level=2] [ref=e316]
+      - generic [ref=e317]:
+        - link "Freelance / Auto-entrepreneur Mention art. 293B pré-remplie. Plan gratuit suffisant. Découvrir le plan Gratuit →" [ref=e318] [cursor=pointer]:
+          - /url: /register
+          - img [ref=e320]
+          - heading "Freelance / Auto-entrepreneur" [level=3] [ref=e322]
+          - paragraph [ref=e323]: Mention art. 293B pré-remplie. Plan gratuit suffisant.
+          - generic [ref=e324]: Découvrir le plan Gratuit →
+        - link "Artisan / Commerçant Multi-taux TVA. Relances automatiques. Découvrir le plan Pro →" [ref=e325] [cursor=pointer]:
+          - /url: /register
+          - img [ref=e327]
+          - heading "Artisan / Commerçant" [level=3] [ref=e329]
+          - paragraph [ref=e330]: Multi-taux TVA. Relances automatiques.
+          - generic [ref=e331]: Découvrir le plan Pro →
+        - link "TPE / PME (1-50 salariés) Multi-utilisateurs. Comptabilité automatisée. Découvrir le plan Équipe →" [ref=e332] [cursor=pointer]:
+          - /url: /register
+          - img [ref=e334]
+          - heading "TPE / PME (1-50 salariés)" [level=3] [ref=e337]
+          - paragraph [ref=e338]: Multi-utilisateurs. Comptabilité automatisée.
+          - generic [ref=e339]: Découvrir le plan Équipe →
+        - link "Cabinet comptable Portail multi-clients. Export FEC groupé. White-label. Découvrir le plan Cabinet →" [ref=e340] [cursor=pointer]:
+          - /url: /register
+          - img [ref=e342]
+          - heading "Cabinet comptable" [level=3] [ref=e344]
+          - paragraph [ref=e345]: Portail multi-clients. Export FEC groupé. White-label.
+          - generic [ref=e346]: Découvrir le plan Cabinet →
+        - link "SCI / LMNP Factures fournisseurs conformes. Archivage inclus. Découvrir le plan Gratuit →" [ref=e347] [cursor=pointer]:
+          - /url: /register
+          - img [ref=e349]
+          - heading "SCI / LMNP" [level=3] [ref=e352]
+          - paragraph [ref=e353]: Factures fournisseurs conformes. Archivage inclus.
+          - generic [ref=e354]: Découvrir le plan Gratuit →
+    - generic [ref=e356]:
+      - generic [ref=e357]:
+        - heading "Des prix clairs. Pas de « dès ». Pas de surprise." [level=2] [ref=e358]
+        - paragraph [ref=e359]: La conformité est incluse dans tous les plans — y compris le gratuit. Changez d'avis ? Changez de plan en 1 clic, à tout moment.
+      - generic [ref=e360]:
+        - generic [ref=e361]:
+          - generic [ref=e362]: Gratuit
+          - generic [ref=e363]:
+            - generic [ref=e364]: "0"
+            - generic [ref=e365]: €
+          - generic [ref=e366]: pour toujours
+          - list [ref=e367]:
+            - listitem [ref=e368]:
+              - img [ref=e370]
+              - text: 10 factures / mois
+            - listitem [ref=e372]:
+              - img [ref=e374]
+              - text: Factur-X + UBL + CII
+            - listitem [ref=e376]:
+              - img [ref=e378]
+              - text: Chorus Pro intégré
+            - listitem [ref=e380]:
+              - img [ref=e382]
+              - text: Archivage légal 10 ans
+            - listitem [ref=e384]:
+              - img [ref=e386]
+              - text: Piste d'audit fiable
+            - listitem [ref=e388]:
+              - img [ref=e390]
+              - text: 1 utilisateur · 1 entreprise
+            - listitem [ref=e392]:
+              - img [ref=e394]
+              - text: Mentions DGFiP pré-remplies
+          - link "Commencer gratuitement" [ref=e396] [cursor=pointer]:
+            - /url: /register
+          - generic [ref=e397]: Sans carte bancaire
+        - generic [ref=e398]:
+          - generic [ref=e399]: Le plus populaire
+          - generic [ref=e400]: Pro
+          - generic [ref=e401]:
+            - generic [ref=e402]: "14"
+            - generic [ref=e403]: €/mois
+          - generic [ref=e404]: HT, sans engagement
+          - generic [ref=e405]: "Tout le plan Gratuit, plus :"
+          - list [ref=e406]:
+            - listitem [ref=e407]:
+              - img [ref=e409]
+              - text: Factures illimitées
+            - listitem [ref=e411]:
+              - img [ref=e413]
+              - text: 3 utilisateurs · 3 entreprises
+            - listitem [ref=e415]:
+              - img [ref=e417]
+              - text: PDF personnalisé (votre logo, vos couleurs)
+            - listitem [ref=e419]:
+              - img [ref=e421]
+              - text: Relances automatiques (J-3, J+1, J+7, J+30)
+            - listitem [ref=e423]:
+              - img [ref=e425]
+              - text: Synchronisation bancaire
+            - listitem [ref=e427]:
+              - img [ref=e429]
+              - text: Réconciliation paiements ↔ factures
+            - listitem [ref=e431]:
+              - img [ref=e433]
+              - text: Devis convertibles en facture
+            - listitem [ref=e435]:
+              - img [ref=e437]
+              - text: Support prioritaire
+          - link "Essayer Pro — 14 jours gratuits" [ref=e439] [cursor=pointer]:
+            - /url: /register
+          - generic [ref=e440]: Sans engagement
+        - generic [ref=e441]:
+          - generic [ref=e442]: Équipe
+          - generic [ref=e443]:
+            - generic [ref=e444]: "34"
+            - generic [ref=e445]: €/mois
+          - generic [ref=e446]: HT, sans engagement
+          - generic [ref=e447]: "Tout le plan Pro, plus :"
+          - list [ref=e448]:
+            - listitem [ref=e449]:
+              - img [ref=e451]
+              - text: 10 utilisateurs · 5 entreprises
+            - listitem [ref=e453]:
+              - img [ref=e455]
+              - text: Comptabilité automatisée (PCG)
+            - listitem [ref=e457]:
+              - img [ref=e459]
+              - text: Déclarations TVA (CA3/CA12) pré-remplies
+            - listitem [ref=e461]:
+              - img [ref=e463]
+              - text: Déclarations URSSAF pré-remplies
+            - listitem [ref=e465]:
+              - img [ref=e467]
+              - text: Export FEC conforme
+            - listitem [ref=e469]:
+              - img [ref=e471]
+              - text: Assistant IA fiscal
+            - listitem [ref=e473]:
+              - img [ref=e475]
+              - text: API publique (10 000 req/h)
+            - listitem [ref=e477]:
+              - img [ref=e479]
+              - text: Webhooks + intégrations
+          - link "Démarrer avec Équipe" [ref=e481] [cursor=pointer]:
+            - /url: /register
+          - generic [ref=e482]: Sans engagement
+      - generic [ref=e483]:
+        - generic [ref=e484]:
+          - generic [ref=e485]: Plan Cabinet
+          - heading "Vous êtes expert-comptable ?" [level=3] [ref=e486]
+          - paragraph [ref=e487]: Gérez tous vos clients depuis un seul portail. Export FEC groupé, white-label, utilisateurs illimités.
+          - list [ref=e488]:
+            - listitem [ref=e489]:
+              - img [ref=e490]
+              - text: Portail multi-clients
+            - listitem [ref=e492]:
+              - img [ref=e493]
+              - text: Export FEC groupé
+            - listitem [ref=e495]:
+              - img [ref=e496]
+              - text: White-label
+            - listitem [ref=e498]:
+              - img [ref=e499]
+              - text: Utilisateurs illimités
+          - link "Demander une démo Cabinet →" [ref=e501] [cursor=pointer]:
+            - /url: mailto:contact@mafacturepro.fr
+        - generic [ref=e502]:
+          - generic [ref=e503]:
+            - generic [ref=e504]: "79"
+            - generic [ref=e505]: €/mois
+          - paragraph [ref=e506]: + 2 €/client actif au-delà de 20
+          - generic [ref=e507]:
+            - generic [ref=e508]:
+              - generic [ref=e509]: 150 clients
+              - generic [ref=e510]: →
+              - strong [ref=e511]: 339 €/mois
+            - generic [ref=e512]: soit 2,26 €/client
+      - generic [ref=e513]:
+        - generic [ref=e514]:
+          - generic [ref=e515]: Plan Succès Partagé
+          - heading "Vous préférez payer au succès ?" [level=3] [ref=e516]
+          - paragraph [ref=e517]: Zéro frais fixe. Vous ne payez qu'un micro-pourcentage de votre CA facturé — plafonné pour rester prévisible.
+          - generic [ref=e518]:
+            - img [ref=e519]
+            - text: Plafonné à 49 €/mois
+          - link "Simuler mon prix →" [ref=e521] [cursor=pointer]:
+            - /url: mailto:contact@mafacturepro.fr
+        - generic [ref=e522]:
+          - generic [ref=e523]:
+            - generic [ref=e524]: "0"
+            - generic [ref=e525]: € fixe
+          - paragraph [ref=e526]: + 0,1 % du CA au-delà de 50 000 €/an
+          - generic [ref=e527]:
+            - generic [ref=e528]:
+              - generic [ref=e529]: CA 80 000 €/an
+              - generic [ref=e530]: →
+              - strong [ref=e531]: 30 €/an
+            - generic [ref=e532]: soit 2,50 €/mois
+    - generic [ref=e534]:
+      - heading "Ils ont anticipé la réforme" [level=2] [ref=e535]
+      - generic [ref=e536]:
+        - generic [ref=e537]:
+          - generic "5 étoiles sur 5" [ref=e538]:
+            - img [ref=e539]
+            - img [ref=e541]
+            - img [ref=e543]
+            - img [ref=e545]
+            - img [ref=e547]
+          - paragraph [ref=e549]: « Inscription en 2 minutes, première facture Factur-X envoyée dans la foulée. Chorus Pro reçoit tout automatiquement. Je ne m'en occupe plus. »
+          - generic [ref=e550]:
+            - generic [ref=e551]: SM
+            - generic [ref=e552]:
+              - generic [ref=e553]: Sophie M.
+              - generic [ref=e554]: Développeuse freelance · Lyon
+        - generic [ref=e555]:
+          - generic "5 étoiles sur 5" [ref=e556]:
+            - img [ref=e557]
+            - img [ref=e559]
+            - img [ref=e561]
+            - img [ref=e563]
+            - img [ref=e565]
+          - paragraph [ref=e567]: « 120 clients migrés en une semaine. Le portail comptable et l'export FEC groupé me font gagner 2 jours par mois. À 2,26 €/client, c'est imbattable. »
+          - generic [ref=e568]:
+            - generic [ref=e569]: MD
+            - generic [ref=e570]:
+              - generic [ref=e571]: Marc D.
+              - generic [ref=e572]: Expert-comptable · Paris
+        - generic [ref=e573]:
+          - generic "5 étoiles sur 5" [ref=e574]:
+            - img [ref=e575]
+            - img [ref=e577]
+            - img [ref=e579]
+            - img [ref=e581]
+            - img [ref=e583]
+          - paragraph [ref=e585]: « Je suis plombier, pas informaticien. J'ai compris le produit en 5 minutes. La TVA se calcule toute seule, les factures partent toutes seules. Parfait. »
+          - generic [ref=e586]:
+            - generic [ref=e587]: KB
+            - generic [ref=e588]:
+              - generic [ref=e589]: Karim B.
+              - generic [ref=e590]: Artisan plombier · Toulouse
+    - generic [ref=e592]:
+      - heading "Ce qui nous rend différents" [level=2] [ref=e593]
+      - generic [ref=e594]:
+        - generic [ref=e595]:
+          - img [ref=e597]
+          - heading "Open-source. Auditable. Transparent." [level=3] [ref=e600]
+          - paragraph [ref=e601]: Notre code est public sur GitHub sous licence MIT. Pas de boîte noire. Pas de mauvaise surprise. Vous savez exactement comment vos données sont traitées.
+        - generic [ref=e602]:
+          - img [ref=e604]
+          - heading "Conçu pour la réforme. Pas adapté après coup." [level=3] [ref=e606]
+          - paragraph [ref=e607]: Ma Facture Pro n'est pas un outil de comptabilité qui a « ajouté » la facturation électronique. C'est un outil de facturation électronique qui inclut la comptabilité. La nuance change tout.
+        - generic [ref=e608]:
+          - img [ref=e610]
+          - heading "Vos factures restent en France. Point." [level=3] [ref=e612]
+          - paragraph [ref=e613]: Archivage S3 chez Scaleway, région Paris. Hash SHA-256. Versioning activé. Conforme RGPD et article 289 VII du CGI. Pas de serveur aux États-Unis. Pas de zone grise.
+    - generic [ref=e615]:
+      - heading "Vos questions, nos réponses" [level=2] [ref=e616]
+      - generic [ref=e617]:
+        - generic [ref=e618]:
+          - button "Est-ce vraiment gratuit ?" [ref=e619] [cursor=pointer]:
+            - generic [ref=e620]: Est-ce vraiment gratuit ?
+            - img [ref=e621]
+          - region:
+            - paragraph [ref=e623]: "10 factures par mois, Chorus Pro, archivage 10 ans, les 3 formats réglementaires — sans carte bancaire, sans engagement, sans durée limitée. Le plan Gratuit n'est pas un essai : c'est un vrai plan permanent."
+        - generic [ref=e624]:
+          - button "Suis-je obligé de passer à la facturation électronique ?" [ref=e625] [cursor=pointer]:
+            - generic [ref=e626]: Suis-je obligé de passer à la facturation électronique ?
+            - img [ref=e627]
+          - region:
+            - paragraph [ref=e629]: Oui. Le décret impose la réception dès le 1er septembre 2026 et l'émission progressivement jusqu'en septembre 2027. Toutes les entreprises françaises sont concernées, quelle que soit leur taille ou leur statut.
+        - generic [ref=e630]:
+          - button "Qu'est-ce que le Factur-X ?" [ref=e631] [cursor=pointer]:
+            - generic [ref=e632]: Qu'est-ce que le Factur-X ?
+            - img [ref=e633]
+          - region:
+            - paragraph [ref=e635]: "Un format hybride : un PDF lisible par un humain avec un fichier XML lisible par une machine, embarqué dedans. C'est le format recommandé par la DGFiP pour les PME. Ma Facture Pro le génère automatiquement à chaque facture."
+        - generic [ref=e636]:
+          - button "Je suis auto-entrepreneur, c'est adapté ?" [ref=e637] [cursor=pointer]:
+            - generic [ref=e638]: Je suis auto-entrepreneur, c'est adapté ?
+            - img [ref=e639]
+          - region:
+            - paragraph [ref=e641]: C'est conçu pour vous. La mention « TVA non applicable, art. 293 B du CGI » est pré-remplie. Le plan Gratuit couvre largement 5 à 10 factures par mois.
+        - generic [ref=e642]:
+          - button "Comment fonctionne la connexion à Chorus Pro ?" [ref=e643] [cursor=pointer]:
+            - generic [ref=e644]: Comment fonctionne la connexion à Chorus Pro ?
+            - img [ref=e645]
+          - region:
+            - paragraph [ref=e647]: Ma Facture Pro est connecté via l'API PISTE (OAuth2). Quand vous émettez une facture, elle est transmise automatiquement. Le statut se met à jour en temps réel. Aucune manipulation de votre part.
+        - generic [ref=e648]:
+          - button "Mes données sont-elles en sécurité ?" [ref=e649] [cursor=pointer]:
+            - generic [ref=e650]: Mes données sont-elles en sécurité ?
+            - img [ref=e651]
+          - region:
+            - paragraph [ref=e653]: Archivage S3 en France (Scaleway Paris). Hash SHA-256. Versioning activé. Conservation 10 ans. Authentification JWT RS256. Code source ouvert et auditable sur GitHub.
+        - generic [ref=e654]:
+          - button "Puis-je migrer depuis un autre outil ?" [ref=e655] [cursor=pointer]:
+            - generic [ref=e656]: Puis-je migrer depuis un autre outil ?
+            - img [ref=e657]
+          - region:
+            - paragraph [ref=e659]: Oui. Ma Facture Pro lit les factures Factur-X entrantes. Comptez 15 à 20 minutes pour saisir vos clients et produits. Nous travaillons sur un import automatique.
+        - generic [ref=e660]:
+          - button "C'est quoi le label DGFiP « Solution compatible » ?" [ref=e661] [cursor=pointer]:
+            - generic [ref=e662]: C'est quoi le label DGFiP « Solution compatible » ?
+            - img [ref=e663]
+          - region:
+            - paragraph [ref=e665]: Un label de l'administration fiscale qui certifie qu'un logiciel respecte toutes les exigences de la réforme. Notre dossier de candidature est déposé.
+    - generic [ref=e667]:
+      - heading "La réforme n'attend pas. Votre première facture conforme, si." [level=2] [ref=e668]:
+        - text: La réforme n'attend pas.
+        - text: Votre première facture conforme, si.
+      - paragraph [ref=e669]: 2 minutes pour créer votre compte. 90 secondes pour votre premier Factur-X. 0 € pour commencer. 0 excuse pour attendre.
+      - link "Créer ma première facture conforme →" [ref=e670] [cursor=pointer]:
+        - /url: /register
+      - paragraph [ref=e671]: Gratuit · Sans carte bancaire · Open-source · Hébergé en France
+  - contentinfo [ref=e672]:
+    - generic [ref=e673]:
+      - generic [ref=e674]:
+        - generic [ref=e675]:
+          - generic [ref=e676]: Ma Facture Pro
+          - paragraph [ref=e677]:
+            - text: La facturation électronique conforme, simple et gratuite.
+            - img [ref=e678]
+            - text: Conçu et hébergé en France.
+            - text: Open-source (MIT) sur GitHub.
+        - generic [ref=e680]:
+          - heading "Produit" [level=4] [ref=e681]
+          - list [ref=e682]:
+            - listitem [ref=e683]:
+              - link "Fonctionnalités" [ref=e684] [cursor=pointer]:
+                - /url: "#fonctionnalites"
+            - listitem [ref=e685]:
+              - link "Tarifs" [ref=e686] [cursor=pointer]:
+                - /url: "#tarifs"
+            - listitem [ref=e687]:
+              - link "Sécurité & conformité" [ref=e688] [cursor=pointer]:
+                - /url: "#conformite"
+            - listitem [ref=e689]:
+              - link "Documentation API" [ref=e690] [cursor=pointer]:
+                - /url: "#faq"
+            - listitem [ref=e691]:
+              - link "Changelog" [ref=e692] [cursor=pointer]:
+                - /url: "#faq"
+        - generic [ref=e693]:
+          - heading "Ressources" [level=4] [ref=e694]
+          - list [ref=e695]:
+            - listitem [ref=e696]:
+              - link "Guide de la réforme 2026" [ref=e697] [cursor=pointer]:
+                - /url: /guide
+            - listitem [ref=e698]:
+              - link "Qu'est-ce que le Factur-X ?" [ref=e699] [cursor=pointer]:
+                - /url: "#faq"
+            - listitem [ref=e700]:
+              - link "Centre d'aide" [ref=e701] [cursor=pointer]:
+                - /url: "#faq"
+            - listitem [ref=e702]:
+              - link "Statut des services" [ref=e703] [cursor=pointer]:
+                - /url: "#faq"
+        - generic [ref=e704]:
+          - heading "Légal" [level=4] [ref=e705]
+          - list [ref=e706]:
+            - listitem [ref=e707]:
+              - link "Mentions légales" [ref=e708] [cursor=pointer]:
+                - /url: "#faq"
+            - listitem [ref=e709]:
+              - link "Politique de confidentialité" [ref=e710] [cursor=pointer]:
+                - /url: "#faq"
+            - listitem [ref=e711]:
+              - link "Conditions générales" [ref=e712] [cursor=pointer]:
+                - /url: "#faq"
+      - generic [ref=e713]: © 2026 Ma Facture Pro — Pierre-Arthur Demengel · Code source sous licence MIT

@@ -596,68 +596,71 @@
   margin-top: 0.1rem;
 }
 
-/* Footer facture */
-.lp-mockup-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--lp-gray-100);
-  gap: 0.5rem;
-}
-.lp-mockup-footer-left {
+/* Infos paiement */
+.lp-mockup-payment-info {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
-}
-.lp-mockup-status {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: var(--lp-green);
-  font-weight: 600;
-  font-size: 0.6rem;
-}
-.lp-mockup-payment {
-  font-size: 0.55rem;
-  color: var(--lp-gray-400);
+  gap: 0.05rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--lp-gray-50);
+  border-radius: 5px;
 }
 
-/* Badge DGFiP */
-.lp-mockup-dgfip {
+/* Footer facture — badges */
+.lp-mockup-footer {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--lp-gray-100);
+}
+.lp-mockup-stamp {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.3rem 0.45rem;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 6px;
-  flex-shrink: 0;
+  flex: 1;
+  padding: 0.3rem 0.4rem;
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.06) 0%, rgba(16, 185, 129, 0.02) 100%);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  border-radius: 5px;
 }
-.lp-mockup-dgfip .lp-icon {
-  width: 14px;
-  height: 14px;
-  color: #60a5fa;
+.lp-mockup-stamp .lp-icon {
+  color: #059669;
   flex-shrink: 0;
+  width: 12px;
+  height: 12px;
 }
-.lp-mockup-dgfip-text {
+.lp-mockup-stamp-archive {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(96, 165, 250, 0.02) 100%);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+.lp-mockup-stamp-archive .lp-icon {
+  color: #3b82f6;
+}
+.lp-mockup-stamp-text {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  line-height: 1.2;
+  line-height: 1.15;
 }
-.lp-mockup-dgfip-label {
+.lp-mockup-stamp-label {
   font-size: 0.45rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  font-weight: 500;
+  color: var(--lp-gray-400);
 }
-.lp-mockup-dgfip-name {
+.lp-mockup-stamp-value {
   font-size: 0.5rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--lp-gray-700);
+}
+
+/* Ligne conformité */
+.lp-mockup-conformity {
+  text-align: center;
+  font-size: 0.42rem;
+  font-weight: 600;
+  color: var(--lp-gray-400);
+  letter-spacing: 0.3px;
+  padding-top: 0.3rem;
 }
 
 /* Hero social proof */

@@ -290,10 +290,12 @@ export default function Landing() {
                 {/* En-tête facture */}
                 <div className="lp-mockup-top">
                   <div className="lp-mockup-brand">
-                    <span className="lp-mockup-brand-logo">MFP</span>
+                    <span className="lp-mockup-brand-logo">SM</span>
                     <div className="lp-mockup-brand-info">
-                      <span className="lp-mockup-company">Studio Créatif</span>
-                      <span className="lp-mockup-small">12 rue des Lilas, 75011 Paris</span>
+                      <span className="lp-mockup-company">Sophie Martin</span>
+                      <span className="lp-mockup-small">Conseil &amp; Formation</span>
+                      <span className="lp-mockup-small">18 rue des Lilas, 75011 Paris</span>
+                      <span className="lp-mockup-small">SIRET 823 745 213 00017 · TVA FR 82 823745213</span>
                     </div>
                   </div>
                   <div className="lp-mockup-meta">
@@ -306,8 +308,9 @@ export default function Landing() {
                 {/* Client */}
                 <div className="lp-mockup-client">
                   <span className="lp-mockup-label">Client</span>
-                  <span className="lp-mockup-client-name">Agence Horizon SARL</span>
-                  <span className="lp-mockup-small">45 avenue Montaigne, 75008 Paris</span>
+                  <span className="lp-mockup-client-name">Boulangerie Maison Leroy</span>
+                  <span className="lp-mockup-small">12 rue du Commerce, 69002 Lyon</span>
+                  <span className="lp-mockup-small">SIREN 451 283 907</span>
                 </div>
 
                 {/* Lignes de facture */}
@@ -322,22 +325,22 @@ export default function Landing() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Développement site vitrine</td>
-                      <td>1</td>
-                      <td>2 400 €</td>
-                      <td>2 400 €</td>
+                      <td>Accompagnement stratégique</td>
+                      <td>3j</td>
+                      <td>450,00 €</td>
+                      <td>1 350,00 €</td>
                     </tr>
                     <tr>
-                      <td>Identité visuelle &amp; logo</td>
+                      <td>Formation équipe (sur site)</td>
                       <td>1</td>
-                      <td>800 €</td>
-                      <td>800 €</td>
+                      <td>680,00 €</td>
+                      <td>680,00 €</td>
                     </tr>
                     <tr>
-                      <td>Hébergement annuel</td>
-                      <td>12</td>
-                      <td>15 €</td>
-                      <td>180 €</td>
+                      <td>Frais de déplacement</td>
+                      <td>1</td>
+                      <td>85,00 €</td>
+                      <td>85,00 €</td>
                     </tr>
                   </tbody>
                 </table>
@@ -346,34 +349,46 @@ export default function Landing() {
                 <div className="lp-mockup-totals">
                   <div className="lp-mockup-total-row">
                     <span>Sous-total HT</span>
-                    <span>3 380,00 €</span>
+                    <span>2 115,00 €</span>
                   </div>
                   <div className="lp-mockup-total-row">
                     <span>TVA 20 %</span>
-                    <span>676,00 €</span>
+                    <span>423,00 €</span>
                   </div>
                   <div className="lp-mockup-total-row lp-mockup-total-final">
                     <span>Total TTC</span>
-                    <span>4 056,00 €</span>
+                    <span>2 538,00 €</span>
                   </div>
                 </div>
 
-                {/* Statut */}
+                {/* Paiement */}
+                <div className="lp-mockup-payment-info">
+                  <span className="lp-mockup-small">Échéance : 11 mai 2026</span>
+                  <span className="lp-mockup-small">IBAN : FR76 3000 4028 3700 0100 0425 082</span>
+                  <span className="lp-mockup-small">Conditions : paiement à 30 jours</span>
+                </div>
+
+                {/* Badges statut */}
                 <div className="lp-mockup-footer">
-                  <div className="lp-mockup-footer-left">
-                    <div className="lp-mockup-status">
-                      <IconCheckCircle />
-                      Transmise à Chorus Pro
-                    </div>
-                    <span className="lp-mockup-payment">Échéance : 11 mai 2026</span>
-                  </div>
-                  <div className="lp-mockup-dgfip" title="Conforme aux exigences de la DGFiP — Art. 290 du CGI">
-                    <IconShield />
-                    <span className="lp-mockup-dgfip-text">
-                      <span className="lp-mockup-dgfip-label">Conforme exigences</span>
-                      <span className="lp-mockup-dgfip-name">DGFiP · Art. 290 CGI</span>
+                  <div className="lp-mockup-stamp">
+                    <IconCheckCircle />
+                    <span className="lp-mockup-stamp-text">
+                      <span className="lp-mockup-stamp-label">Transmise à</span>
+                      <span className="lp-mockup-stamp-value">Chorus Pro</span>
                     </span>
                   </div>
+                  <div className="lp-mockup-stamp lp-mockup-stamp-archive">
+                    <svg className="lp-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                    <span className="lp-mockup-stamp-text">
+                      <span className="lp-mockup-stamp-label">Archivée 10 ans</span>
+                      <span className="lp-mockup-stamp-value">SHA-256 · France</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Conformité */}
+                <div className="lp-mockup-conformity">
+                  Conforme DGFiP · Décret 2022-1299 · EN 16931
                 </div>
               </div>
             </div>
