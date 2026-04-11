@@ -69,7 +69,7 @@ export default function RevenueChart({ invoices }: RevenueChartProps) {
   }, [invoices]);
 
   return (
-    <div style={{ width: '100%', height: 350, marginTop: '20px' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 200 }}>
       <ResponsiveContainer>
         <AreaChart
           data={data}
