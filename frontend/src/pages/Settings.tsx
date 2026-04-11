@@ -85,17 +85,17 @@ export default function Settings() {
   if (loading) return (
     <div className="app-container">
       <div className="app-skeleton app-skeleton-title" />
-      <div className="app-skeleton app-skeleton-title" style={{ width: '30%', marginTop: '2rem' }} />
+      <div className="app-skeleton app-skeleton-title" />
       <div className="app-form-row">
-        <div className="app-skeleton app-skeleton-table-row" style={{ flex: 2 }} />
-        <div className="app-skeleton app-skeleton-table-row" style={{ flex: 1 }} />
+        <div className="app-skeleton app-skeleton-table-row flex-2" />
+        <div className="app-skeleton app-skeleton-table-row" />
       </div>
       <div className="app-form-row">
         <div className="app-skeleton app-skeleton-table-row" />
         <div className="app-skeleton app-skeleton-table-row" />
       </div>
       <div className="app-skeleton app-skeleton-table-row" />
-      <div className="app-skeleton" style={{ width: '150px', height: '40px', borderRadius: '6px', marginTop: '1rem' }} />
+      <div className="app-skeleton" />
     </div>
   );
 
@@ -134,29 +134,25 @@ export default function Settings() {
       <h1 className="app-page-title">Parametres</h1>
 
       {/* Onglets */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', overflowX: 'auto' }}>
+      <div className="app-tabs">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none', background: activeTab === tab.key ? 'var(--accent)' : 'transparent',
-              color: activeTab === tab.key ? '#fff' : 'var(--text)', borderRadius: '6px', cursor: 'pointer',
-              fontWeight: activeTab === tab.key ? 600 : 400, fontSize: '0.9rem', whiteSpace: 'nowrap',
-            }}
+            className={`app-tab ${activeTab === tab.key ? 'app-tab--active' : ''}`}
           >
             {tab.label}
           </button>
         ))}
       </div>
 
-      {message && <div style={{ color: '#22c55e', padding: '1rem', background: 'rgba(34,197,94,0.1)', borderRadius: '6px', marginBottom: '1rem' }}>{message}</div>}
-      {error && <div style={{ color: '#ef4444', padding: '1rem', background: 'rgba(239,68,68,0.1)', borderRadius: '6px', marginBottom: '1rem' }}>{error}</div>}
+      {message && <div className="app-alert app-alert--success">{message}</div>}
+      {error && <div className="app-alert app-alert--error">{error}</div>}
 
       {/* Onglet Entreprise */}
       {activeTab === 'company' && (
       <form onSubmit={handleSave}>
-        <h2 className="app-section-title" style={{ marginTop: 0 }}>Informations entreprise</h2>
+        <h2 className="app-section-title app-mt-0">Informations entreprise</h2>
 
         <div className="app-form-row">
           <div className="app-form-group flex-2">
@@ -249,16 +245,16 @@ export default function Settings() {
           </select>
         </div>
 
-        <div style={{ marginTop: '2rem' }}>
+        <div className="app-mt-2">
           <button type="submit" disabled={saving} className="app-btn-primary">
             {saving ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
 
-      <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
-        <h2 className="app-section-title" style={{ marginTop: 0 }}>Abonnement</h2>
-        <p style={{ marginBottom: '1rem', color: 'var(--text-h)' }}>Plan actuel : <strong>Gratuit</strong> (30 factures/mois)</p>
-        <p style={{ color: 'var(--text)', fontSize: '0.95rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+      <div className="app-section-separator">
+        <h2 className="app-section-title app-mt-0">Abonnement</h2>
+        <p className="app-plan-info">Plan actuel : <strong>Gratuit</strong> (30 factures/mois)</p>
+        <p className="app-plan-detail">
           Le plan Pro (14,90 EUR/mois HT) offre des factures illimitees et l'acces aux exports avances.
         </p>
         <button
@@ -271,14 +267,13 @@ export default function Settings() {
               setError('Impossible d\'acceder au portail de facturation.');
             }
           }}
-          className="app-btn-primary"
-          style={{ background: 'var(--text-h)', color: 'var(--bg)' }}
+          className="app-btn-secondary"
         >
           Gerer mon abonnement
         </button>
       </div>
 
-      <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
+      <div className="app-section-separator">
         <button type="button" onClick={() => { void logout(); }} className="app-btn-outline-danger">
           Se deconnecter
         </button>
@@ -289,24 +284,19 @@ export default function Settings() {
       {/* Onglet Personnalisation */}
       {activeTab === 'customization' && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Personnalisation des factures</h2>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <h2 className="app-section-title app-mt-0">Personnalisation des factures</h2>
+          <p className="app-desc">
             Personnalisez l'apparence de vos factures PDF avec votre logo, vos couleurs et votre pied de page.
           </p>
 
           {/* Upload logo */}
-          <div className="app-form-group" style={{ marginBottom: '2rem' }}>
+          <div className="app-form-group app-mb-2">
             <label className="app-label">Logo de l'entreprise</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="app-logo-upload-row">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                style={{
-                  width: 120, height: 120, border: '2px dashed var(--border)', borderRadius: '8px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                  background: logoPreview ? `url(${logoPreview}) center/contain no-repeat` : 'var(--surface)',
-                  color: 'var(--text)', fontSize: '0.8rem', textAlign: 'center',
-                  transition: 'border-color 0.2s',
-                }}
+                className="app-logo-dropzone"
+                style={logoPreview ? { backgroundImage: `url(${logoPreview})` } : undefined}
               >
                 {!logoPreview && <span>Cliquez ou<br/>deposez un<br/>fichier</span>}
               </div>
@@ -315,15 +305,15 @@ export default function Settings() {
                 type="file"
                 accept="image/png,image/jpeg,image/svg+xml"
                 onChange={handleLogoUpload}
-                style={{ display: 'none' }}
+                className="app-hidden"
               />
-              <div style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
-                <p style={{ margin: 0 }}>PNG, JPG ou SVG</p>
-                <p style={{ margin: '0.25rem 0 0', opacity: 0.7 }}>Max 2 Mo, recommande : 400x200px</p>
+              <div className="app-logo-meta">
+                <p>PNG, JPG ou SVG</p>
+                <p>Max 2 Mo, recommande : 400x200px</p>
                 {logoPreview && (
                   <button
                     onClick={() => setLogoPreview(null)}
-                    style={{ marginTop: '0.5rem', background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: 0, fontSize: '0.85rem' }}
+                    className="app-logo-remove-btn"
                   >
                     Supprimer le logo
                   </button>
@@ -333,39 +323,37 @@ export default function Settings() {
           </div>
 
           {/* Couleurs */}
-          <div className="app-form-row" style={{ marginBottom: '2rem' }}>
+          <div className="app-form-row app-mb-2">
             <div className="app-form-group">
               <label className="app-label">Couleur primaire</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className="app-color-picker-row">
                 <input
                   type="color"
                   value={primaryColor}
                   onChange={(e) => setPrimaryColor(e.target.value)}
-                  style={{ width: 40, height: 40, border: 'none', borderRadius: '6px', cursor: 'pointer', padding: 0 }}
+                  className="app-color-swatch"
                 />
                 <input
                   value={primaryColor}
                   onChange={(e) => setPrimaryColor(e.target.value)}
-                  className="app-input"
-                  style={{ width: 100 }}
+                  className="app-input app-color-hex-input"
                   maxLength={7}
                 />
               </div>
             </div>
             <div className="app-form-group">
               <label className="app-label">Couleur secondaire</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div className="app-color-picker-row">
                 <input
                   type="color"
                   value={secondaryColor}
                   onChange={(e) => setSecondaryColor(e.target.value)}
-                  style={{ width: 40, height: 40, border: 'none', borderRadius: '6px', cursor: 'pointer', padding: 0 }}
+                  className="app-color-swatch"
                 />
                 <input
                   value={secondaryColor}
                   onChange={(e) => setSecondaryColor(e.target.value)}
-                  className="app-input"
-                  style={{ width: 100 }}
+                  className="app-input app-color-hex-input"
                   maxLength={7}
                 />
               </div>
@@ -373,7 +361,7 @@ export default function Settings() {
           </div>
 
           {/* Pied de page */}
-          <div className="app-form-group" style={{ marginBottom: '2rem' }}>
+          <div className="app-form-group app-mb-2">
             <label className="app-label">Pied de page des factures</label>
             <textarea
               value={footerText}
@@ -381,40 +369,34 @@ export default function Settings() {
               className="app-input"
               rows={3}
               placeholder="Ex: Merci pour votre confiance. Paiement par virement sous 30 jours."
-              style={{ resize: 'vertical' }}
             />
           </div>
 
           {/* Previsualisation */}
-          <div style={{ marginBottom: '2rem' }}>
+          <div className="app-mb-2">
             <label className="app-label">Previsualisation</label>
-            <div style={{
-              border: '1px solid var(--border)', borderRadius: '8px', padding: '1.5rem',
-              background: '#fff', color: '#000', maxWidth: 500,
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+            <div className="app-invoice-preview">
+              <div className="app-invoice-preview-header">
                 <div>
                   {logoPreview ? (
-                    <img src={logoPreview} alt="Logo" style={{ maxHeight: 50, maxWidth: 150 }} />
+                    <img src={logoPreview} alt="Logo" className="app-logo-preview-img" />
                   ) : (
-                    <div style={{ width: 100, height: 30, background: '#e5e7eb', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: '#9ca3af' }}>Logo</div>
+                    <div className="app-invoice-preview-logo-placeholder">Logo</div>
                   )}
                 </div>
-                <div style={{ textAlign: 'right', fontSize: '0.8rem', color: '#6b7280' }}>
-                  <div style={{ fontWeight: 700, color: primaryColor, fontSize: '1rem' }}>FACTURE</div>
+                <div className="app-invoice-preview-right">
+                  <div className="app-invoice-preview-title" style={{ color: primaryColor }}>FACTURE</div>
                   <div>FA-2026-0001</div>
                   <div>08/04/2026</div>
                 </div>
               </div>
-              <div style={{ height: 1, background: primaryColor, margin: '0.5rem 0 1rem' }} />
-              <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>Prestation de developpement</span>
-                  <span style={{ fontWeight: 600, color: secondaryColor }}>1 200,00 EUR</span>
-                </div>
+              <div className="app-invoice-preview-separator" style={{ background: primaryColor }} />
+              <div className="app-invoice-preview-line">
+                <span>Prestation de developpement</span>
+                <span className="app-invoice-preview-amount" style={{ color: secondaryColor }}>1 200,00 EUR</span>
               </div>
               {footerText && (
-                <div style={{ marginTop: '1rem', paddingTop: '0.5rem', borderTop: '1px solid #e5e7eb', fontSize: '0.7rem', color: '#9ca3af' }}>
+                <div className="app-invoice-preview-footer">
                   {footerText}
                 </div>
               )}
@@ -433,27 +415,20 @@ export default function Settings() {
       {/* Onglet Relances */}
       {activeTab === 'reminders' && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Relances automatiques</h2>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <h2 className="app-section-title app-mt-0">Relances automatiques</h2>
+          <p className="app-desc">
             Configurez les relances envoyees automatiquement lorsqu'une facture n'est pas payee a echeance.
           </p>
 
           {/* Activation */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+          <div className="app-toggle-row app-mb-2">
             <button
               onClick={() => setRemindersEnabled(!remindersEnabled)}
-              style={{
-                width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer',
-                background: remindersEnabled ? 'var(--accent)' : 'var(--border)',
-                position: 'relative', transition: 'background 0.2s',
-              }}
+              className={`app-toggle ${remindersEnabled ? 'app-toggle--on' : ''}`}
             >
-              <span style={{
-                width: 18, height: 18, borderRadius: '50%', background: '#fff', position: 'absolute',
-                top: 3, left: remindersEnabled ? 23 : 3, transition: 'left 0.2s',
-              }} />
+              <span className="app-toggle-knob" />
             </button>
-            <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>
+            <span className="app-toggle-label">
               {remindersEnabled ? 'Relances activees' : 'Relances desactivees'}
             </span>
           </div>
@@ -461,7 +436,7 @@ export default function Settings() {
           {remindersEnabled && (
             <>
               {/* Delais */}
-              <div className="app-form-row" style={{ marginBottom: '2rem' }}>
+              <div className="app-form-row app-mb-2">
                 <div className="app-form-group">
                   <label className="app-label">1re relance (jours apres echeance)</label>
                   <input
@@ -472,7 +447,7 @@ export default function Settings() {
                     onChange={(e) => setReminderDelays({ ...reminderDelays, first: e.target.value })}
                     className="app-input"
                   />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>Ton amical</span>
+                  <span className="app-reminder-hint">Ton amical</span>
                 </div>
                 <div className="app-form-group">
                   <label className="app-label">2e relance (jours)</label>
@@ -484,7 +459,7 @@ export default function Settings() {
                     onChange={(e) => setReminderDelays({ ...reminderDelays, second: e.target.value })}
                     className="app-input"
                   />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>Ton ferme</span>
+                  <span className="app-reminder-hint">Ton ferme</span>
                 </div>
                 <div className="app-form-group">
                   <label className="app-label">Mise en demeure (jours)</label>
@@ -496,27 +471,27 @@ export default function Settings() {
                     onChange={(e) => setReminderDelays({ ...reminderDelays, formal: e.target.value })}
                     className="app-input"
                   />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>Ton formel</span>
+                  <span className="app-reminder-hint">Ton formel</span>
                 </div>
               </div>
 
               {/* Apercu chronologique */}
-              <div style={{ marginBottom: '2rem' }}>
+              <div className="app-mb-2">
                 <label className="app-label">Chronologie des relances</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.85rem' }}>
-                  <span style={{ background: 'var(--accent-bg)', color: 'var(--accent)', padding: '4px 10px', borderRadius: '1rem', fontWeight: 600 }}>
+                <div className="app-reminder-timeline">
+                  <span className="app-reminder-pill app-reminder-pill--due">
                     Echeance
                   </span>
-                  <span style={{ color: 'var(--text)' }}>→</span>
-                  <span style={{ background: 'rgba(234, 179, 8, 0.15)', color: '#ca8a04', padding: '4px 10px', borderRadius: '1rem', fontWeight: 600 }}>
+                  <span className="app-reminder-arrow">&rarr;</span>
+                  <span className="app-reminder-pill app-reminder-pill--first">
                     J+{reminderDelays.first} Relance 1
                   </span>
-                  <span style={{ color: 'var(--text)' }}>→</span>
-                  <span style={{ background: 'rgba(249, 115, 22, 0.15)', color: '#ea580c', padding: '4px 10px', borderRadius: '1rem', fontWeight: 600 }}>
+                  <span className="app-reminder-arrow">&rarr;</span>
+                  <span className="app-reminder-pill app-reminder-pill--second">
                     J+{reminderDelays.second} Relance 2
                   </span>
-                  <span style={{ color: 'var(--text)' }}>→</span>
-                  <span style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#dc2626', padding: '4px 10px', borderRadius: '1rem', fontWeight: 600 }}>
+                  <span className="app-reminder-arrow">&rarr;</span>
+                  <span className="app-reminder-pill app-reminder-pill--formal">
                     J+{reminderDelays.formal} Mise en demeure
                   </span>
                 </div>
@@ -536,8 +511,8 @@ export default function Settings() {
       {/* Onglet Integrations */}
       {activeTab === 'integrations' && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Integrations</h2>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <h2 className="app-section-title app-mt-0">Integrations</h2>
+          <p className="app-desc">
             Connectez Factura a vos outils et services externes.
           </p>
 
@@ -550,18 +525,13 @@ export default function Settings() {
           ].map((integration) => (
             <div
               key={integration.name}
-              className="app-card"
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}
+              className="app-integration-card"
             >
-              <div>
-                <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.95rem' }}>{integration.name}</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.25rem' }}>{integration.desc}</div>
+              <div className="app-integration-card-info">
+                <div className="app-integration-card-name">{integration.name}</div>
+                <div className="app-integration-card-desc">{integration.desc}</div>
               </div>
-              <div style={{
-                padding: '4px 12px', borderRadius: '1rem', fontSize: '0.8rem', fontWeight: 600,
-                background: integration.connected ? 'rgba(34,197,94,0.1)' : 'rgba(156,163,175,0.1)',
-                color: integration.connected ? '#22c55e' : 'var(--text)',
-              }}>
+              <div className={`app-status-pill ${integration.connected ? 'app-status-pill--connected' : 'app-status-pill--muted'}`}>
                 {integration.status}
               </div>
             </div>
@@ -572,26 +542,26 @@ export default function Settings() {
       {/* Onglet Facturation */}
       {activeTab === 'billing' && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Tableau de bord facturation</h2>
+          <h2 className="app-section-title app-mt-0">Tableau de bord facturation</h2>
 
           {/* Resume annuel */}
-          <div className="app-card" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: 'linear-gradient(135deg, var(--accent-bg) 0%, var(--surface) 100%)' }}>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '0.5rem' }}>Cette annee ({currentYear})</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-h)' }}>{yearTotal.toFixed(0)} EUR</span>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>factures HT</span>
-              <span style={{ fontSize: '1.2rem', color: 'var(--text)', margin: '0 0.25rem' }}>→</span>
-              <span style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--accent)' }}>{estimatedFees.toFixed(2)} EUR</span>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>de frais {currentPlan === 'pro' ? 'annuels' : currentPlan === 'success' ? 'estimes' : ''}</span>
+          <div className="app-card app-billing-summary">
+            <div className="app-billing-summary-label">Cette annee ({currentYear})</div>
+            <div className="app-billing-summary-values">
+              <span className="app-billing-summary-total">{yearTotal.toFixed(0)} EUR</span>
+              <span className="app-billing-summary-unit">factures HT</span>
+              <span className="app-billing-summary-arrow">&rarr;</span>
+              <span className="app-billing-summary-fees">{estimatedFees.toFixed(2)} EUR</span>
+              <span className="app-billing-summary-unit">de frais {currentPlan === 'pro' ? 'annuels' : currentPlan === 'success' ? 'estimes' : ''}</span>
             </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.5rem' }}>
+            <div className="app-billing-summary-count">
               {yearInvoices.length} facture(s) emise(s) en {currentYear}
             </div>
           </div>
 
           {/* Selecteur de plan */}
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-h)', marginBottom: '1rem' }}>Choisir un plan</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+          <h3 className="app-subsection-title">Choisir un plan</h3>
+          <div className="app-kpi-grid app-mb-2">
             {[
               { key: 'free' as const, name: 'Gratuit', price: '0 EUR', desc: '30 factures/mois', features: ['Factures illimitees (30/mois)', 'Export PDF Factur-X', 'Support email'] },
               { key: 'pro' as const, name: 'Pro', price: '14,90 EUR/mois', desc: 'ou 149 EUR/an', features: ['Factures illimitees', 'Relances automatiques', 'Rapprochement bancaire', 'Support prioritaire'] },
@@ -600,24 +570,19 @@ export default function Settings() {
               <div
                 key={plan.key}
                 onClick={() => setCurrentPlan(plan.key)}
-                className="app-card"
-                style={{
-                  padding: '1.25rem', cursor: 'pointer', position: 'relative',
-                  border: currentPlan === plan.key ? '2px solid var(--accent)' : '2px solid transparent',
-                  transition: 'border-color 0.2s',
-                }}
+                className={`app-card app-plan-card ${currentPlan === plan.key ? 'app-plan-card--selected' : ''}`}
               >
                 {currentPlan === plan.key && (
-                  <div style={{ position: 'absolute', top: 8, right: 8, width: 20, height: 20, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="app-plan-card-check">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                   </div>
                 )}
-                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-h)', marginBottom: '0.25rem' }}>{plan.name}</div>
-                <div style={{ fontWeight: 600, color: 'var(--accent)', marginBottom: '0.25rem' }}>{plan.price}</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginBottom: '0.75rem' }}>{plan.desc}</div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.8rem' }}>
+                <div className="app-plan-card-name">{plan.name}</div>
+                <div className="app-plan-card-price">{plan.price}</div>
+                <div className="app-plan-card-desc">{plan.desc}</div>
+                <ul className="app-plan-card-features">
                   {plan.features.map((f, i) => (
-                    <li key={i} style={{ padding: '2px 0', color: 'var(--text-h)' }}>✓ {f}</li>
+                    <li key={i}>&#10003; {f}</li>
                   ))}
                 </ul>
               </div>
@@ -625,22 +590,22 @@ export default function Settings() {
           </div>
 
           {/* Option paiement mensuel/annuel */}
-          <div className="app-card" style={{ padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div className="app-card app-payment-mode-row">
             <div>
-              <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.9rem' }}>Mode de paiement</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Payez annuellement et economisez 2 mois</div>
+              <div className="app-payment-mode-info-title">Mode de paiement</div>
+              <div className="app-payment-mode-info-desc">Payez annuellement et economisez 2 mois</div>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button className="app-btn-outline-danger" style={{ fontSize: '0.8rem', padding: '6px 14px' }}>Mensuel</button>
-              <button className="app-btn-primary" style={{ fontSize: '0.8rem', padding: '6px 14px' }}>Annuel (-17%)</button>
+            <div className="app-payment-mode-buttons">
+              <button className="app-btn-outline-danger app-btn-compact">Mensuel</button>
+              <button className="app-btn-primary app-btn-compact">Annuel (-17%)</button>
             </div>
           </div>
 
           {/* Historique facturation */}
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-h)', marginBottom: '1rem' }}>Historique de facturation</h3>
-          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text)' }}>
-            <p style={{ fontSize: '0.9rem' }}>Aucune facture Factura emise pour le moment.</p>
-            <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Vos factures d'abonnement apparaitront ici.</p>
+          <h3 className="app-subsection-title">Historique de facturation</h3>
+          <div className="app-empty-history">
+            <p>Aucune facture Factura emise pour le moment.</p>
+            <p>Vos factures d'abonnement apparaitront ici.</p>
           </div>
 
           <button
@@ -661,40 +626,34 @@ export default function Settings() {
 
       {/* Onglet Affacturage */}
       {activeTab === 'factoring' && (
-        <div style={{ maxWidth: 600 }}>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Affacturage</h2>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: 1.6 }}>
+        <div className="app-factoring-container">
+          <h2 className="app-section-title app-mt-0">Affacturage</h2>
+          <p className="app-desc">
             L'affacturage permet de recevoir le paiement de vos factures avant leur echeance,
             moyennant une commission. Vous pouvez activer ou desactiver cette fonctionnalite ici.
           </p>
 
-          <div className="app-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>Activer l'affacturage</span>
-              <label style={{ position: 'relative', display: 'inline-block', width: 44, height: 24, cursor: 'pointer' }}>
-                <input type="checkbox" defaultChecked style={{ opacity: 0, width: 0, height: 0 }} />
-                <span style={{
-                  position: 'absolute', inset: 0, borderRadius: '12px',
-                  background: 'var(--accent)', transition: 'background 0.2s',
-                }}>
-                  <span style={{
-                    position: 'absolute', left: '22px', top: '2px',
-                    width: 20, height: 20, borderRadius: '50%', background: '#fff',
-                    transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                  }} />
-                </span>
-              </label>
+          <div className="app-card app-mb-2">
+            <div className="app-toggle-row app-mb-2">
+              <span className="app-toggle-label">Activer l'affacturage</span>
+              <button
+                type="button"
+                className="app-toggle app-toggle--on"
+                aria-pressed="true"
+              >
+                <span className="app-toggle-knob" />
+              </button>
             </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text)', margin: 0 }}>
+            <p className="app-factoring-desc">
               Lorsque l'affacturage est active, un bouton "Recevoir le paiement maintenant" apparait
               sur les factures en attente de paiement. Commission standard : 5%.
             </p>
           </div>
 
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-h)', marginBottom: '1rem' }}>Historique des financements</h3>
-          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text)' }}>
-            <p style={{ fontSize: '0.9rem' }}>Aucun financement demande pour le moment.</p>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.5rem' }}>
+          <h3 className="app-subsection-title">Historique des financements</h3>
+          <div className="app-empty-history">
+            <p>Aucun financement demande pour le moment.</p>
+            <p>
               Les demandes de financement et leur statut apparaitront ici.
             </p>
           </div>

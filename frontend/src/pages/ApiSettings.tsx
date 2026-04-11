@@ -264,19 +264,12 @@ export default function ApiSettings() {
       <h1 className="app-page-title">API & Integrations</h1>
 
       {/* Onglets */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', overflowX: 'auto' }}>
+      <div className="app-tabs">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none',
-              background: activeTab === tab.key ? 'var(--accent)' : 'transparent',
-              color: activeTab === tab.key ? '#fff' : 'var(--text)',
-              borderRadius: '6px', cursor: 'pointer',
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              fontSize: '0.9rem', whiteSpace: 'nowrap',
-            }}
+            className={`app-tab ${activeTab === tab.key ? 'app-tab--active' : ''}`}
           >
             {tab.label}
           </button>
@@ -286,10 +279,10 @@ export default function ApiSettings() {
       {/* Onglet Cles API */}
       {activeTab === 'keys' && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div className="app-page-header">
             <div>
-              <h2 className="app-section-title" style={{ marginTop: 0, marginBottom: '0.25rem' }}>Cles API</h2>
-              <p style={{ color: 'var(--text)', fontSize: '0.9rem', margin: 0 }}>
+              <h2 className="app-section-title app-mt-0">Cles API</h2>
+              <p className="app-desc" style={{ marginBottom: 0 }}>
                 Gerez vos cles d'acces a l'API REST Factura.
               </p>
             </div>
@@ -302,52 +295,44 @@ export default function ApiSettings() {
 
           {/* Formulaire de generation */}
           {showKeyForm && (
-            <div className="app-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
+            <div className="app-card" style={{ marginBottom: '1.5rem' }}>
               {generatedKey ? (
                 // Affichage de la cle generee (une seule fois)
                 <div>
-                  <h3 style={{ marginTop: 0, marginBottom: '0.75rem', color: 'var(--text-h)', fontSize: '1rem' }}>
+                  <h3 className="app-subsection-title app-mt-0">
                     Cle generee
                   </h3>
-                  <p style={{ fontSize: '0.85rem', color: '#f59e0b', marginBottom: '1rem', lineHeight: 1.5 }}>
+                  <div className="app-alert app-alert--warning">
                     Copiez cette cle maintenant. Elle ne sera plus visible apres fermeture.
-                  </p>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                    background: 'var(--surface)', padding: '0.75rem 1rem',
-                    borderRadius: '6px', border: '1px solid var(--border)',
-                    flexWrap: 'wrap',
-                  }}>
-                    <code style={{ flex: 1, fontSize: '0.85rem', color: 'var(--text-h)', wordBreak: 'break-all' }}>
+                  </div>
+                  <div className="app-integration-card">
+                    <code className="app-list-item-info" style={{ wordBreak: 'break-all' }}>
                       {generatedKey}
                     </code>
                     <button
                       onClick={() => handleCopyKey(generatedKey)}
-                      style={{
-                        padding: '4px 12px', borderRadius: '6px', border: '1px solid var(--border)',
-                        background: 'var(--bg)', color: 'var(--text-h)', cursor: 'pointer',
-                        fontSize: '0.85rem', whiteSpace: 'nowrap',
-                      }}
+                      className="app-btn-outline app-btn-compact"
                     >
                       Copier
                     </button>
                   </div>
-                  <button
-                    onClick={resetKeyForm}
-                    className="app-btn-primary"
-                    style={{ marginTop: '1rem' }}
-                  >
-                    Fermer
-                  </button>
+                  <div className="app-actions-row">
+                    <button
+                      onClick={resetKeyForm}
+                      className="app-btn-primary"
+                    >
+                      Fermer
+                    </button>
+                  </div>
                 </div>
               ) : (
                 // Formulaire de creation
                 <div>
-                  <h3 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--text-h)', fontSize: '1rem' }}>
+                  <h3 className="app-subsection-title app-mt-0">
                     Nouvelle cle API
                   </h3>
 
-                  <div className="app-form-group" style={{ marginBottom: '1rem' }}>
+                  <div className="app-form-group">
                     <label className="app-label">Nom de la cle</label>
                     <input
                       value={newKeyName}
@@ -358,16 +343,14 @@ export default function ApiSettings() {
                     />
                   </div>
 
-                  <div className="app-form-group" style={{ marginBottom: '1.25rem' }}>
+                  <div className="app-form-group">
                     <label className="app-label">Portees (scopes)</label>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <div className="app-list">
                       {AVAILABLE_SCOPES.map((scope) => (
                         <label
                           key={scope.value}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: '0.5rem',
-                            cursor: 'pointer', fontSize: '0.9rem', color: 'var(--text-h)',
-                          }}
+                          className="app-toggle-row"
+                          style={{ cursor: 'pointer' }}
                         >
                           <input
                             type="checkbox"
@@ -375,8 +358,8 @@ export default function ApiSettings() {
                             onChange={() => toggleScope(scope.value)}
                             style={{ accentColor: 'var(--accent)' }}
                           />
-                          <span>{scope.label}</span>
-                          <code style={{ fontSize: '0.75rem', color: 'var(--text)', marginLeft: '0.25rem' }}>
+                          <span className="app-toggle-label">{scope.label}</span>
+                          <code className="app-list-item-sub">
                             {scope.value}
                           </code>
                         </label>
@@ -384,7 +367,7 @@ export default function ApiSettings() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <div className="app-actions-row" style={{ marginTop: '1rem' }}>
                     <button
                       onClick={handleGenerateKey}
                       disabled={loadingKey}
@@ -394,11 +377,7 @@ export default function ApiSettings() {
                     </button>
                     <button
                       onClick={resetKeyForm}
-                      style={{
-                        padding: '0.5rem 1rem', border: '1px solid var(--border)',
-                        background: 'transparent', color: 'var(--text)', borderRadius: '6px',
-                        cursor: 'pointer', fontSize: '0.9rem',
-                      }}
+                      className="app-btn-outline"
                     >
                       Annuler
                     </button>
@@ -410,65 +389,59 @@ export default function ApiSettings() {
 
           {/* Liste des cles */}
           {apiKeys.length === 0 && !showKeyForm ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.5rem' }}>Aucune cle API</p>
-              <p style={{ fontSize: '0.9rem' }}>
+            <div className="app-empty">
+              <p className="app-empty-title">Aucune cle API</p>
+              <p className="app-empty-desc">
                 Generez votre premiere cle pour integrer Factura a vos outils.
               </p>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <div className="app-table-wrapper">
+              <table className="app-table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                    <th style={{ textAlign: 'left', padding: '0.75rem 0.5rem', color: 'var(--text)', fontWeight: 600, fontSize: '0.8rem', whiteSpace: 'nowrap' }}>Nom</th>
-                    <th style={{ textAlign: 'left', padding: '0.75rem 0.5rem', color: 'var(--text)', fontWeight: 600, fontSize: '0.8rem', whiteSpace: 'nowrap' }}>Cle</th>
-                    <th style={{ textAlign: 'left', padding: '0.75rem 0.5rem', color: 'var(--text)', fontWeight: 600, fontSize: '0.8rem', whiteSpace: 'nowrap' }}>Portees</th>
-                    <th style={{ textAlign: 'left', padding: '0.75rem 0.5rem', color: 'var(--text)', fontWeight: 600, fontSize: '0.8rem', whiteSpace: 'nowrap' }}>Creee le</th>
-                    <th style={{ textAlign: 'left', padding: '0.75rem 0.5rem', color: 'var(--text)', fontWeight: 600, fontSize: '0.8rem', whiteSpace: 'nowrap' }}>Derniere utilisation</th>
-                    <th style={{ textAlign: 'right', padding: '0.75rem 0.5rem', color: 'var(--text)', fontWeight: 600, fontSize: '0.8rem' }}></th>
+                  <tr>
+                    <th>Nom</th>
+                    <th>Cle</th>
+                    <th>Portees</th>
+                    <th>Creee le</th>
+                    <th>Derniere utilisation</th>
+                    <th className="text-right"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {apiKeys.map((key) => (
-                    <tr key={key.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-h)', fontWeight: 500 }}>
+                    <tr key={key.id}>
+                      <td>
                         {key.name}
                       </td>
-                      <td style={{ padding: '0.75rem 0.5rem' }}>
-                        <code style={{ fontSize: '0.8rem', color: 'var(--text)', background: 'var(--surface)', padding: '2px 6px', borderRadius: '4px' }}>
+                      <td>
+                        <code className="app-badge app-badge-draft">
                           {key.keyPreview}
                         </code>
                       </td>
-                      <td style={{ padding: '0.75rem 0.5rem' }}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                      <td>
+                        <div className="app-pills">
                           {key.scopes.map((scope) => (
                             <span
                               key={scope}
-                              style={{
-                                background: 'var(--accent-bg)', color: 'var(--accent)',
-                                padding: '1px 6px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 500,
-                              }}
+                              className="app-pill app-pill--active"
+                              style={{ cursor: 'default' }}
                             >
                               {scope}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text)', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+                      <td>
                         {new Date(key.createdAt).toLocaleDateString('fr-FR')}
                       </td>
-                      <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text)', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+                      <td>
                         {key.lastUsedAt ? new Date(key.lastUsedAt).toLocaleDateString('fr-FR') : 'Jamais'}
                       </td>
-                      <td style={{ padding: '0.75rem 0.5rem', textAlign: 'right' }}>
+                      <td className="text-right">
                         <button
                           onClick={() => handleRevokeKey(key.id)}
-                          style={{
-                            padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(239,68,68,0.3)',
-                            background: 'rgba(239,68,68,0.1)', color: '#ef4444', cursor: 'pointer',
-                            fontSize: '0.8rem', fontWeight: 500,
-                          }}
+                          className="app-btn-outline-danger app-btn-compact"
                         >
                           Revoquer
                         </button>
@@ -485,10 +458,10 @@ export default function ApiSettings() {
       {/* Onglet Webhooks */}
       {activeTab === 'webhooks' && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div className="app-page-header">
             <div>
-              <h2 className="app-section-title" style={{ marginTop: 0, marginBottom: '0.25rem' }}>Webhooks</h2>
-              <p style={{ color: 'var(--text)', fontSize: '0.9rem', margin: 0 }}>
+              <h2 className="app-section-title app-mt-0">Webhooks</h2>
+              <p className="app-desc" style={{ marginBottom: 0 }}>
                 Recevez des notifications en temps reel sur vos evenements Factura.
               </p>
             </div>
@@ -501,12 +474,12 @@ export default function ApiSettings() {
 
           {/* Formulaire d'ajout de webhook */}
           {showWebhookForm && (
-            <div className="app-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
-              <h3 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--text-h)', fontSize: '1rem' }}>
+            <div className="app-card" style={{ marginBottom: '1.5rem' }}>
+              <h3 className="app-subsection-title app-mt-0">
                 Nouveau webhook
               </h3>
 
-              <div className="app-form-group" style={{ marginBottom: '1rem' }}>
+              <div className="app-form-group">
                 <label className="app-label">URL de l'endpoint</label>
                 <input
                   value={webhookUrl}
@@ -517,16 +490,14 @@ export default function ApiSettings() {
                 />
               </div>
 
-              <div className="app-form-group" style={{ marginBottom: '1rem' }}>
+              <div className="app-form-group">
                 <label className="app-label">Evenements</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div className="app-list">
                   {AVAILABLE_EVENTS.map((event) => (
                     <label
                       key={event.value}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '0.5rem',
-                        cursor: 'pointer', fontSize: '0.9rem', color: 'var(--text-h)',
-                      }}
+                      className="app-toggle-row"
+                      style={{ cursor: 'pointer' }}
                     >
                       <input
                         type="checkbox"
@@ -534,8 +505,8 @@ export default function ApiSettings() {
                         onChange={() => toggleEvent(event.value)}
                         style={{ accentColor: 'var(--accent)' }}
                       />
-                      <span>{event.label}</span>
-                      <code style={{ fontSize: '0.75rem', color: 'var(--text)', marginLeft: '0.25rem' }}>
+                      <span className="app-toggle-label">{event.label}</span>
+                      <code className="app-list-item-sub">
                         {event.value}
                       </code>
                     </label>
@@ -543,7 +514,7 @@ export default function ApiSettings() {
                 </div>
               </div>
 
-              <div className="app-form-group" style={{ marginBottom: '1.25rem' }}>
+              <div className="app-form-group">
                 <label className="app-label">Secret de signature (optionnel)</label>
                 <input
                   value={webhookSecret}
@@ -552,12 +523,12 @@ export default function ApiSettings() {
                   placeholder="Utilise pour verifier la signature HMAC-SHA256 des requetes"
                   type="text"
                 />
-                <span style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem', display: 'block' }}>
+                <span className="app-reminder-hint">
                   Si defini, chaque requete inclura un en-tete X-Factura-Signature.
                 </span>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div className="app-actions-row" style={{ marginTop: '0.5rem' }}>
                 <button
                   onClick={handleCreateWebhook}
                   disabled={loadingWebhook}
@@ -572,11 +543,7 @@ export default function ApiSettings() {
                     setWebhookEvents([]);
                     setWebhookSecret('');
                   }}
-                  style={{
-                    padding: '0.5rem 1rem', border: '1px solid var(--border)',
-                    background: 'transparent', color: 'var(--text)', borderRadius: '6px',
-                    cursor: 'pointer', fontSize: '0.9rem',
-                  }}
+                  className="app-btn-outline"
                 >
                   Annuler
                 </button>
@@ -586,41 +553,35 @@ export default function ApiSettings() {
 
           {/* Liste des webhooks */}
           {webhooks.length === 0 && !showWebhookForm ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.5rem' }}>Aucun webhook configure</p>
-              <p style={{ fontSize: '0.9rem' }}>
+            <div className="app-empty">
+              <p className="app-empty-title">Aucun webhook configure</p>
+              <p className="app-empty-desc">
                 Ajoutez un endpoint pour recevoir les evenements en temps reel.
               </p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div className="app-list">
               {webhooks.map((webhook) => (
-                <div key={webhook.id} className="app-card" style={{ padding: '1.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
-                    <div style={{ flex: 1, minWidth: 250 }}>
+                <div key={webhook.id} className="app-card">
+                  <div className="app-client-card-header" style={{ marginBottom: '0.5rem' }}>
+                    <div className="app-list-item-info">
                       {/* URL et statut */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-                        <code style={{ fontSize: '0.85rem', color: 'var(--text-h)', wordBreak: 'break-all' }}>
+                      <div className="app-toggle-row" style={{ marginBottom: '0.5rem' }}>
+                        <code className="app-list-item-title" style={{ wordBreak: 'break-all' }}>
                           {webhook.url}
                         </code>
-                        <span style={{
-                          padding: '2px 8px', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600,
-                          background: webhook.active ? 'rgba(34,197,94,0.1)' : 'rgba(156,163,175,0.1)',
-                          color: webhook.active ? '#22c55e' : '#9ca3af',
-                        }}>
+                        <span className={`app-status-pill ${webhook.active ? 'app-status-pill--connected' : 'app-status-pill--muted'}`}>
                           {webhook.active ? 'Actif' : 'En pause'}
                         </span>
                       </div>
 
                       {/* Evenements */}
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                      <div className="app-pills">
                         {webhook.events.map((event) => (
                           <span
                             key={event}
-                            style={{
-                              background: 'var(--accent-bg)', color: 'var(--accent)',
-                              padding: '1px 6px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 500,
-                            }}
+                            className="app-pill app-pill--active"
+                            style={{ cursor: 'default' }}
                           >
                             {event}
                           </span>
@@ -628,12 +589,12 @@ export default function ApiSettings() {
                       </div>
 
                       {/* Derniere livraison */}
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>
+                      <div className="app-list-item-sub" style={{ marginTop: '0.5rem' }}>
                         {webhook.lastDeliveryAt ? (
                           <span>
                             Derniere livraison : {new Date(webhook.lastDeliveryAt).toLocaleString('fr-FR')}
                             {' — '}
-                            <span style={{ color: webhook.lastDeliveryStatus === 'success' ? '#22c55e' : '#ef4444', fontWeight: 600 }}>
+                            <span className={`app-status-pill ${webhook.lastDeliveryStatus === 'success' ? 'app-status-pill--connected' : 'app-status-pill--closed'}`}>
                               {webhook.lastDeliveryStatus === 'success' ? 'Succes' : 'Echec'}
                             </span>
                           </span>
@@ -644,34 +605,22 @@ export default function ApiSettings() {
                     </div>
 
                     {/* Actions */}
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <div className="app-client-card-actions">
                       <button
                         onClick={() => handleTestWebhook(webhook.id)}
-                        style={{
-                          padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)',
-                          background: 'var(--bg)', color: 'var(--text-h)', cursor: 'pointer',
-                          fontSize: '0.8rem', fontWeight: 500,
-                        }}
+                        className="app-btn-outline app-btn-compact"
                       >
                         Tester
                       </button>
                       <button
                         onClick={() => handleToggleWebhook(webhook.id)}
-                        style={{
-                          padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--border)',
-                          background: 'var(--bg)', color: 'var(--text-h)', cursor: 'pointer',
-                          fontSize: '0.8rem', fontWeight: 500,
-                        }}
+                        className="app-btn-outline app-btn-compact"
                       >
                         {webhook.active ? 'Pause' : 'Activer'}
                       </button>
                       <button
                         onClick={() => handleDeleteWebhook(webhook.id)}
-                        style={{
-                          padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(239,68,68,0.3)',
-                          background: 'rgba(239,68,68,0.1)', color: '#ef4444', cursor: 'pointer',
-                          fontSize: '0.8rem', fontWeight: 500,
-                        }}
+                        className="app-btn-outline-danger app-btn-compact"
                       >
                         Supprimer
                       </button>
@@ -687,67 +636,45 @@ export default function ApiSettings() {
       {/* Onglet Connecteurs */}
       {activeTab === 'connectors' && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0, marginBottom: '0.25rem' }}>Connecteurs</h2>
-          <p style={{ color: 'var(--text)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+          <h2 className="app-section-title app-mt-0">Connecteurs</h2>
+          <p className="app-desc">
             Connectez Factura a vos outils comptables et d'automatisation preferes.
           </p>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '1rem',
-          }}>
+          <div className="app-cards-grid">
             {CONNECTORS.map((connector) => (
               <div
                 key={connector.id}
                 className="app-card"
-                style={{
-                  padding: '1.5rem',
-                  display: 'flex', flexDirection: 'column',
-                  opacity: connector.available ? 1 : 0.7,
-                }}
+                style={{ opacity: connector.available ? 1 : 0.7 }}
               >
                 {/* En-tete avec nom et badge */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                  <div style={{
-                    width: 44, height: 44, borderRadius: '10px',
+                <div className="app-client-card-header" style={{ marginBottom: '0.75rem' }}>
+                  <div className="app-health-indicator" style={{
+                    borderRadius: '10px',
                     background: connector.available ? 'var(--accent-bg)' : 'var(--surface)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 700, fontSize: '1rem',
                     color: connector.available ? 'var(--accent)' : 'var(--text)',
                   }}>
                     {connector.name.charAt(0)}
                   </div>
-                  <span style={{
-                    padding: '3px 10px', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600,
-                    background: connector.available ? 'rgba(34,197,94,0.1)' : 'rgba(234,179,8,0.15)',
-                    color: connector.available ? '#22c55e' : '#ca8a04',
-                  }}>
+                  <span className={`app-status-pill ${connector.available ? 'app-status-pill--connected' : 'app-status-pill--muted'}`}>
                     {connector.available ? 'Disponible' : 'Bientot'}
                   </span>
                 </div>
 
                 {/* Nom et description */}
-                <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '1rem', marginBottom: '0.5rem' }}>
+                <div className="app-integration-card-name">
                   {connector.name}
                 </div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text)', margin: 0, flex: 1, lineHeight: 1.5 }}>
+                <p className="app-integration-card-desc" style={{ flex: 1 }}>
                   {connector.description}
                 </p>
 
                 {/* Bouton d'action */}
                 <button
                   disabled={!connector.available}
-                  className={connector.available ? 'app-btn-primary' : ''}
-                  style={{
-                    marginTop: '1rem', width: '100%',
-                    padding: '0.5rem 1rem', borderRadius: '6px',
-                    fontSize: '0.9rem', cursor: connector.available ? 'pointer' : 'not-allowed',
-                    ...(connector.available ? {} : {
-                      background: 'var(--surface)', color: 'var(--text)',
-                      border: '1px solid var(--border)',
-                    }),
-                  }}
+                  className={connector.available ? 'app-btn-primary' : 'app-btn-outline'}
+                  style={{ marginTop: '1rem', width: '100%' }}
                   onClick={() => {
                     if (connector.available) {
                       success(`Configuration de ${connector.name} en cours...`);

@@ -89,8 +89,8 @@ export default function Accounting() {
 
   return (
     <div className="app-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
-        <h1 className="app-page-title" style={{ margin: 0 }}>Comptabilite</h1>
+      <div className="app-page-header">
+        <h1 className="app-page-title">Comptabilite</h1>
         <input
           type="month"
           value={periodFilter}
@@ -101,18 +101,12 @@ export default function Accounting() {
       </div>
 
       {/* Onglets */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', overflowX: 'auto' }}>
+      <div className="app-tabs">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none',
-              background: activeTab === tab.key ? 'var(--accent)' : 'transparent',
-              color: activeTab === tab.key ? '#fff' : 'var(--text)',
-              borderRadius: '6px', cursor: 'pointer', fontWeight: activeTab === tab.key ? 600 : 400,
-              fontSize: '0.9rem', whiteSpace: 'nowrap',
-            }}
+            className={`app-tab${activeTab === tab.key ? ' app-tab--active' : ''}`}
           >
             {tab.label}
           </button>
@@ -121,61 +115,61 @@ export default function Accounting() {
 
       {/* Journal */}
       {activeTab === 'journal' && (
-        <div style={{ overflowX: 'auto' }}>
-          {entries.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)' }}>Aucune ecriture sur cette periode</p>
-              <p style={{ fontSize: '0.9rem' }}>Les ecritures sont generees automatiquement lors de l'emission des factures.</p>
-            </div>
-          ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+        entries.length === 0 ? (
+          <div className="app-empty">
+            <p className="app-empty-title">Aucune ecriture sur cette periode</p>
+            <p className="app-empty-desc">Les ecritures sont generees automatiquement lors de l'emission des factures.</p>
+          </div>
+        ) : (
+          <div className="app-table-wrapper">
+            <table className="app-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid var(--border)', textAlign: 'left' }}>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Date</th>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Journal</th>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Compte</th>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Libelle</th>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)', textAlign: 'right' }}>Debit</th>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)', textAlign: 'right' }}>Credit</th>
+                <tr>
+                  <th>Date</th>
+                  <th>Journal</th>
+                  <th>Compte</th>
+                  <th>Libelle</th>
+                  <th className="text-right">Debit</th>
+                  <th className="text-right">Credit</th>
                 </tr>
               </thead>
               <tbody>
                 {entries.map((entry) => (
-                  <tr key={entry.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '0.5rem', color: 'var(--text)' }}>{new Date(entry.date).toLocaleDateString('fr-FR')}</td>
-                    <td style={{ padding: '0.5rem' }}>
-                      <span style={{ background: 'var(--accent-bg)', color: 'var(--accent)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>
+                  <tr key={entry.id}>
+                    <td>{new Date(entry.date).toLocaleDateString('fr-FR')}</td>
+                    <td>
+                      <span className="app-status-pill" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
                         {entry.journalCode}
                       </span>
                     </td>
-                    <td style={{ padding: '0.5rem', color: 'var(--text-h)', fontWeight: 500 }}>{entry.accountNumber} — {entry.accountLabel}</td>
-                    <td style={{ padding: '0.5rem', color: 'var(--text)' }}>{entry.label}</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'right', color: parseFloat(entry.debit) > 0 ? 'var(--text-h)' : 'var(--text)' }}>
+                    <td style={{ fontWeight: 500, color: 'var(--text-h)' }}>{entry.accountNumber} — {entry.accountLabel}</td>
+                    <td>{entry.label}</td>
+                    <td className="text-right" style={{ color: parseFloat(entry.debit) > 0 ? 'var(--text-h)' : undefined }}>
                       {parseFloat(entry.debit) > 0 ? parseFloat(entry.debit).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) : ''}
                     </td>
-                    <td style={{ padding: '0.5rem', textAlign: 'right', color: parseFloat(entry.credit) > 0 ? 'var(--text-h)' : 'var(--text)' }}>
+                    <td className="text-right" style={{ color: parseFloat(entry.credit) > 0 ? 'var(--text-h)' : undefined }}>
                       {parseFloat(entry.credit) > 0 ? parseFloat(entry.credit).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) : ''}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          )}
-        </div>
+          </div>
+        )
       )}
 
       {/* Grand livre */}
       {activeTab === 'ledger' && (
         <div>
           {Object.keys(ledger).length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)' }}>Aucun compte sur cette periode</p>
+            <div className="app-empty">
+              <p className="app-empty-title">Aucun compte sur cette periode</p>
             </div>
           ) : (
             Object.entries(ledger).sort(([a], [b]) => a.localeCompare(b)).map(([num, data]) => (
               <div key={num} className="app-card" style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>{num} — {data.label}</span>
+                  <span className="app-list-item-title">{num} — {data.label}</span>
                   <span style={{
                     fontWeight: 600, fontSize: '0.9rem',
                     color: data.totalDebit - data.totalCredit >= 0 ? 'var(--text-h)' : '#ef4444',
@@ -183,7 +177,7 @@ export default function Accounting() {
                     Solde : {(data.totalDebit - data.totalCredit).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
                   </span>
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>
+                <div className="app-card-sub">
                   {data.entries.length} ecriture(s) — Debit : {data.totalDebit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR — Credit : {data.totalCredit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
                 </div>
               </div>
@@ -194,68 +188,68 @@ export default function Accounting() {
 
       {/* Balance */}
       {activeTab === 'balance' && (
-        <div style={{ overflowX: 'auto' }}>
-          {balance.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)' }}>Aucune donnee de balance</p>
-            </div>
-          ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+        balance.length === 0 ? (
+          <div className="app-empty">
+            <p className="app-empty-title">Aucune donnee de balance</p>
+          </div>
+        ) : (
+          <div className="app-table-wrapper">
+            <table className="app-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid var(--border)', textAlign: 'left' }}>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Compte</th>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Libelle</th>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)', textAlign: 'right' }}>Total debit</th>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)', textAlign: 'right' }}>Total credit</th>
-                  <th style={{ padding: '0.5rem', color: 'var(--text-h)', textAlign: 'right' }}>Solde</th>
+                <tr>
+                  <th>Compte</th>
+                  <th>Libelle</th>
+                  <th className="text-right">Total debit</th>
+                  <th className="text-right">Total credit</th>
+                  <th className="text-right">Solde</th>
                 </tr>
               </thead>
               <tbody>
                 {balance.map((b) => (
-                  <tr key={b.accountNumber} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '0.5rem', fontWeight: 600, color: 'var(--text-h)' }}>{b.accountNumber}</td>
-                    <td style={{ padding: '0.5rem', color: 'var(--text)' }}>{b.accountLabel}</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'right', color: 'var(--text-h)' }}>{b.totalDebit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'right', color: 'var(--text-h)' }}>{b.totalCredit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</td>
-                    <td style={{ padding: '0.5rem', textAlign: 'right', fontWeight: 600, color: b.solde >= 0 ? 'var(--text-h)' : '#ef4444' }}>
+                  <tr key={b.accountNumber}>
+                    <td style={{ fontWeight: 600, color: 'var(--text-h)' }}>{b.accountNumber}</td>
+                    <td>{b.accountLabel}</td>
+                    <td className="text-right" style={{ color: 'var(--text-h)' }}>{b.totalDebit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</td>
+                    <td className="text-right" style={{ color: 'var(--text-h)' }}>{b.totalCredit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</td>
+                    <td className="text-right" style={{ fontWeight: 600, color: b.solde >= 0 ? 'var(--text-h)' : '#ef4444' }}>
                       {b.solde.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
                     </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr style={{ borderTop: '2px solid var(--border)', fontWeight: 700 }}>
-                  <td colSpan={2} style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Total</td>
-                  <td style={{ padding: '0.5rem', textAlign: 'right', color: 'var(--text-h)' }}>
+                <tr style={{ fontWeight: 700 }}>
+                  <td colSpan={2}>Total</td>
+                  <td className="text-right">
                     {balance.reduce((s, b) => s + b.totalDebit, 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
                   </td>
-                  <td style={{ padding: '0.5rem', textAlign: 'right', color: 'var(--text-h)' }}>
+                  <td className="text-right">
                     {balance.reduce((s, b) => s + b.totalCredit, 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
                   </td>
-                  <td style={{ padding: '0.5rem', textAlign: 'right', color: 'var(--text-h)' }}>
+                  <td className="text-right">
                     {balance.reduce((s, b) => s + b.solde, 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
                   </td>
                 </tr>
               </tfoot>
             </table>
-          )}
-        </div>
+          </div>
+        )
       )}
 
       {/* Export FEC */}
       {activeTab === 'fec' && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Export FEC</h2>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem', maxWidth: 600, lineHeight: 1.6 }}>
+          <h2 className="app-section-title app-mt-0">Export FEC</h2>
+          <p className="app-desc" style={{ maxWidth: 600 }}>
             Le Fichier des Ecritures Comptables (FEC) est un export obligatoire en cas de controle fiscal.
             Il contient toutes les ecritures comptables de l'exercice au format normalise.
           </p>
-          <div className="app-card" style={{ maxWidth: 400, padding: '1.5rem', textAlign: 'center' }}>
+          <div className="app-card app-kpi-card" style={{ maxWidth: 400 }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📊</div>
-            <div style={{ fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.5rem' }}>
+            <div className="app-list-item-title" style={{ marginBottom: '0.5rem' }}>
               FEC {periodFilter.split('-')[0]}
             </div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '1rem' }}>
+            <div className="app-card-sub" style={{ marginBottom: '1rem' }}>
               {entries.length} ecriture(s) comptable(s)
             </div>
             <button onClick={handleExportFec} className="app-btn-primary">

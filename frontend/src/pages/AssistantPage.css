@@ -1,0 +1,257 @@
+/* ═══════════════════════════════════════════════════════════════
+   AssistantPage — Supplementary styles (beyond AppLayout design system)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Chat Layout ─── */
+.assistant-layout {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px);
+  padding: 0;
+  max-width: 100%;
+}
+
+/* ─── Chat Header ─── */
+.assistant-header {
+  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1rem, 3vw, 2rem);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.assistant-header .app-page-title {
+  margin: 0;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+/* ─── Quick Actions Bar ─── */
+.assistant-quick-actions {
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.assistant-quick-btn {
+  padding: 0.5rem 1rem;
+  background: var(--social-bg);
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  color: var(--text-h);
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.assistant-quick-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─── Messages Area ─── */
+.assistant-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ─── Empty State ─── */
+.assistant-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text);
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+}
+
+.assistant-empty-icon {
+  font-size: 2.5rem;
+}
+
+.assistant-empty-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.assistant-empty-desc {
+  font-size: 0.9rem;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+/* ─── Message Row ─── */
+.assistant-msg-row {
+  display: flex;
+  width: 100%;
+}
+
+.assistant-msg-row--user {
+  justify-content: flex-end;
+}
+
+.assistant-msg-row--assistant {
+  justify-content: flex-start;
+}
+
+/* ─── Message Bubble ─── */
+.assistant-bubble {
+  max-width: min(85%, 600px);
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.assistant-bubble--user {
+  border-radius: 1rem 1rem 0.25rem 1rem;
+  background: var(--accent);
+  color: #fff;
+}
+
+.assistant-bubble--assistant {
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  background: var(--social-bg);
+  color: var(--text);
+}
+
+/* ─── Sources ─── */
+.assistant-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.assistant-source-link {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent);
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.assistant-source-link:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.assistant-source-link--static {
+  cursor: default;
+}
+
+/* ─── Actions ─── */
+.assistant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.assistant-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.assistant-action-link:hover {
+  opacity: 0.85;
+}
+
+/* ─── Loading Indicator ─── */
+.assistant-loading-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.assistant-loading-bubble {
+  padding: 0.5rem;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  background: var(--social-bg);
+}
+
+/* ─── Typing Indicator ─── */
+.assistant-typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 0.75rem 1rem;
+}
+
+.assistant-typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text);
+  opacity: 0.4;
+  animation: assistant-typing 1.2s ease-in-out infinite;
+}
+
+.assistant-typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.assistant-typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes assistant-typing {
+  0%, 60%, 100% { opacity: 0.2; transform: scale(0.8); }
+  30% { opacity: 0.8; transform: scale(1); }
+}
+
+/* ─── Input Bar ─── */
+.assistant-input-bar {
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 3vw, 2rem);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.assistant-input-bar .app-input {
+  flex: 1;
+  border-radius: 2rem;
+  padding: 0.65rem 1.25rem;
+}
+
+/* ─── Send Button ─── */
+.assistant-send-btn {
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+/* ─── Bold content ─── */
+.assistant-bold {
+  color: var(--text-h);
+}

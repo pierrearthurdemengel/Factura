@@ -142,22 +142,12 @@ export default function Network() {
       <h1 className="app-page-title">Reseau</h1>
 
       {/* Onglets */}
-      <div style={{
-        display: 'flex', gap: '0.5rem', marginBottom: '1.5rem',
-        borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', overflowX: 'auto',
-      }}>
+      <div className="app-tabs">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none',
-              background: activeTab === tab.key ? 'var(--accent)' : 'transparent',
-              color: activeTab === tab.key ? '#fff' : 'var(--text)',
-              borderRadius: '6px', cursor: 'pointer',
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              fontSize: '0.9rem', whiteSpace: 'nowrap',
-            }}
+            className={`app-tab ${activeTab === tab.key ? 'app-tab--active' : ''}`}
           >
             {tab.label}
           </button>
@@ -167,28 +157,24 @@ export default function Network() {
       {/* Onglet Annuaire */}
       {activeTab === 'directory' && (
         <div>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem', maxWidth: 600, lineHeight: 1.6 }}>
+          <p className="app-desc">
             Recherchez une entreprise par son SIREN ou sa raison sociale pour consulter
             ses informations et son activite sur le reseau.
           </p>
 
           {/* Barre de recherche */}
-          <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-            <div className="app-form-group" style={{ flex: 1, minWidth: '200px', marginBottom: 0 }}>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="app-input"
-                placeholder="SIREN ou raison sociale..."
-                style={{ marginBottom: 0 }}
-              />
-            </div>
+          <form onSubmit={handleSearchSubmit} className="app-filter-bar">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="app-input"
+              placeholder="SIREN ou raison sociale..."
+            />
             <button
               type="submit"
               className="app-btn-primary"
               disabled={searchLoading || !searchQuery.trim()}
-              style={{ alignSelf: 'flex-end' }}
             >
               {searchLoading ? 'Recherche...' : 'Rechercher'}
             </button>
@@ -196,57 +182,43 @@ export default function Network() {
 
           {/* Resultats */}
           {searchLoading && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: 'clamp(1rem, 2vw, 1.5rem)',
-            }}>
+            <div className="app-cards-grid">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="app-skeleton app-skeleton-card" style={{ height: 160 }} />
+                <div key={i} className="app-skeleton app-skeleton-card" />
               ))}
             </div>
           )}
 
           {!searchLoading && hasSearched && searchResults.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)' }}>Aucun resultat</p>
-              <p style={{ fontSize: '0.9rem' }}>
+            <div className="app-empty">
+              <p className="app-empty-title">Aucun resultat</p>
+              <p className="app-empty-desc">
                 Aucune entreprise ne correspond a votre recherche. Verifiez le SIREN ou le nom saisi.
               </p>
             </div>
           )}
 
           {!searchLoading && searchResults.length > 0 && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: 'clamp(1rem, 2vw, 1.5rem)',
-            }}>
+            <div className="app-cards-grid">
               {searchResults.map((company) => (
-                <div key={company.id} className="app-card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: 'var(--text-h)' }}>
+                <div key={company.id} className="app-card app-client-card">
+                  <div className="app-client-card-header">
+                    <h3 className="app-client-card-name">
                       {company.name}
                     </h3>
                     {company.verified && (
-                      <span style={{
-                        padding: '2px 8px', borderRadius: '1rem', fontSize: '0.7rem', fontWeight: 600,
-                        background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', whiteSpace: 'nowrap',
-                      }}>
+                      <span className="app-status-pill app-status-pill--connected">
                         Entreprise verifiee
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '0.5rem' }}>
-                    <span style={{ fontWeight: 500, color: 'var(--text-h)' }}>SIREN :</span> {company.siren}
+                  <div className="app-client-card-sub">
+                    <span className="app-stat-box-value">SIREN :</span> {company.siren}
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '0.75rem' }}>
-                    <span style={{ fontWeight: 500, color: 'var(--text-h)' }}>Ville :</span> {company.city}
+                  <div className="app-client-card-sub">
+                    <span className="app-stat-box-value">Ville :</span> {company.city}
                   </div>
-                  <div style={{
-                    marginTop: 'auto', paddingTop: '0.75rem', borderTop: '1px solid var(--border)',
-                    fontSize: '0.8rem', color: 'var(--text)',
-                  }}>
+                  <div className="app-client-card-meta">
                     {company.invoiceCount} facture(s) traitee(s)
                   </div>
                 </div>
@@ -259,17 +231,12 @@ export default function Network() {
       {/* Onglet Statistiques reseau */}
       {activeTab === 'stats' && (
         <div>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem', maxWidth: 600, lineHeight: 1.6 }}>
+          <p className="app-desc">
             Vue d'ensemble de l'activite du reseau Factura. Ces chiffres sont mis a jour quotidiennement.
           </p>
 
           {statsLoading && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-              gap: 'clamp(1rem, 2vw, 1.5rem)',
-              marginBottom: '2rem',
-            }}>
+            <div className="app-kpi-grid">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="app-skeleton app-skeleton-card" />
               ))}
@@ -277,11 +244,7 @@ export default function Network() {
           )}
 
           {!statsLoading && !stats && (
-            <div style={{
-              padding: '1rem', borderRadius: '6px',
-              background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
-              marginBottom: '1.5rem', fontSize: '0.9rem',
-            }}>
+            <div className="app-alert app-alert--error">
               Impossible de charger les statistiques du reseau. Veuillez reessayer.
             </div>
           )}
@@ -289,25 +252,20 @@ export default function Network() {
           {!statsLoading && stats && (
             <>
               {/* Cartes KPI */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                gap: 'clamp(1rem, 2vw, 1.5rem)',
-                marginBottom: '2rem',
-              }}>
-                <div className="app-card">
+              <div className="app-kpi-grid">
+                <div className="app-card app-kpi-card">
                   <h3 className="app-card-title">Total entreprises</h3>
                   <p className="app-card-value">
                     {stats.totalCompanies.toLocaleString('fr-FR')}
                   </p>
                 </div>
-                <div className="app-card">
+                <div className="app-card app-kpi-card">
                   <h3 className="app-card-title">Factures echangees</h3>
                   <p className="app-card-value">
                     {stats.totalInvoices.toLocaleString('fr-FR')}
                   </p>
                 </div>
-                <div className="app-card">
+                <div className="app-card app-kpi-card">
                   <h3 className="app-card-title">Volume total</h3>
                   <p className="app-card-value">
                     {formatEur(stats.totalVolumeEur)}
@@ -316,13 +274,9 @@ export default function Network() {
               </div>
 
               {/* Espace reserve pour le graphique de croissance */}
-              <div className="app-card" style={{ padding: '2rem', textAlign: 'center' }}>
-                <h3 className="app-card-title" style={{ marginBottom: '1rem' }}>Croissance du reseau</h3>
-                <div style={{
-                  padding: '3rem 1rem', borderRadius: '8px',
-                  background: 'var(--social-bg)', border: '1px dashed var(--border)',
-                  color: 'var(--text)', fontSize: '0.9rem',
-                }}>
+              <div className="app-card">
+                <h3 className="app-card-title">Croissance du reseau</h3>
+                <div className="app-empty">
                   Graphique de croissance a venir. Les donnees sont en cours de collecte
                   pour afficher l'evolution mensuelle du nombre d'entreprises et du volume de factures.
                 </div>
@@ -335,35 +289,26 @@ export default function Network() {
       {/* Onglet Parrainage */}
       {activeTab === 'referral' && (
         <div>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem', maxWidth: 600, lineHeight: 1.6 }}>
+          <p className="app-desc">
             Invitez d'autres entreprises a rejoindre Factura et gagnez des avantages
             pour chaque inscription validee.
           </p>
 
           {referralLoading && (
             <div>
-              <div className="app-skeleton" style={{ width: '100%', height: 60, borderRadius: '8px', marginBottom: '1.5rem' }} />
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                gap: 'clamp(1rem, 2vw, 1.5rem)',
-                marginBottom: '1.5rem',
-              }}>
+              <div className="app-skeleton app-skeleton-table-row" />
+              <div className="app-kpi-grid">
                 <div className="app-skeleton app-skeleton-card" />
                 <div className="app-skeleton app-skeleton-card" />
               </div>
               {[1, 2, 3].map((i) => (
-                <div key={i} className="app-skeleton app-skeleton-table-row" style={{ marginBottom: '0.5rem' }} />
+                <div key={i} className="app-skeleton app-skeleton-table-row" />
               ))}
             </div>
           )}
 
           {!referralLoading && !referralData && (
-            <div style={{
-              padding: '1rem', borderRadius: '6px',
-              background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
-              marginBottom: '1.5rem', fontSize: '0.9rem',
-            }}>
+            <div className="app-alert app-alert--error">
               Impossible de charger vos informations de parrainage. Veuillez reessayer.
             </div>
           )}
@@ -372,14 +317,14 @@ export default function Network() {
             <>
               {/* Lien de parrainage */}
               <div className="app-card" style={{ marginBottom: '1.5rem' }}>
-                <label className="app-label" style={{ marginBottom: '0.5rem' }}>Votre lien de parrainage</label>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <label className="app-label">Votre lien de parrainage</label>
+                <div className="app-filter-bar">
                   <input
                     type="text"
                     value={referralData.referralLink}
                     readOnly
                     className="app-input"
-                    style={{ flex: 1, minWidth: '200px', marginBottom: 0, background: 'var(--social-bg)' }}
+                    style={{ background: 'var(--social-bg)' }}
                   />
                   <button
                     onClick={handleCopyReferralLink}
@@ -391,17 +336,12 @@ export default function Network() {
               </div>
 
               {/* Statistiques de parrainage */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                gap: 'clamp(1rem, 2vw, 1.5rem)',
-                marginBottom: '2rem',
-              }}>
-                <div className="app-card">
+              <div className="app-kpi-grid">
+                <div className="app-card app-kpi-card">
                   <h3 className="app-card-title">Nombre de parrainages</h3>
                   <p className="app-card-value">{referralData.referralCount}</p>
                 </div>
-                <div className="app-card">
+                <div className="app-card app-kpi-card">
                   <h3 className="app-card-title">Gains cumules</h3>
                   <p className="app-card-value">{formatEur(referralData.totalEarnings)}</p>
                 </div>
@@ -411,9 +351,9 @@ export default function Network() {
               <h2 className="app-section-title">Historique des parrainages</h2>
 
               {referralData.referrals.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-                  <p style={{ fontWeight: 600, color: 'var(--text-h)' }}>Aucun parrainage pour le moment</p>
-                  <p style={{ fontSize: '0.9rem' }}>
+                <div className="app-empty">
+                  <p className="app-empty-title">Aucun parrainage pour le moment</p>
+                  <p className="app-empty-desc">
                     Partagez votre lien de parrainage pour commencer a inviter des entreprises.
                   </p>
                 </div>
@@ -433,20 +373,20 @@ export default function Network() {
                         const statusInfo = referralStatusLabel(referral.status);
                         return (
                           <tr key={referral.id}>
-                            <td style={{ fontWeight: 500, color: 'var(--text-h)' }}>
+                            <td className="app-list-item-title">
                               {referral.referredName}
                             </td>
-                            <td style={{ color: 'var(--text)' }}>
+                            <td>
                               {referral.referredEmail}
                             </td>
-                            <td style={{ color: 'var(--text)' }}>
+                            <td>
                               {new Date(referral.createdAt).toLocaleDateString('fr-FR')}
                             </td>
                             <td>
-                              <span style={{
-                                padding: '2px 10px', borderRadius: '1rem', fontSize: '0.8rem', fontWeight: 600,
-                                background: statusInfo.bg, color: statusInfo.color,
-                              }}>
+                              <span
+                                className="app-status-pill"
+                                style={{ background: statusInfo.bg, color: statusInfo.color }}
+                              >
                                 {statusInfo.label}
                               </span>
                             </td>

@@ -31,6 +31,16 @@ const statusBadge = (status: string) => {
   );
 };
 
+const STATUSES = [
+  { value: '', label: 'Tous' },
+  { value: 'DRAFT', label: 'Brouillon' },
+  { value: 'SENT', label: 'Envoyee' },
+  { value: 'ACKNOWLEDGED', label: 'Acceptee' },
+  { value: 'REJECTED', label: 'Rejetee' },
+  { value: 'PAID', label: 'Payee' },
+  { value: 'CANCELLED', label: 'Annulee' },
+];
+
 const PAGE_SIZE = 20;
 
 export default function InvoiceList() {
@@ -73,11 +83,11 @@ export default function InvoiceList() {
     // Optimistic Update
     const previousInvoices = [...invoices];
     setInvoices((prev) => prev.map(inv => inv.id === id ? { ...inv, status: newStatus } : inv));
-    
+
     try {
       const inv = previousInvoices.find(i => i.id === id);
       if (!inv) return;
-      
+
       if (inv.status === 'DRAFT' && newStatus === 'SENT') {
         await sendInvoice(id);
       } else if (['SENT', 'ACKNOWLEDGED'].includes(inv.status) && newStatus === 'PAID') {
@@ -89,7 +99,7 @@ export default function InvoiceList() {
         setInvoices(previousInvoices);
         return;
       }
-      
+
       success(`Facture deplacee en ${newStatus}`);
       // Background Full Refresh
       const params: Record<string, string> = { page: String(page), itemsPerPage: String(PAGE_SIZE) };
@@ -105,12 +115,12 @@ export default function InvoiceList() {
 
   if (loading) return (
     <div className="app-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
-        <div className="app-skeleton app-skeleton-title" style={{ margin: 0, width: '200px' }} />
-        <div className="app-skeleton" style={{ width: '150px', height: '40px', borderRadius: '6px' }} />
+      <div className="app-skeleton-header">
+        <div className="app-skeleton app-skeleton-title" />
+        <div className="app-skeleton" />
       </div>
-      <div className="app-skeleton" style={{ width: '300px', height: '40px', borderRadius: '6px', marginBottom: '2rem' }} />
-      <div className="app-table-wrapper" style={{ padding: '1rem', border: 'none' }}>
+      <div className="app-skeleton app-skeleton-pills" />
+      <div className="app-table-wrapper app-skeleton-table">
         {[1,2,3,4,5,6,7,8].map(i => <div key={i} className="app-skeleton app-skeleton-table-row" />)}
       </div>
     </div>
@@ -118,14 +128,20 @@ export default function InvoiceList() {
 
   return (
     <div className="app-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'clamp(1rem, 3vw, 2rem)', flexWrap: 'wrap', gap: '1rem' }}>
-        <h1 className="app-page-title" style={{ margin: 0 }}>Factures</h1>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <div style={{ display: 'flex', background: 'var(--social-bg)', borderRadius: '8px', padding: '4px' }}>
-            <button onClick={() => setViewMode('list')} style={{ border: 'none', background: viewMode === 'list' ? 'var(--bg)' : 'transparent', color: viewMode === 'list' ? 'var(--text-h)' : 'var(--text)', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: viewMode === 'list' ? 600 : 400, boxShadow: viewMode === 'list' ? '0 2px 5px rgba(0,0,0,0.1)' : 'none' }}>
+      <div className="app-page-header">
+        <h1 className="app-page-title">Factures</h1>
+        <div className="app-page-header-actions">
+          <div className="app-view-toggle">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`app-view-toggle-btn${viewMode === 'list' ? ' app-view-toggle-btn--active' : ''}`}
+            >
               Liste
             </button>
-            <button onClick={() => setViewMode('kanban')} style={{ border: 'none', background: viewMode === 'kanban' ? 'var(--bg)' : 'transparent', color: viewMode === 'kanban' ? 'var(--text-h)' : 'var(--text)', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: viewMode === 'kanban' ? 600 : 400, boxShadow: viewMode === 'kanban' ? '0 2px 5px rgba(0,0,0,0.1)' : 'none' }}>
+            <button
+              onClick={() => setViewMode('kanban')}
+              className={`app-view-toggle-btn${viewMode === 'kanban' ? ' app-view-toggle-btn--active' : ''}`}
+            >
               Kanban
             </button>
           </div>
@@ -135,17 +151,16 @@ export default function InvoiceList() {
         </div>
       </div>
 
-      <div className="app-form-group" style={{ maxWidth: '300px', marginBottom: '2rem' }}>
-        <label className="app-label">Filtrer par statut : </label>
-        <select value={statusFilter} onChange={(e) => handleFilterChange(e.target.value)} className="app-select">
-          <option value="">Tous</option>
-          <option value="DRAFT">Brouillon</option>
-          <option value="SENT">Envoyee</option>
-          <option value="ACKNOWLEDGED">Acceptee</option>
-          <option value="REJECTED">Rejetee</option>
-          <option value="PAID">Payee</option>
-          <option value="CANCELLED">Annulee</option>
-        </select>
+      <div className="app-pills">
+        {STATUSES.map((s) => (
+          <button
+            key={s.value}
+            className={`app-pill${statusFilter === s.value ? ' app-pill--active' : ''}`}
+            onClick={() => handleFilterChange(s.value)}
+          >
+            {s.label}
+          </button>
+        ))}
       </div>
 
       {invoices.length > 0 && viewMode === 'kanban' && (
@@ -153,34 +168,53 @@ export default function InvoiceList() {
       )}
 
       {invoices.length > 0 && viewMode === 'list' && (
-        <div className="app-table-wrapper">
-        <table className="app-table">
-          <thead>
-            <tr>
-              <th>Numero</th>
-              <th>Client</th>
-              <th>Date</th>
-              <th style={{ textAlign: 'right' }}>HT</th>
-              <th style={{ textAlign: 'right' }}>TTC</th>
-              <th style={{ textAlign: 'center' }}>Statut</th>
-            </tr>
-          </thead>
-          <tbody>
+        <>
+          {/* Mobile: card-based list */}
+          <div className="app-list app-mobile-only">
             {invoices.map((inv) => (
-              <tr key={inv.id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/invoices/${inv.id}`)}>
-                <td>
-                  <Link to={`/invoices/${inv.id}`} style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>{inv.number || 'Brouillon'}</Link>
-                </td>
-                <td>{inv.buyer?.name}</td>
-                <td>{new Date(inv.issueDate).toLocaleDateString('fr-FR')}</td>
-                <td style={{ textAlign: 'right' }}>{inv.totalExcludingTax} EUR</td>
-                <td style={{ textAlign: 'right' }}>{inv.totalIncludingTax} EUR</td>
-                <td style={{ textAlign: 'center' }}>{statusBadge(inv.status)}</td>
-              </tr>
+              <Link key={inv.id} to={`/invoices/${inv.id}`} className="app-list-item">
+                <div className="app-list-item-info">
+                  <div className="app-list-item-title">{inv.number || 'Brouillon'}</div>
+                  <div className="app-list-item-sub">
+                    {inv.buyer?.name} &middot; {new Date(inv.issueDate).toLocaleDateString('fr-FR')}
+                  </div>
+                </div>
+                <div className="app-list-item-value">{inv.totalIncludingTax} EUR</div>
+                {statusBadge(inv.status)}
+              </Link>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </div>
+
+          {/* Desktop: full table */}
+          <div className="app-table-wrapper app-desktop-only">
+            <table className="app-table">
+              <thead>
+                <tr>
+                  <th>Numero</th>
+                  <th>Client</th>
+                  <th>Date</th>
+                  <th className="text-right">HT</th>
+                  <th className="text-right">TTC</th>
+                  <th className="text-center">Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((inv) => (
+                  <tr key={inv.id} className="app-table-row-link" onClick={() => navigate(`/invoices/${inv.id}`)}>
+                    <td>
+                      <Link to={`/invoices/${inv.id}`} className="app-table-link">{inv.number || 'Brouillon'}</Link>
+                    </td>
+                    <td>{inv.buyer?.name}</td>
+                    <td>{new Date(inv.issueDate).toLocaleDateString('fr-FR')}</td>
+                    <td className="text-right">{inv.totalExcludingTax} EUR</td>
+                    <td className="text-right">{inv.totalIncludingTax} EUR</td>
+                    <td className="text-center">{statusBadge(inv.status)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {invoices.length === 0 && (
@@ -201,7 +235,7 @@ export default function InvoiceList() {
       )}
 
       {totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: 'clamp(1.5rem, 4vw, 2rem)' }}>
+        <div className="app-pagination">
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
@@ -209,7 +243,7 @@ export default function InvoiceList() {
           >
             Precedent
           </button>
-          <span style={{ fontWeight: 500 }}>Page {page} / {totalPages}</span>
+          <span className="app-pagination-info">Page {page} / {totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}

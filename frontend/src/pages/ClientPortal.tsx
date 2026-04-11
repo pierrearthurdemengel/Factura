@@ -98,24 +98,24 @@ export default function ClientPortal() {
   // --- Etat de chargement avec squelette ---
   if (loading) {
     return (
-      <div className="app-container" style={{ minHeight: '100vh' }}>
-        <div style={{ textAlign: 'center', marginBottom: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
-          <div className="app-skeleton" style={{ width: '120px', height: '40px', borderRadius: '8px', margin: '0 auto 1rem' }} />
-          <div className="app-skeleton app-skeleton-title" style={{ width: '50%', margin: '0 auto' }} />
+      <div className="app-container portal-loading">
+        <div className="portal-skeleton-header">
+          <div className="app-skeleton portal-skeleton-logo" />
+          <div className="app-skeleton app-skeleton-title portal-skeleton-title" />
         </div>
         <div className="app-grid">
           <div className="app-skeleton app-skeleton-card" />
           <div className="app-skeleton app-skeleton-card" />
         </div>
-        <div className="app-skeleton app-skeleton-card" style={{ height: '80px', marginTop: '1.5rem', marginBottom: '1.5rem' }} />
-        <div className="app-skeleton app-skeleton-title" style={{ width: '20%' }} />
-        <div style={{ padding: '1rem' }}>
+        <div className="app-skeleton app-skeleton-card portal-skeleton-dates" />
+        <div className="app-skeleton app-skeleton-title portal-skeleton-section-title" />
+        <div className="portal-skeleton-rows">
           {[1, 2, 3].map((i) => (
             <div key={i} className="app-skeleton app-skeleton-table-row" />
           ))}
         </div>
-        <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
-          <div className="app-skeleton" style={{ width: '200px', height: '60px', borderRadius: '8px' }} />
+        <div className="portal-skeleton-totals">
+          <div className="app-skeleton portal-skeleton-totals-box" />
         </div>
       </div>
     );
@@ -124,13 +124,13 @@ export default function ClientPortal() {
   // --- Etat d'erreur (token invalide ou facture introuvable) ---
   if (error || !portalData) {
     return (
-      <div className="app-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center', maxWidth: '480px' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.3 }}>404</div>
-          <h1 style={{ fontSize: 'clamp(1.25rem, 3vw, 1.75rem)', color: 'var(--text-h)', marginBottom: '1rem' }}>
+      <div className="app-container portal-error-wrapper">
+        <div className="portal-error-inner">
+          <div className="portal-error-code">404</div>
+          <h1 className="portal-error-title">
             Facture introuvable
           </h1>
-          <p style={{ color: 'var(--text)', lineHeight: 1.6 }}>
+          <p className="portal-error-desc">
             Ce lien est invalide ou a expire. Veuillez contacter l'emetteur de la facture
             pour obtenir un nouveau lien de partage.
           </p>
@@ -154,83 +154,78 @@ export default function ClientPortal() {
   const cfg = statusConfig[invoice.status] || statusConfig.SENT;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--social-bg, #f9fafb)' }}>
-      <div className="app-container" style={{ paddingTop: 'clamp(1.5rem, 4vw, 3rem)', paddingBottom: 'clamp(2rem, 5vw, 4rem)' }}>
+    <div className="portal-bg">
+      <div className="app-container portal-container">
 
         {/* En-tete avec logo du vendeur et numero de facture */}
-        <div style={{ textAlign: 'center', marginBottom: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+        <div className="portal-header">
           {sellerLogo && (
             <img
               src={sellerLogo}
               alt={invoice.seller?.name || 'Logo'}
-              style={{ maxHeight: '60px', maxWidth: '200px', objectFit: 'contain', marginBottom: '1rem' }}
+              className="portal-seller-logo"
             />
           )}
-          <h1 className="app-page-title" style={{ margin: '0 0 0.75rem' }}>
+          <h1 className="app-page-title portal-invoice-title">
             Facture {invoice.number || ''}
           </h1>
-          <span style={{
-            padding: '4px 14px',
-            borderRadius: '1rem',
-            fontSize: '0.85rem',
-            fontWeight: 600,
-            background: cfg.bg,
-            color: cfg.color,
-            display: 'inline-block',
-          }}>
+          <span
+            className="app-status-pill"
+            style={{ background: cfg.bg, color: cfg.color }}
+          >
             {cfg.label}
           </span>
         </div>
 
         {/* Informations vendeur et acheteur */}
-        <div className="app-grid" style={{ marginBottom: 'clamp(1rem, 3vw, 1.5rem)' }}>
+        <div className="app-grid portal-entities-row">
           <div className="app-card">
             <h3 className="app-card-title">Emetteur</h3>
-            <p style={{ margin: '0 0 0.25rem', color: 'var(--text)', fontWeight: 600 }}>{invoice.seller?.name}</p>
+            <p className="app-card-text">{invoice.seller?.name}</p>
             {invoice.seller?.siren && (
-              <p style={{ margin: '0 0 0.25rem', color: 'var(--text)', fontSize: '0.9rem' }}>SIREN : {invoice.seller.siren}</p>
+              <p className="app-card-text">SIREN : {invoice.seller.siren}</p>
             )}
             {invoice.seller?.vatNumber && (
-              <p style={{ margin: '0 0 0.25rem', color: 'var(--text)', fontSize: '0.9rem' }}>TVA : {invoice.seller.vatNumber}</p>
+              <p className="app-card-text">TVA : {invoice.seller.vatNumber}</p>
             )}
-            <p style={{ margin: '0 0 0.25rem', color: 'var(--text)', fontSize: '0.9rem' }}>{invoice.seller?.addressLine1}</p>
-            <p style={{ margin: 0, color: 'var(--text)', fontSize: '0.9rem' }}>{invoice.seller?.postalCode} {invoice.seller?.city}</p>
+            <p className="app-card-text">{invoice.seller?.addressLine1}</p>
+            <p className="app-card-text">{invoice.seller?.postalCode} {invoice.seller?.city}</p>
           </div>
           <div className="app-card">
             <h3 className="app-card-title">Destinataire</h3>
-            <p style={{ margin: '0 0 0.25rem', color: 'var(--text)', fontWeight: 600 }}>{invoice.buyer?.name}</p>
+            <p className="app-card-text">{invoice.buyer?.name}</p>
             {invoice.buyer?.siren && (
-              <p style={{ margin: '0 0 0.25rem', color: 'var(--text)', fontSize: '0.9rem' }}>SIREN : {invoice.buyer.siren}</p>
+              <p className="app-card-text">SIREN : {invoice.buyer.siren}</p>
             )}
             {invoice.buyer?.vatNumber && (
-              <p style={{ margin: '0 0 0.25rem', color: 'var(--text)', fontSize: '0.9rem' }}>TVA : {invoice.buyer.vatNumber}</p>
+              <p className="app-card-text">TVA : {invoice.buyer.vatNumber}</p>
             )}
-            <p style={{ margin: '0 0 0.25rem', color: 'var(--text)', fontSize: '0.9rem' }}>{invoice.buyer?.addressLine1}</p>
-            <p style={{ margin: 0, color: 'var(--text)', fontSize: '0.9rem' }}>{invoice.buyer?.postalCode} {invoice.buyer?.city}</p>
+            <p className="app-card-text">{invoice.buyer?.addressLine1}</p>
+            <p className="app-card-text">{invoice.buyer?.postalCode} {invoice.buyer?.city}</p>
           </div>
         </div>
 
         {/* Dates et references */}
-        <div className="app-card" style={{ marginBottom: 'clamp(1rem, 3vw, 1.5rem)' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(1rem, 3vw, 2rem)' }}>
+        <div className="app-card portal-dates-card">
+          <div className="portal-dates-row">
             <div>
-              <p style={{ margin: '0 0 0.25rem', fontSize: '0.85rem', color: 'var(--text)' }}>Date d'emission</p>
-              <p style={{ margin: 0, fontWeight: 600, color: 'var(--text-h)' }}>
+              <p className="portal-date-label">Date d'emission</p>
+              <p className="portal-date-value">
                 {new Date(invoice.issueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
               </p>
             </div>
             {invoice.dueDate && (
               <div>
-                <p style={{ margin: '0 0 0.25rem', fontSize: '0.85rem', color: 'var(--text)' }}>Date d'echeance</p>
-                <p style={{ margin: 0, fontWeight: 600, color: 'var(--text-h)' }}>
+                <p className="portal-date-label">Date d'echeance</p>
+                <p className="portal-date-value">
                   {new Date(invoice.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               </div>
             )}
             {invoice.currency && (
               <div>
-                <p style={{ margin: '0 0 0.25rem', fontSize: '0.85rem', color: 'var(--text)' }}>Devise</p>
-                <p style={{ margin: 0, fontWeight: 600, color: 'var(--text-h)' }}>{invoice.currency}</p>
+                <p className="portal-date-label">Devise</p>
+                <p className="portal-date-value">{invoice.currency}</p>
               </div>
             )}
           </div>
@@ -238,27 +233,27 @@ export default function ClientPortal() {
 
         {/* Tableau des lignes de facture */}
         <h2 className="app-section-title">Detail des prestations</h2>
-        <div className="app-table-wrapper" style={{ marginBottom: 'clamp(1rem, 3vw, 1.5rem)' }}>
+        <div className="app-table-wrapper portal-table-section">
           <table className="app-table">
             <thead>
               <tr>
                 <th>Description</th>
-                <th style={{ textAlign: 'right' }}>Quantite</th>
-                <th style={{ textAlign: 'center' }}>Unite</th>
-                <th style={{ textAlign: 'right' }}>Prix unitaire HT</th>
-                <th style={{ textAlign: 'right' }}>TVA</th>
-                <th style={{ textAlign: 'right' }}>Montant HT</th>
+                <th className="text-right">Quantite</th>
+                <th className="text-center">Unite</th>
+                <th className="text-right">Prix unitaire HT</th>
+                <th className="text-right">TVA</th>
+                <th className="text-right">Montant HT</th>
               </tr>
             </thead>
             <tbody>
               {invoice.lines?.map((line) => (
                 <tr key={line.id}>
                   <td>{line.description}</td>
-                  <td style={{ textAlign: 'right' }}>{line.quantity}</td>
-                  <td style={{ textAlign: 'center' }}>{line.unit}</td>
-                  <td style={{ textAlign: 'right' }}>{formatEur(line.unitPriceExcludingTax)}</td>
-                  <td style={{ textAlign: 'right' }}>{line.vatRate}%</td>
-                  <td style={{ textAlign: 'right' }}>{formatEur(line.lineAmount)}</td>
+                  <td className="text-right">{line.quantity}</td>
+                  <td className="text-center">{line.unit}</td>
+                  <td className="text-right">{formatEur(line.unitPriceExcludingTax)}</td>
+                  <td className="text-right">{line.vatRate}%</td>
+                  <td className="text-right">{formatEur(line.lineAmount)}</td>
                 </tr>
               ))}
             </tbody>
@@ -266,43 +261,35 @@ export default function ClientPortal() {
         </div>
 
         {/* Totaux */}
-        <div className="app-card" style={{ marginBottom: 'clamp(1rem, 3vw, 1.5rem)' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '300px' }}>
-              <span style={{ color: 'var(--text)' }}>Total HT</span>
-              <strong style={{ color: 'var(--text-h)' }}>{formatEur(invoice.totalExcludingTax)}</strong>
+        <div className="app-card portal-totals-card">
+          <div className="portal-totals-inner">
+            <div className="portal-totals-line">
+              <span className="portal-totals-line-label">Total HT</span>
+              <strong className="portal-totals-line-value">{formatEur(invoice.totalExcludingTax)}</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '300px' }}>
-              <span style={{ color: 'var(--text)' }}>Total TVA</span>
-              <strong style={{ color: 'var(--text-h)' }}>{formatEur(invoice.totalTax)}</strong>
+            <div className="portal-totals-line">
+              <span className="portal-totals-line-label">Total TVA</span>
+              <strong className="portal-totals-line-value">{formatEur(invoice.totalTax)}</strong>
             </div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              width: '100%',
-              maxWidth: '300px',
-              paddingTop: '0.5rem',
-              borderTop: '2px solid var(--border)',
-              fontSize: '1.15rem',
-            }}>
-              <span style={{ color: 'var(--text-h)', fontWeight: 600 }}>Total TTC</span>
-              <strong style={{ color: 'var(--text-h)' }}>{formatEur(invoice.totalIncludingTax)}</strong>
+            <div className="portal-totals-line portal-totals-grand">
+              <span className="portal-totals-line-label">Total TTC</span>
+              <strong className="portal-totals-line-value">{formatEur(invoice.totalIncludingTax)}</strong>
             </div>
           </div>
         </div>
 
         {/* Mentions legales */}
         {invoice.legalMention && (
-          <p style={{ fontStyle: 'italic', color: 'var(--text)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: 'clamp(1rem, 3vw, 1.5rem)' }}>
+          <p className="portal-legal">
             {invoice.legalMention}
           </p>
         )}
 
         {/* Conditions de paiement */}
         {invoice.paymentTerms && (
-          <div className="app-card" style={{ marginBottom: 'clamp(1rem, 3vw, 1.5rem)', background: 'rgba(37,99,235,0.04)' }}>
-            <h3 className="app-card-title" style={{ fontSize: '0.95rem' }}>Conditions de paiement</h3>
-            <p style={{ margin: 0, color: 'var(--text)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+          <div className="app-card portal-payment-terms-card">
+            <h3 className="app-card-title portal-payment-terms-title">Conditions de paiement</h3>
+            <p className="app-card-text">
               {invoice.paymentTerms}
             </p>
           </div>
@@ -310,13 +297,13 @@ export default function ClientPortal() {
 
         {/* Coordonnees bancaires du vendeur (si disponibles) */}
         {invoice.seller?.iban && (
-          <div className="app-card" style={{ marginBottom: 'clamp(1.5rem, 4vw, 2rem)' }}>
-            <h3 className="app-card-title" style={{ fontSize: '0.95rem' }}>Coordonnees bancaires</h3>
-            <p style={{ margin: '0 0 0.25rem', color: 'var(--text)', fontSize: '0.9rem' }}>
+          <div className="app-card portal-bank-card">
+            <h3 className="app-card-title portal-bank-title">Coordonnees bancaires</h3>
+            <p className="app-card-text">
               IBAN : <strong>{invoice.seller.iban}</strong>
             </p>
             {invoice.seller.bic && (
-              <p style={{ margin: 0, color: 'var(--text)', fontSize: '0.9rem' }}>
+              <p className="app-card-text">
                 BIC : <strong>{invoice.seller.bic}</strong>
               </p>
             )}
@@ -324,18 +311,11 @@ export default function ClientPortal() {
         )}
 
         {/* Boutons d'action : telecharger le PDF et payer */}
-        <div style={{
-          display: 'flex',
-          gap: '0.75rem',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          marginTop: 'clamp(1rem, 3vw, 2rem)',
-        }}>
+        <div className="portal-actions">
           <button
             onClick={handleDownloadPdf}
             disabled={downloading}
-            className="app-btn-primary"
-            style={{ minWidth: '200px' }}
+            className="app-btn-primary portal-btn-download"
           >
             {downloading ? 'Telechargement...' : 'Telecharger le PDF'}
           </button>
@@ -344,11 +324,7 @@ export default function ClientPortal() {
           {paymentLink && invoice.status !== 'PAID' && invoice.status !== 'CANCELLED' && (
             <button
               onClick={handlePay}
-              className="app-btn-primary"
-              style={{
-                minWidth: '200px',
-                background: '#10b981',
-              }}
+              className="app-btn-primary portal-btn-pay"
             >
               Payer cette facture
             </button>
@@ -356,16 +332,8 @@ export default function ClientPortal() {
         </div>
 
         {/* Pied de page discret */}
-        <div style={{
-          textAlign: 'center',
-          marginTop: 'clamp(2rem, 5vw, 4rem)',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid var(--border)',
-          color: 'var(--text)',
-          fontSize: '0.8rem',
-          opacity: 0.6,
-        }}>
-          <p style={{ margin: 0 }}>
+        <div className="portal-footer">
+          <p>
             Ce document a ete genere par {invoice.seller?.name}
           </p>
         </div>

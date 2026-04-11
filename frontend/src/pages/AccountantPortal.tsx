@@ -246,12 +246,12 @@ export default function AccountantPortal() {
     }
   };
 
-  // Couleur du statut d'invitation
-  const getInvitationStatusColor = (status: Invitation['status']): string => {
+  // Classe CSS du statut d'invitation
+  const getInvitationStatusClass = (status: Invitation['status']): string => {
     switch (status) {
-      case 'pending': return '#f59e0b';
-      case 'accepted': return '#22c55e';
-      case 'expired': return '#ef4444';
+      case 'pending': return 'app-status-pill app-status-pill--muted';
+      case 'accepted': return 'app-status-pill app-status-pill--connected';
+      case 'expired': return 'app-status-pill app-status-pill--closed';
     }
   };
 
@@ -266,42 +266,32 @@ export default function AccountantPortal() {
     return (
       <div className="app-container">
         <div className="app-skeleton app-skeleton-title" />
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+        <div className="app-skeleton-pills app-tabs">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="app-skeleton" style={{ width: 100, height: 36, borderRadius: 6 }} />
+            <div key={i} className="app-skeleton app-tab" />
           ))}
         </div>
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="app-skeleton app-skeleton-card" style={{ marginBottom: '0.75rem' }} />
+          <div key={i} className="app-skeleton app-skeleton-card" />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="app-container" style={{ textAlign: 'left' }}>
+    <div className="app-container">
       <h1 className="app-page-title">Portail comptable</h1>
-      <p style={{ color: 'var(--text)', marginBottom: '1.5rem', maxWidth: 650, lineHeight: 1.6 }}>
+      <p className="app-desc">
         Gerez les dossiers de vos clients, validez leurs ecritures comptables et invitez de nouveaux clients.
       </p>
 
       {/* Onglets */}
-      <div style={{
-        display: 'flex', gap: '0.5rem', marginBottom: '1.5rem',
-        borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', overflowX: 'auto',
-      }}>
+      <div className="app-tabs">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none',
-              background: activeTab === tab.key ? 'var(--accent)' : 'transparent',
-              color: activeTab === tab.key ? '#fff' : 'var(--text)',
-              borderRadius: '6px', cursor: 'pointer',
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              fontSize: '0.9rem', whiteSpace: 'nowrap',
-            }}
+            className={`app-tab ${activeTab === tab.key ? 'app-tab--active' : ''}`}
           >
             {tab.label}
           </button>
@@ -312,62 +302,46 @@ export default function AccountantPortal() {
       {activeTab === 'clients' && (
         <div>
           {clients.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)' }}>Aucun client pour le moment</p>
-              <p style={{ fontSize: '0.9rem' }}>
+            <div className="app-empty">
+              <p className="app-empty-title">Aucun client pour le moment</p>
+              <p className="app-empty-desc">
                 Invitez vos premiers clients depuis l'onglet Invitations.
               </p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div className="app-cards-grid">
               {clients.map((client) => (
                 <div
                   key={client.id}
-                  className="app-card"
+                  className={`app-card app-client-card ${selectedClientId === client.id ? 'app-plan-card--selected' : ''}`}
                   onClick={() => setSelectedClientId(client.id)}
-                  style={{
-                    cursor: 'pointer',
-                    flexDirection: 'row', alignItems: 'center', gap: '1rem',
-                    border: selectedClientId === client.id
-                      ? '2px solid var(--accent)'
-                      : '1px solid var(--border)',
-                    transition: 'border-color 0.15s ease',
-                  }}
+                  style={{ cursor: 'pointer' }}
                 >
-                  {/* Avatar avec initiale */}
-                  <div style={{
-                    width: 44, height: 44, borderRadius: '50%',
-                    background: 'var(--accent-bg)', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 700, color: 'var(--accent)', fontSize: '1.1rem', flexShrink: 0,
-                  }}>
-                    {client.name.charAt(0).toUpperCase()}
+                  <div className="app-client-card-header">
+                    {/* Avatar avec initiale */}
+                    <div className="app-health-indicator" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+                      {client.name.charAt(0).toUpperCase()}
+                    </div>
+
+                    {/* Indicateur de selection */}
+                    {selectedClientId === client.id && (
+                      <div className="app-health-indicator" style={{ width: 10, height: 10, background: 'var(--accent)' }} />
+                    )}
                   </div>
 
                   {/* Informations du client */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.95rem' }}>
-                      {client.name}
-                    </div>
-                    <div style={{
-                      display: 'flex', gap: '0.75rem', flexWrap: 'wrap',
-                      marginTop: '0.25rem', fontSize: '0.8rem', color: 'var(--text)',
-                    }}>
-                      {client.siren && <span>SIREN : {client.siren}</span>}
-                      <span>{client.invoiceCount} facture{client.invoiceCount > 1 ? 's' : ''}</span>
-                      {client.lastActivityAt && (
-                        <span>
-                          Derniere activite : {new Date(client.lastActivityAt).toLocaleDateString('fr-FR')}
-                        </span>
-                      )}
-                    </div>
+                  <div className="app-client-card-name">{client.name}</div>
+                  <div className="app-client-card-sub">
+                    {client.siren && <span>SIREN : {client.siren}</span>}
+                    {client.siren && ' — '}
+                    <span>{client.invoiceCount} facture{client.invoiceCount > 1 ? 's' : ''}</span>
                   </div>
 
-                  {/* Indicateur de selection */}
-                  <div style={{
-                    width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-                    background: selectedClientId === client.id ? 'var(--accent)' : 'transparent',
-                  }} />
+                  {client.lastActivityAt && (
+                    <div className="app-client-card-meta">
+                      Derniere activite : {new Date(client.lastActivityAt).toLocaleDateString('fr-FR')}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -379,15 +353,11 @@ export default function AccountantPortal() {
       {activeTab === 'entries' && (
         <div>
           {/* Filtre par client */}
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem',
-          }}>
+          <div className="app-filter-bar">
             <select
               value={selectedClientId || ''}
               onChange={(e) => setSelectedClientId(e.target.value || null)}
-              className="app-input"
-              style={{ width: 'auto', minWidth: 200 }}
+              className="app-select"
             >
               <option value="">Tous les clients</option>
               {clients.map((c) => (
@@ -410,18 +380,18 @@ export default function AccountantPortal() {
           </div>
 
           {entries.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)' }}>Aucune ecriture a afficher</p>
-              <p style={{ fontSize: '0.9rem' }}>
+            <div className="app-empty">
+              <p className="app-empty-title">Aucune ecriture a afficher</p>
+              <p className="app-empty-desc">
                 Les ecritures apparaitront ici lorsque vos clients emettront des factures.
               </p>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <div className="app-table-wrapper">
+              <table className="app-table">
                 <thead>
-                  <tr style={{ borderBottom: '2px solid var(--border)', textAlign: 'left' }}>
-                    <th style={{ padding: '0.5rem', width: 40 }}>
+                  <tr>
+                    <th>
                       <input
                         type="checkbox"
                         checked={
@@ -432,26 +402,23 @@ export default function AccountantPortal() {
                         title="Tout selectionner"
                       />
                     </th>
-                    <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Date</th>
-                    <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Client</th>
-                    <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Journal</th>
-                    <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Compte</th>
-                    <th style={{ padding: '0.5rem', color: 'var(--text-h)' }}>Libelle</th>
-                    <th style={{ padding: '0.5rem', color: 'var(--text-h)', textAlign: 'right' }}>Debit</th>
-                    <th style={{ padding: '0.5rem', color: 'var(--text-h)', textAlign: 'right' }}>Credit</th>
-                    <th style={{ padding: '0.5rem', color: 'var(--text-h)', textAlign: 'center' }}>Statut</th>
+                    <th>Date</th>
+                    <th>Client</th>
+                    <th>Journal</th>
+                    <th>Compte</th>
+                    <th>Libelle</th>
+                    <th className="text-right">Debit</th>
+                    <th className="text-right">Credit</th>
+                    <th className="text-center">Statut</th>
                   </tr>
                 </thead>
                 <tbody>
                   {entries.map((entry) => (
                     <tr
                       key={entry.id}
-                      style={{
-                        borderBottom: '1px solid var(--border)',
-                        opacity: entry.validated ? 0.6 : 1,
-                      }}
+                      style={{ opacity: entry.validated ? 0.6 : 1 }}
                     >
-                      <td style={{ padding: '0.5rem' }}>
+                      <td>
                         {!entry.validated && (
                           <input
                             type="checkbox"
@@ -460,55 +427,40 @@ export default function AccountantPortal() {
                           />
                         )}
                       </td>
-                      <td style={{ padding: '0.5rem', color: 'var(--text)', whiteSpace: 'nowrap' }}>
+                      <td>
                         {new Date(entry.date).toLocaleDateString('fr-FR')}
                       </td>
-                      <td style={{ padding: '0.5rem', color: 'var(--text-h)', fontWeight: 500 }}>
+                      <td>
                         {entry.clientName}
                       </td>
-                      <td style={{ padding: '0.5rem' }}>
-                        <span style={{
-                          background: 'var(--accent-bg)', color: 'var(--accent)',
-                          padding: '2px 6px', borderRadius: '4px',
-                          fontSize: '0.8rem', fontWeight: 600,
-                        }}>
+                      <td>
+                        <span className="app-status-pill" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
                           {entry.journalCode}
                         </span>
                       </td>
-                      <td style={{ padding: '0.5rem', color: 'var(--text-h)', fontWeight: 500 }}>
+                      <td>
                         {entry.accountNumber} — {entry.accountLabel}
                       </td>
-                      <td style={{ padding: '0.5rem', color: 'var(--text)' }}>
+                      <td>
                         {entry.label}
                         {entry.invoiceNumber && (
-                          <span style={{ color: 'var(--accent)', marginLeft: '0.5rem', fontSize: '0.8rem' }}>
+                          <span className="app-badge app-badge-sent">
                             ({entry.invoiceNumber})
                           </span>
                         )}
                       </td>
-                      <td style={{
-                        padding: '0.5rem', textAlign: 'right',
-                        color: parseFloat(entry.debit) > 0 ? 'var(--text-h)' : 'var(--text)',
-                      }}>
+                      <td className="text-right">
                         {parseFloat(entry.debit) > 0
                           ? parseFloat(entry.debit).toLocaleString('fr-FR', { minimumFractionDigits: 2 })
                           : ''}
                       </td>
-                      <td style={{
-                        padding: '0.5rem', textAlign: 'right',
-                        color: parseFloat(entry.credit) > 0 ? 'var(--text-h)' : 'var(--text)',
-                      }}>
+                      <td className="text-right">
                         {parseFloat(entry.credit) > 0
                           ? parseFloat(entry.credit).toLocaleString('fr-FR', { minimumFractionDigits: 2 })
                           : ''}
                       </td>
-                      <td style={{ padding: '0.5rem', textAlign: 'center' }}>
-                        <span style={{
-                          padding: '2px 8px', borderRadius: '1rem',
-                          fontSize: '0.75rem', fontWeight: 600,
-                          background: entry.validated ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)',
-                          color: entry.validated ? '#22c55e' : '#f59e0b',
-                        }}>
+                      <td className="text-center">
+                        <span className={`app-status-pill ${entry.validated ? 'app-status-pill--connected' : 'app-status-pill--muted'}`}>
                           {entry.validated ? 'Validee' : 'A valider'}
                         </span>
                       </td>
@@ -525,51 +477,54 @@ export default function AccountantPortal() {
       {activeTab === 'invitations' && (
         <div>
           {/* Formulaire d'invitation */}
-          <div className="app-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
-            <h2 style={{ margin: '0 0 0.5rem', color: 'var(--text-h)', fontSize: '1rem' }}>
+          <div className="app-card" style={{ marginBottom: '1.5rem' }}>
+            <h2 className="app-subsection-title app-mt-0">
               Inviter un client
             </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '1rem' }}>
+            <p className="app-desc" style={{ marginBottom: '1rem' }}>
               Envoyez une invitation par email pour rattacher un client a votre cabinet.
             </p>
 
             <form onSubmit={handleInvite}>
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <input
-                  type="email"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  placeholder="Email du client"
-                  className="app-input"
-                  style={{ flex: 1, minWidth: 200 }}
-                  required
-                />
-                <input
-                  type="text"
-                  value={inviteSiren}
-                  onChange={(e) => setInviteSiren(e.target.value)}
-                  placeholder="SIREN (9 chiffres)"
-                  className="app-input"
-                  style={{ flex: 1, minWidth: 160 }}
-                  required
-                />
-                <button
-                  type="submit"
-                  disabled={inviting}
-                  className="app-btn-primary"
-                  style={{ whiteSpace: 'nowrap' }}
-                >
-                  {inviting ? 'Envoi...' : 'Envoyer l\'invitation'}
-                </button>
+              <div className="app-form-row">
+                <div className="app-form-group flex-2">
+                  <input
+                    type="email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    placeholder="Email du client"
+                    className="app-input"
+                    required
+                  />
+                </div>
+                <div className="app-form-group">
+                  <input
+                    type="text"
+                    value={inviteSiren}
+                    onChange={(e) => setInviteSiren(e.target.value)}
+                    placeholder="SIREN (9 chiffres)"
+                    className="app-input"
+                    required
+                  />
+                </div>
+                <div className="app-form-group" style={{ flex: 'none' }}>
+                  <button
+                    type="submit"
+                    disabled={inviting}
+                    className="app-btn-primary"
+                  >
+                    {inviting ? 'Envoi...' : 'Envoyer l\'invitation'}
+                  </button>
+                </div>
               </div>
 
               {inviteError && (
-                <div style={{ marginTop: '0.75rem', color: '#ef4444', fontSize: '0.85rem' }}>
+                <div className="app-alert app-alert--error">
                   {inviteError}
                 </div>
               )}
               {inviteSuccess && (
-                <div style={{ marginTop: '0.75rem', color: '#22c55e', fontSize: '0.85rem' }}>
+                <div className="app-alert app-alert--success">
                   {inviteSuccess}
                 </div>
               )}
@@ -577,42 +532,33 @@ export default function AccountantPortal() {
           </div>
 
           {/* Liste des invitations en cours */}
-          <h2 style={{ fontSize: '1rem', color: 'var(--text-h)', marginBottom: '0.75rem' }}>
+          <h2 className="app-subsection-title">
             Invitations en cours
           </h2>
 
           {invitations.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)' }}>Aucune invitation envoyee</p>
-              <p style={{ fontSize: '0.9rem' }}>
+            <div className="app-empty">
+              <p className="app-empty-title">Aucune invitation envoyee</p>
+              <p className="app-empty-desc">
                 Utilisez le formulaire ci-dessus pour inviter votre premier client.
               </p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '2rem' }}>
+            <div className="app-list app-mb-2">
               {invitations.map((inv) => (
                 <div
                   key={inv.id}
-                  className="app-card"
-                  style={{
-                    flexDirection: 'row', alignItems: 'center',
-                    justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap',
-                  }}
+                  className="app-list-item"
                 >
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.9rem' }}>
+                  <div className="app-list-item-info">
+                    <div className="app-list-item-title">
                       {inv.email}
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.2rem' }}>
+                    <div className="app-list-item-sub">
                       SIREN : {inv.siren} — Envoyee le {new Date(inv.sentAt).toLocaleDateString('fr-FR')}
                     </div>
                   </div>
-                  <span style={{
-                    padding: '3px 10px', borderRadius: '1rem',
-                    fontSize: '0.75rem', fontWeight: 600,
-                    background: `${getInvitationStatusColor(inv.status)}18`,
-                    color: getInvitationStatusColor(inv.status),
-                  }}>
+                  <span className={getInvitationStatusClass(inv.status)}>
                     {getInvitationStatusLabel(inv.status)}
                   </span>
                 </div>
@@ -621,21 +567,18 @@ export default function AccountantPortal() {
           )}
 
           {/* Section marque blanche */}
-          <div style={{
-            marginTop: '2rem', paddingTop: '2rem',
-            borderTop: '1px solid var(--border)',
-          }}>
-            <h2 style={{ fontSize: '1rem', color: 'var(--text-h)', marginBottom: '0.5rem' }}>
+          <div className="app-section-separator">
+            <h2 className="app-subsection-title">
               Personnalisation marque blanche
             </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '1rem', maxWidth: 550 }}>
+            <p className="app-desc">
               Personnalisez l'apparence du portail avec les couleurs et le nom de votre cabinet.
               Vos clients verront cette identite visuelle sur les documents partages.
             </p>
 
-            <div className="app-card" style={{ maxWidth: 500, padding: '1.5rem' }}>
+            <div className="app-card app-factoring-container">
               <div className="app-form-group">
-                <label className="app-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+                <label className="app-label">
                   Nom du cabinet
                 </label>
                 <input
@@ -647,52 +590,44 @@ export default function AccountantPortal() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <div className="app-form-group" style={{ flex: 1, minWidth: 140 }}>
-                  <label className="app-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+              <div className="app-form-row">
+                <div className="app-form-group">
+                  <label className="app-label">
                     Couleur principale
                   </label>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div className="app-color-picker-row">
                     <input
                       type="color"
                       value={whiteLabel.primaryColor}
                       onChange={(e) => setWhiteLabel({ ...whiteLabel, primaryColor: e.target.value })}
-                      style={{
-                        width: 36, height: 36, border: '1px solid var(--border)',
-                        borderRadius: 6, cursor: 'pointer', padding: 2,
-                      }}
+                      className="app-color-swatch"
                     />
                     <input
                       type="text"
                       value={whiteLabel.primaryColor}
                       onChange={(e) => setWhiteLabel({ ...whiteLabel, primaryColor: e.target.value })}
-                      className="app-input"
-                      style={{ flex: 1 }}
+                      className="app-input app-color-hex-input"
                       maxLength={7}
                     />
                   </div>
                 </div>
 
-                <div className="app-form-group" style={{ flex: 1, minWidth: 140 }}>
-                  <label className="app-label" style={{ fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+                <div className="app-form-group">
+                  <label className="app-label">
                     Couleur secondaire
                   </label>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div className="app-color-picker-row">
                     <input
                       type="color"
                       value={whiteLabel.secondaryColor}
                       onChange={(e) => setWhiteLabel({ ...whiteLabel, secondaryColor: e.target.value })}
-                      style={{
-                        width: 36, height: 36, border: '1px solid var(--border)',
-                        borderRadius: 6, cursor: 'pointer', padding: 2,
-                      }}
+                      className="app-color-swatch"
                     />
                     <input
                       type="text"
                       value={whiteLabel.secondaryColor}
                       onChange={(e) => setWhiteLabel({ ...whiteLabel, secondaryColor: e.target.value })}
-                      className="app-input"
-                      style={{ flex: 1 }}
+                      className="app-input app-color-hex-input"
                       maxLength={7}
                     />
                   </div>
@@ -700,11 +635,7 @@ export default function AccountantPortal() {
               </div>
 
               {/* Apercu des couleurs */}
-              <div style={{
-                display: 'flex', gap: '0.75rem', alignItems: 'center',
-                padding: '0.75rem', borderRadius: 6, marginBottom: '1rem',
-                background: 'var(--surface)', border: '1px solid var(--border)',
-              }}>
+              <div className="app-integration-card">
                 <div style={{
                   width: 32, height: 32, borderRadius: 6,
                   background: whiteLabel.primaryColor, flexShrink: 0,
@@ -713,19 +644,20 @@ export default function AccountantPortal() {
                   width: 32, height: 32, borderRadius: 6,
                   background: whiteLabel.secondaryColor, flexShrink: 0,
                 }} />
-                <span style={{ fontSize: '0.8rem', color: 'var(--text)' }}>
+                <span className="app-list-item-sub">
                   Apercu : {whiteLabel.cabinetName || 'Votre cabinet'}
                 </span>
               </div>
 
-              <button
-                onClick={handleSaveWhiteLabel}
-                disabled={savingWhiteLabel}
-                className="app-btn-primary"
-                style={{ width: '100%' }}
-              >
-                {savingWhiteLabel ? 'Enregistrement...' : 'Enregistrer la personnalisation'}
-              </button>
+              <div className="app-form-actions">
+                <button
+                  onClick={handleSaveWhiteLabel}
+                  disabled={savingWhiteLabel}
+                  className="app-btn-primary"
+                >
+                  {savingWhiteLabel ? 'Enregistrement...' : 'Enregistrer la personnalisation'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

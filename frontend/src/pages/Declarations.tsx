@@ -73,18 +73,12 @@ export default function Declarations() {
       <h1 className="app-page-title">Declarations fiscales</h1>
 
       {/* Onglets */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
+      <div className="app-tabs">
         {sections.map((s) => (
           <button
             key={s.key}
             onClick={() => setActiveSection(s.key)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none',
-              background: activeSection === s.key ? 'var(--accent)' : 'transparent',
-              color: activeSection === s.key ? '#fff' : 'var(--text)',
-              borderRadius: '6px', cursor: 'pointer', fontWeight: activeSection === s.key ? 600 : 400,
-              fontSize: '0.9rem',
-            }}
+            className={`app-tab${activeSection === s.key ? ' app-tab--active' : ''}`}
           >
             {s.label}
           </button>
@@ -94,38 +88,33 @@ export default function Declarations() {
       {/* Calendrier des echeances */}
       {activeSection === 'calendar' && (
         <div>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <p className="app-desc">
             Prochaines echeances fiscales et sociales pour {currentYear}.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="app-list">
             {deadlines.sort((a, b) => a.dueDate.localeCompare(b.dueDate)).map((d) => {
               const cfg = statusConfig[d.status];
               const isUpcoming = d.status === 'pending' && new Date(d.dueDate) > new Date();
               return (
                 <div
                   key={d.id}
-                  className="app-card"
+                  className="app-list-item"
                   style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    flexWrap: 'wrap', gap: '0.5rem',
                     opacity: d.status === 'done' ? 0.6 : 1,
                     borderLeft: isUpcoming ? '3px solid var(--accent)' : undefined,
                   }}
                 >
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.95rem' }}>{d.label}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.15rem' }}>
+                  <div className="app-list-item-info">
+                    <div className="app-list-item-title">{d.label}</div>
+                    <div className="app-list-item-sub">
                       Echeance : {new Date(d.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </div>
                   </div>
                   {d.amount && (
-                    <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.9rem' }}>{d.amount} EUR</div>
+                    <div className="app-list-item-value">{d.amount} EUR</div>
                   )}
-                  <span style={{
-                    padding: '3px 10px', borderRadius: '1rem', fontSize: '0.8rem', fontWeight: 600,
-                    background: cfg.bg, color: cfg.color,
-                  }}>
+                  <span className="app-status-pill" style={{ background: cfg.bg, color: cfg.color }}>
                     {cfg.label}
                   </span>
                 </div>
@@ -138,41 +127,40 @@ export default function Declarations() {
       {/* Assistant TVA */}
       {activeSection === 'tva' && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Situation TVA</h2>
+          <h2 className="app-section-title app-mt-0">Situation TVA</h2>
 
           {vatBalance ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-              <div className="app-card" style={{ textAlign: 'center', padding: '1.5rem' }}>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#2563eb' }}>
+            <div className="app-kpi-grid">
+              <div className="app-card app-kpi-card">
+                <div className="app-card-value" style={{ color: '#2563eb' }}>
                   {parseFloat(vatBalance.collected).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
                 </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.25rem' }}>TVA collectee</div>
+                <div className="app-card-sub">TVA collectee</div>
               </div>
-              <div className="app-card" style={{ textAlign: 'center', padding: '1.5rem' }}>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#22c55e' }}>
+              <div className="app-card app-kpi-card">
+                <div className="app-card-value" style={{ color: '#22c55e' }}>
                   {parseFloat(vatBalance.deductible).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
                 </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.25rem' }}>TVA deductible</div>
+                <div className="app-card-sub">TVA deductible</div>
               </div>
-              <div className="app-card" style={{ textAlign: 'center', padding: '1.5rem' }}>
-                <div style={{
-                  fontSize: '1.5rem', fontWeight: 700,
+              <div className="app-card app-kpi-card">
+                <div className="app-card-value" style={{
                   color: parseFloat(vatBalance.balance) >= 0 ? '#ef4444' : '#22c55e',
                 }}>
                   {parseFloat(vatBalance.balance).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
                 </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.25rem' }}>
+                <div className="app-card-sub">
                   {parseFloat(vatBalance.balance) >= 0 ? 'TVA a payer' : 'Credit de TVA'}
                 </div>
               </div>
             </div>
           ) : (
-            <div className="app-card" style={{ textAlign: 'center', padding: '2rem', marginBottom: '2rem' }}>
-              <p style={{ color: 'var(--text)' }}>Aucune donnee TVA disponible pour cette periode.</p>
+            <div className="app-card app-kpi-card" style={{ marginBottom: '2rem' }}>
+              <p className="app-card-sub">Aucune donnee TVA disponible pour cette periode.</p>
             </div>
           )}
 
-          <p style={{ color: 'var(--text)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+          <p className="app-desc">
             Les calculs de TVA sont bases sur vos factures emises (TVA collectee) et vos justificatifs
             enregistres (TVA deductible). Verifiez les montants avant de declarer sur impots.gouv.fr.
           </p>
@@ -182,22 +170,22 @@ export default function Declarations() {
       {/* Assistant URSSAF */}
       {activeSection === 'urssaf' && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Cotisations URSSAF</h2>
+          <h2 className="app-section-title app-mt-0">Cotisations URSSAF</h2>
 
-          <div className="app-card" style={{ maxWidth: 500, padding: '1.5rem', marginBottom: '2rem' }}>
+          <div className="app-card" style={{ maxWidth: 500, marginBottom: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>Estimation {currentYear}</span>
-              <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent)' }}>
+              <span className="app-list-item-title">Estimation {currentYear}</span>
+              <span className="app-card-value" style={{ color: 'var(--accent)' }}>
                 {urssafAmount ? `${parseFloat(urssafAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR` : '—'}
               </span>
             </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.5, margin: 0 }}>
+            <p className="app-card-sub" style={{ lineHeight: 1.5, margin: 0 }}>
               Estimation basee sur votre chiffre d'affaires facture. Le montant reel depend de votre
               taux de cotisation et de votre type d'activite.
             </p>
           </div>
 
-          <p style={{ color: 'var(--text)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+          <p className="app-desc">
             Declarez vos cotisations sur <a href="https://www.autoentrepreneur.urssaf.fr" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>autoentrepreneur.urssaf.fr</a> selon
             votre frequence de declaration (mensuelle ou trimestrielle).
           </p>

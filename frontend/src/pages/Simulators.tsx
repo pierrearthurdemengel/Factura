@@ -69,23 +69,17 @@ export default function Simulators() {
   return (
     <div className="app-container">
       <h1 className="app-page-title">Simulateurs</h1>
-      <p style={{ color: 'var(--text)', marginBottom: '2rem', maxWidth: 650, lineHeight: 1.6 }}>
+      <p className="app-desc" style={{ maxWidth: 650 }}>
         Estimez votre situation fiscale avec nos simulateurs. Ces calculs sont indicatifs et ne remplacent pas les conseils d'un expert-comptable.
       </p>
 
       {/* Onglets */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', overflowX: 'auto' }}>
+      <div className="app-tabs">
         {sims.map((s) => (
           <button
             key={s.key}
             onClick={() => setActiveSim(s.key)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none',
-              background: activeSim === s.key ? 'var(--accent)' : 'transparent',
-              color: activeSim === s.key ? '#fff' : 'var(--text)',
-              borderRadius: '6px', cursor: 'pointer', fontWeight: activeSim === s.key ? 600 : 400,
-              fontSize: '0.9rem', whiteSpace: 'nowrap',
-            }}
+            className={`app-tab${activeSim === s.key ? ' app-tab--active' : ''}`}
           >
             {s.label}
           </button>
@@ -95,9 +89,9 @@ export default function Simulators() {
       {/* Micro vs Reel */}
       {activeSim === 'micro-reel' && (
         <div style={{ maxWidth: 600 }}>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Micro-entreprise vs Regime reel</h2>
+          <h2 className="app-section-title app-mt-0">Micro-entreprise vs Regime reel</h2>
 
-          <div className="app-form-row" style={{ marginBottom: '1rem' }}>
+          <div className="app-form-row">
             <div className="app-form-group">
               <label className="app-label">Type d'activite</label>
               <select value={activity} onChange={(e) => setActivity(e.target.value as 'service' | 'vente')} className="app-select">
@@ -107,39 +101,35 @@ export default function Simulators() {
             </div>
           </div>
 
-          <div className="app-form-row" style={{ marginBottom: '1.5rem' }}>
+          <div className="app-form-row">
             <div className="app-form-group">
               <label className="app-label">Chiffre d'affaires annuel</label>
-              <input type="range" min={0} max={200000} step={5000} value={ca} onChange={(e) => setCa(parseInt(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)' }} />
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-h)' }}>{fmt(ca)} EUR</span>
+              <input type="range" min={0} max={200000} step={5000} value={ca} onChange={(e) => setCa(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
+              <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(ca)} EUR</span>
             </div>
             <div className="app-form-group">
               <label className="app-label">Charges reelles annuelles</label>
-              <input type="range" min={0} max={100000} step={1000} value={charges} onChange={(e) => setCharges(parseInt(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)' }} />
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-h)' }}>{fmt(charges)} EUR</span>
+              <input type="range" min={0} max={100000} step={1000} value={charges} onChange={(e) => setCharges(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
+              <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(charges)} EUR</span>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="app-card" style={{ padding: '1.25rem', borderColor: microResult.recommendation === 'micro' ? 'var(--accent)' : undefined, borderWidth: microResult.recommendation === 'micro' ? 2 : undefined }}>
-              <h3 style={{ margin: '0 0 0.75rem', fontSize: '1rem', color: 'var(--text-h)' }}>Micro-entreprise</h3>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <div>URSSAF : <strong>{fmt(microResult.micro.urssaf)} EUR</strong></div>
-                <div>Revenu imposable : <strong>{fmt(microResult.micro.taxableIncome)} EUR</strong></div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(microResult.micro.net)} EUR</div>
-              </div>
+          <div className="app-kpi-grid" style={{ gridTemplateColumns: '1fr 1fr', marginTop: '0.5rem' }}>
+            <div className="app-card" style={{ borderColor: microResult.recommendation === 'micro' ? 'var(--accent)' : undefined, borderWidth: microResult.recommendation === 'micro' ? 2 : undefined }}>
+              <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>Micro-entreprise</h3>
+              <div className="app-card-text">URSSAF : <strong>{fmt(microResult.micro.urssaf)} EUR</strong></div>
+              <div className="app-card-text">Revenu imposable : <strong>{fmt(microResult.micro.taxableIncome)} EUR</strong></div>
+              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(microResult.micro.net)} EUR</p>
             </div>
-            <div className="app-card" style={{ padding: '1.25rem', borderColor: microResult.recommendation === 'reel' ? 'var(--accent)' : undefined, borderWidth: microResult.recommendation === 'reel' ? 2 : undefined }}>
-              <h3 style={{ margin: '0 0 0.75rem', fontSize: '1rem', color: 'var(--text-h)' }}>Regime reel</h3>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <div>Charges deductibles : <strong>{fmt(charges)} EUR</strong></div>
-                <div>Cotisations estimees : <strong>{fmt(microResult.reel.urssaf)} EUR</strong></div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(microResult.reel.net)} EUR</div>
-              </div>
+            <div className="app-card" style={{ borderColor: microResult.recommendation === 'reel' ? 'var(--accent)' : undefined, borderWidth: microResult.recommendation === 'reel' ? 2 : undefined }}>
+              <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>Regime reel</h3>
+              <div className="app-card-text">Charges deductibles : <strong>{fmt(charges)} EUR</strong></div>
+              <div className="app-card-text">Cotisations estimees : <strong>{fmt(microResult.reel.urssaf)} EUR</strong></div>
+              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(microResult.reel.net)} EUR</p>
             </div>
           </div>
 
-          <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'var(--accent-bg)', borderRadius: '6px', fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 600, textAlign: 'center' }}>
+          <div className="app-alert app-alert--info" style={{ marginTop: '1rem', justifyContent: 'center', fontWeight: 600 }}>
             {microResult.recommendation === 'micro' ? 'La micro-entreprise est plus avantageuse dans votre cas' : 'Le regime reel semble plus avantageux grace a vos charges'}
           </div>
         </div>
@@ -148,15 +138,15 @@ export default function Simulators() {
       {/* Estimation IR */}
       {activeSim === 'ir' && (
         <div style={{ maxWidth: 500 }}>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Estimation impot sur le revenu</h2>
+          <h2 className="app-section-title app-mt-0">Estimation impot sur le revenu</h2>
 
-          <div className="app-form-group" style={{ marginBottom: '1rem' }}>
+          <div className="app-form-group">
             <label className="app-label">Revenu net imposable</label>
-            <input type="range" min={0} max={200000} step={1000} value={irRevenu} onChange={(e) => setIrRevenu(parseInt(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)' }} />
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-h)' }}>{fmt(irRevenu)} EUR</span>
+            <input type="range" min={0} max={200000} step={1000} value={irRevenu} onChange={(e) => setIrRevenu(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
+            <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(irRevenu)} EUR</span>
           </div>
 
-          <div className="app-form-group" style={{ marginBottom: '1.5rem' }}>
+          <div className="app-form-group">
             <label className="app-label">Nombre de parts</label>
             <select value={irParts} onChange={(e) => setIrParts(parseFloat(e.target.value))} className="app-select">
               <option value={1}>1 part (celibataire)</option>
@@ -168,16 +158,16 @@ export default function Simulators() {
             </select>
           </div>
 
-          <div className="app-card" style={{ textAlign: 'center', padding: '1.5rem' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--accent)' }}>
+          <div className="app-card app-kpi-card">
+            <p className="app-card-value" style={{ fontSize: '2rem', color: 'var(--accent)' }}>
               {fmt(irResult.impot)} EUR
-            </div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.25rem' }}>
+            </p>
+            <p className="app-card-sub">
               Impot estime (taux effectif : {irResult.tauxEffectif.toFixed(1)}%)
-            </div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.5rem' }}>
+            </p>
+            <p className="app-card-sub">
               Soit {fmt(irResult.impot / 12)} EUR/mois
-            </div>
+            </p>
           </div>
         </div>
       )}
@@ -185,36 +175,32 @@ export default function Simulators() {
       {/* EI vs SASU */}
       {activeSim === 'ei-sasu' && (
         <div style={{ maxWidth: 600 }}>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Entreprise individuelle vs SASU</h2>
+          <h2 className="app-section-title app-mt-0">Entreprise individuelle vs SASU</h2>
 
-          <div className="app-form-group" style={{ marginBottom: '1.5rem' }}>
+          <div className="app-form-group">
             <label className="app-label">Chiffre d'affaires annuel</label>
-            <input type="range" min={0} max={300000} step={5000} value={sasuCa} onChange={(e) => setSasuCa(parseInt(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)' }} />
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-h)' }}>{fmt(sasuCa)} EUR</span>
+            <input type="range" min={0} max={300000} step={5000} value={sasuCa} onChange={(e) => setSasuCa(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
+            <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(sasuCa)} EUR</span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="app-card" style={{ padding: '1.25rem' }}>
-              <h3 style={{ margin: '0 0 0.75rem', fontSize: '1rem', color: 'var(--text-h)' }}>EI (micro)</h3>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <div>URSSAF (21.2%) : <strong>{fmt(sasuCa * 0.212)} EUR</strong></div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(eiNet)} EUR</div>
-              </div>
+          <div className="app-kpi-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            <div className="app-card">
+              <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>EI (micro)</h3>
+              <div className="app-card-text">URSSAF (21.2%) : <strong>{fmt(sasuCa * 0.212)} EUR</strong></div>
+              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(eiNet)} EUR</p>
             </div>
-            <div className="app-card" style={{ padding: '1.25rem' }}>
-              <h3 style={{ margin: '0 0 0.75rem', fontSize: '1rem', color: 'var(--text-h)' }}>SASU</h3>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <div>Charges (~30%) : <strong>{fmt(sasuCharges)} EUR</strong></div>
-                <div>Remuneration : <strong>{fmt(sasuRemuneration)} EUR</strong></div>
-                <div>Dividendes (apres IS) : <strong>{fmt(Math.max(0, sasuDividendes))} EUR</strong></div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent)', marginTop: '0.5rem' }}>
-                  Total : {fmt(sasuRemuneration + Math.max(0, sasuDividendes))} EUR
-                </div>
-              </div>
+            <div className="app-card">
+              <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>SASU</h3>
+              <div className="app-card-text">Charges (~30%) : <strong>{fmt(sasuCharges)} EUR</strong></div>
+              <div className="app-card-text">Remuneration : <strong>{fmt(sasuRemuneration)} EUR</strong></div>
+              <div className="app-card-text">Dividendes (apres IS) : <strong>{fmt(Math.max(0, sasuDividendes))} EUR</strong></div>
+              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>
+                Total : {fmt(sasuRemuneration + Math.max(0, sasuDividendes))} EUR
+              </p>
             </div>
           </div>
 
-          <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text)', lineHeight: 1.5 }}>
+          <p className="app-card-sub" style={{ marginTop: '1rem', lineHeight: 1.5 }}>
             Ces calculs sont simplifies. En SASU, l'optimisation remuneration/dividendes depend de nombreux facteurs
             (protection sociale souhaitee, projection de revenus, etc.). Consultez un expert-comptable.
           </p>

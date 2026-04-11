@@ -63,8 +63,9 @@ export default function VoiceAssistant() {
       if (e.code === 'Space' && !e.repeat) {
         const target = e.target as HTMLElement;
         const tag = target.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return;
-        
+        // Ne pas intercepter Space sur les elements interactifs
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON' || tag === 'A' || tag === 'SELECT' || target.isContentEditable || target.closest('button') || target.closest('a')) return;
+
         e.preventDefault();
         if (!isSpaceDown) {
           isSpaceDown = true;
@@ -77,8 +78,8 @@ export default function VoiceAssistant() {
       if (e.code === 'Space') {
         const target = e.target as HTMLElement;
         const tag = target.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable) return;
-        
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON' || tag === 'A' || tag === 'SELECT' || target.isContentEditable || target.closest('button') || target.closest('a')) return;
+
         isSpaceDown = false;
         try { recognition.stop(); } catch { /* deja en cours */ }
       }

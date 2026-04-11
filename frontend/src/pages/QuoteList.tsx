@@ -44,29 +44,25 @@ export default function QuoteList() {
     <div className="app-container">
       <div className="app-skeleton app-skeleton-title" />
       {[1, 2, 3].map((i) => (
-        <div key={i} className="app-skeleton app-skeleton-table-row" style={{ marginTop: '0.75rem' }} />
+        <div key={i} className="app-skeleton app-skeleton-table-row" />
       ))}
     </div>
   );
 
   return (
     <div className="app-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
-        <h1 className="app-page-title" style={{ margin: 0 }}>Devis</h1>
-        <Link to="/quotes/new" className="app-btn-primary" style={{ textDecoration: 'none' }}>
+      <div className="app-page-header">
+        <h1 className="app-page-title">Devis</h1>
+        <Link to="/quotes/new" className="app-btn-primary">
           + Nouveau devis
         </Link>
       </div>
 
       {/* Filtres par statut */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div className="app-pills">
         <button
           onClick={() => setFilter('')}
-          style={{
-            padding: '4px 12px', borderRadius: '1rem', border: 'none', cursor: 'pointer',
-            background: !filter ? 'var(--accent)' : 'var(--surface)', color: !filter ? '#fff' : 'var(--text)',
-            fontSize: '0.85rem', fontWeight: 500,
-          }}
+          className={`app-pill${!filter ? ' app-pill--active' : ''}`}
         >
           Tous ({quotes.length})
         </button>
@@ -77,11 +73,8 @@ export default function QuoteList() {
             <button
               key={key}
               onClick={() => setFilter(key)}
-              style={{
-                padding: '4px 12px', borderRadius: '1rem', border: 'none', cursor: 'pointer',
-                background: filter === key ? cfg.bg : 'var(--surface)', color: filter === key ? cfg.color : 'var(--text)',
-                fontSize: '0.85rem', fontWeight: 500,
-              }}
+              className={`app-pill${filter === key ? ' app-pill--active' : ''}`}
+              style={filter === key ? { background: cfg.bg, color: cfg.color } : undefined}
             >
               {cfg.label} ({count})
             </button>
@@ -90,40 +83,39 @@ export default function QuoteList() {
       </div>
 
       {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📋</div>
-          <p style={{ fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.5rem' }}>Aucun devis</p>
-          <p style={{ fontSize: '0.9rem' }}>Creez votre premier devis pour commencer.</p>
+        <div className="app-empty">
+          <div className="app-empty-icon">📋</div>
+          <p className="app-empty-title">Aucun devis</p>
+          <p className="app-empty-desc">Creez votre premier devis pour commencer.</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div className="app-list">
           {filtered.map((quote) => {
             const cfg = STATUS_CONFIG[quote.status] || STATUS_CONFIG.DRAFT;
             return (
               <Link
                 key={quote.id}
                 to={`/quotes/${quote.id}`}
-                className="app-card"
-                style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}
+                className="app-list-item"
               >
-                <div style={{ flex: 1, minWidth: 150 }}>
-                  <div style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.95rem' }}>
+                <div className="app-list-item-info">
+                  <div className="app-list-item-title">
                     {quote.number || 'Brouillon'}
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.15rem' }}>
+                  <div className="app-list-item-sub">
                     {quote.buyer?.name}
                   </div>
                 </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
+                <div className="app-list-item-sub">
                   {new Date(quote.issueDate).toLocaleDateString('fr-FR')}
                 </div>
-                <div style={{
-                  padding: '3px 10px', borderRadius: '1rem', fontSize: '0.8rem', fontWeight: 600,
-                  background: cfg.bg, color: cfg.color,
-                }}>
+                <span
+                  className="app-status-pill"
+                  style={{ background: cfg.bg, color: cfg.color }}
+                >
                   {cfg.label}
-                </div>
-                <div style={{ fontWeight: 600, color: 'var(--text-h)', minWidth: 80, textAlign: 'right' }}>
+                </span>
+                <div className="app-list-item-value">
                   {parseFloat(quote.totalIncludingTax).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                 </div>
               </Link>

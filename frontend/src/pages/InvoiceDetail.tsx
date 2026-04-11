@@ -119,17 +119,17 @@ export default function InvoiceDetail() {
 
   if (loading || !invoice) return (
     <div className="app-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
-        <div className="app-skeleton app-skeleton-title" style={{ margin: 0, width: '30%' }} />
-        <div className="app-skeleton" style={{ width: '100px', height: '30px', borderRadius: '15px' }} />
+      <div className="app-page-header">
+        <div className="app-skeleton app-skeleton-title" />
+        <div className="app-skeleton app-badge" />
       </div>
       <div className="app-grid">
         <div className="app-skeleton app-skeleton-card" />
         <div className="app-skeleton app-skeleton-card" />
       </div>
-      <div className="app-skeleton app-skeleton-card" style={{ height: '80px', marginBottom: '2rem' }} />
-      <div className="app-skeleton app-skeleton-title" style={{ width: '20%' }} />
-      <div className="app-table-wrapper" style={{ padding: '1rem', border: 'none' }}>
+      <div className="app-skeleton app-skeleton-card" />
+      <div className="app-skeleton app-skeleton-title" />
+      <div className="app-table-wrapper">
         {[1,2,3].map(i => <div key={i} className="app-skeleton app-skeleton-table-row" />)}
       </div>
     </div>
@@ -169,9 +169,9 @@ export default function InvoiceDetail() {
 
   return (
     <div className="app-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: 'clamp(1rem, 3vw, 2rem)' }}>
-        <h1 className="app-page-title" style={{ margin: 0 }}>Facture {invoice.number || 'Brouillon'}</h1>
-        <StatusDropdown 
+      <div className="app-page-header">
+        <h1 className="app-page-title">Facture {invoice.number || 'Brouillon'}</h1>
+        <StatusDropdown
           statusLabel={statusLabels[invoice.status] || invoice.status}
           statusClass={statusClasses[invoice.status] || 'app-badge-draft'}
           disabled={actionLoading}
@@ -181,11 +181,11 @@ export default function InvoiceDetail() {
 
       {/* Badge "Issu du devis" si la facture provient d'un devis */}
       {invoice.sourceQuote && (
-        <div style={{ marginBottom: '1rem', padding: '0.75rem', background: 'rgba(139,92,246,0.1)', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.9rem', color: '#8b5cf6', fontWeight: 600 }}>
+        <div className="app-alert app-alert--info">
+          <span className="app-alert-title">
             Issu du devis {invoice.sourceQuote.number || ''}
           </span>
-          <Link to={`/quotes/${invoice.sourceQuote.id}`} style={{ color: '#8b5cf6', textDecoration: 'underline', fontSize: '0.9rem' }}>
+          <Link to={`/quotes/${invoice.sourceQuote.id}`}>
             Voir le devis
           </Link>
         </div>
@@ -198,11 +198,11 @@ export default function InvoiceDetail() {
         const lastReminder = reminderEvents[reminderEvents.length - 1];
         const daysSinceReminder = Math.floor((Date.now() - new Date(lastReminder.occurredAt).getTime()) / (1000 * 60 * 60 * 24));
         return (
-          <div style={{ marginBottom: '1rem', padding: '0.75rem', background: 'rgba(249,115,22,0.1)', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.9rem', color: '#f97316', fontWeight: 600 }}>
+          <div className="app-alert app-alert--warning">
+            <span className="app-alert-title">
               Relance envoyee (J+{daysSinceReminder})
             </span>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text)' }}>
+            <span className="app-alert-sub">
               — {reminderEvents.length} relance(s) au total, derniere le {new Date(lastReminder.occurredAt).toLocaleDateString('fr-FR')}
             </span>
           </div>
@@ -212,24 +212,24 @@ export default function InvoiceDetail() {
       <div className="app-grid">
         <div className="app-card">
           <h3 className="app-card-title">Vendeur</h3>
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>{invoice.seller?.name}</p>
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>SIREN : {invoice.seller?.siren}</p>
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>{invoice.seller?.addressLine1}</p>
-          <p style={{ margin: 0, color: 'var(--text)' }}>{invoice.seller?.postalCode} {invoice.seller?.city}</p>
+          <p className="app-card-text">{invoice.seller?.name}</p>
+          <p className="app-card-text">SIREN : {invoice.seller?.siren}</p>
+          <p className="app-card-text">{invoice.seller?.addressLine1}</p>
+          <p className="app-card-text">{invoice.seller?.postalCode} {invoice.seller?.city}</p>
         </div>
         <div className="app-card">
           <h3 className="app-card-title">Client</h3>
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>{invoice.buyer?.name}</p>
-          {invoice.buyer?.siren && <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>SIREN : {invoice.buyer.siren}</p>}
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>{invoice.buyer?.addressLine1}</p>
-          <p style={{ margin: 0, color: 'var(--text)' }}>{invoice.buyer?.postalCode} {invoice.buyer?.city}</p>
+          <p className="app-card-text">{invoice.buyer?.name}</p>
+          {invoice.buyer?.siren && <p className="app-card-text">SIREN : {invoice.buyer.siren}</p>}
+          <p className="app-card-text">{invoice.buyer?.addressLine1}</p>
+          <p className="app-card-text">{invoice.buyer?.postalCode} {invoice.buyer?.city}</p>
         </div>
       </div>
 
-      <div className="app-card" style={{ marginBottom: 'clamp(1.5rem, 3vw, 2rem)' }}>
-        <p style={{ margin: '0 0 0.5rem', color: 'var(--text-h)' }}>Date d'emission : <strong>{new Date(invoice.issueDate).toLocaleDateString('fr-FR')}</strong></p>
-        {invoice.dueDate && <p style={{ margin: '0 0 0.5rem', color: 'var(--text-h)' }}>Date d'echeance : <strong>{new Date(invoice.dueDate).toLocaleDateString('fr-FR')}</strong></p>}
-        {invoice.pdpReference && <p style={{ margin: 0, color: 'var(--text-h)' }}>Reference PDP : <strong>{invoice.pdpReference}</strong></p>}
+      <div className="app-card app-meta-card">
+        <p className="app-meta-line">Date d'emission : <strong>{new Date(invoice.issueDate).toLocaleDateString('fr-FR')}</strong></p>
+        {invoice.dueDate && <p className="app-meta-line">Date d'echeance : <strong>{new Date(invoice.dueDate).toLocaleDateString('fr-FR')}</strong></p>}
+        {invoice.pdpReference && <p className="app-meta-line">Reference PDP : <strong>{invoice.pdpReference}</strong></p>}
       </div>
 
       <h2 className="app-section-title">Lignes</h2>
@@ -238,49 +238,49 @@ export default function InvoiceDetail() {
           <thead>
             <tr>
               <th>Description</th>
-              <th style={{ textAlign: 'right' }}>Quantite</th>
-              <th style={{ textAlign: 'center' }}>Unite</th>
-              <th style={{ textAlign: 'right' }}>Prix HT</th>
-              <th style={{ textAlign: 'right' }}>TVA</th>
-              <th style={{ textAlign: 'right' }}>Total HT</th>
+              <th className="text-right">Quantite</th>
+              <th className="text-center">Unite</th>
+              <th className="text-right">Prix HT</th>
+              <th className="text-right">TVA</th>
+              <th className="text-right">Total HT</th>
             </tr>
           </thead>
           <tbody>
             {invoice.lines?.map((line) => (
               <tr key={line.id}>
                 <td>{line.description}</td>
-                <td style={{ textAlign: 'right' }}>{line.quantity}</td>
-                <td style={{ textAlign: 'center' }}>{line.unit}</td>
-                <td style={{ textAlign: 'right' }}>{line.unitPriceExcludingTax} EUR</td>
-                <td style={{ textAlign: 'right' }}>{line.vatRate}%</td>
-                <td style={{ textAlign: 'right' }}>{line.lineAmount} EUR</td>
+                <td className="text-right">{line.quantity}</td>
+                <td className="text-center">{line.unit}</td>
+                <td className="text-right">{line.unitPriceExcludingTax} EUR</td>
+                <td className="text-right">{line.vatRate}%</td>
+                <td className="text-right">{line.lineAmount} EUR</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div style={{ marginTop: 'clamp(1rem, 3vw, 2rem)', textAlign: 'right', color: 'var(--text)' }}>
-        <p style={{ marginBottom: '0.5rem' }}>Total HT : <strong style={{ color: 'var(--text-h)' }}>{invoice.totalExcludingTax} EUR</strong></p>
-        <p style={{ marginBottom: '0.5rem' }}>Total TVA : <strong style={{ color: 'var(--text-h)' }}>{invoice.totalTax} EUR</strong></p>
-        <p style={{ fontSize: '1.15rem' }}>Total TTC : <strong style={{ color: 'var(--text-h)' }}>{invoice.totalIncludingTax} EUR</strong></p>
+      <div className="app-totals">
+        <p>Total HT : <strong>{invoice.totalExcludingTax} EUR</strong></p>
+        <p>Total TVA : <strong>{invoice.totalTax} EUR</strong></p>
+        <p className="app-totals-grand">Total TTC : <strong>{invoice.totalIncludingTax} EUR</strong></p>
       </div>
 
       {invoice.legalMention && (
-        <p style={{ marginTop: 'clamp(1rem, 3vw, 2rem)', fontStyle: 'italic', color: 'var(--text)' }}>{invoice.legalMention}</p>
+        <p className="app-legal">{invoice.legalMention}</p>
       )}
 
       {/* Affacturage : proposition de financement pour les factures non payees */}
       {['SENT', 'ACKNOWLEDGED'].includes(invoice.status) && parseFloat(invoice.totalIncludingTax) > 0 && (
-        <div className="app-card" style={{ marginTop: 'clamp(1rem, 3vw, 2rem)', padding: '1.25rem', background: 'linear-gradient(135deg, rgba(37,99,235,0.05), rgba(139,92,246,0.05))', borderColor: 'rgba(37,99,235,0.2)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="app-card app-factoring-card">
+          <div className="app-factoring-inner">
             <div>
-              <div style={{ fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.25rem' }}>
+              <div className="app-factoring-title">
                 Recevoir le paiement maintenant
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.5 }}>
+              <div className="app-factoring-desc">
                 Financez cette facture et recevez {(parseFloat(invoice.totalIncludingTax) * 0.95).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR sous 48h
-                <span style={{ color: 'var(--text)', opacity: 0.7 }}> (commission de 5%)</span>
+                <span className="app-factoring-commission"> (commission de 5%)</span>
               </div>
             </div>
             <button
@@ -292,7 +292,6 @@ export default function InvoiceDetail() {
                 });
               }}
               className="app-btn-primary"
-              style={{ whiteSpace: 'nowrap' }}
             >
               Financer cette facture
             </button>
@@ -300,7 +299,7 @@ export default function InvoiceDetail() {
         </div>
       )}
 
-      <div style={{ marginTop: 'clamp(1.5rem, 4vw, 2.5rem)', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+      <div className="app-actions-row">
         <button onClick={() => handleDownload('pdf')} className="app-btn-primary">
           Telecharger PDF
         </button>
@@ -313,33 +312,28 @@ export default function InvoiceDetail() {
       </div>
 
       {events.length > 0 && (
-        <div style={{ marginTop: 'clamp(2rem, 5vw, 3rem)' }}>
+        <div className="app-paf-section">
           <h2 className="app-section-title">Piste d'audit (PAF)</h2>
-          <div style={{ borderLeft: '2px solid var(--border)', paddingLeft: 'clamp(1rem, 3vw, 1.5rem)', marginTop: '1rem', marginLeft: '0.5rem' }}>
+          <div className="app-timeline">
             {events.map((event) => (
-              <div key={event.id} style={{ marginBottom: '1.25rem', position: 'relative' }}>
-                <div style={{
-                  width: '12px', height: '12px', borderRadius: '50%',
-                  backgroundColor: eventColor(event.eventType),
-                  position: 'absolute', left: 'calc(-12px / 2 - clamp(1rem, 3vw, 1.5rem) - 1px)', top: '4px',
-                }} />
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 'bold',
-                    backgroundColor: eventColor(event.eventType),
-                    color: 'white',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                  }}>
+              <div key={event.id} className="app-timeline-item">
+                <div
+                  className="app-timeline-dot"
+                  style={{ backgroundColor: eventColor(event.eventType) }}
+                />
+                <div className="app-timeline-item-row">
+                  <span
+                    className="app-timeline-label"
+                    style={{ backgroundColor: eventColor(event.eventType) }}
+                  >
                     {eventLabel(event.eventType)}
                   </span>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
+                  <span className="app-timeline-date">
                     {new Date(event.occurredAt).toLocaleString('fr-FR')}
                   </span>
                 </div>
                 {event.metadata && Object.keys(event.metadata).length > 0 && (
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.5rem' }}>
+                  <div className="app-timeline-meta">
                     {event.metadata.from && event.metadata.to && (
                       <span>{event.metadata.from} → {event.metadata.to}</span>
                     )}

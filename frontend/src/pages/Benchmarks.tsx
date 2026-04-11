@@ -76,37 +76,29 @@ function KpiCard({
     : sectorValue.toFixed(1) + unit;
 
   return (
-    <div className="app-card" style={{ minWidth: 0 }}>
+    <div className="app-card">
       <h3 className="app-card-title">{title}</h3>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+      <div className="app-card-body">
         {/* Valeur utilisateur */}
         <div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginBottom: '0.25rem' }}>
-            Votre valeur
-          </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-h)' }}>
-            {formattedUser}
-          </div>
+          <p className="app-card-sub">Votre valeur</p>
+          <p className="app-card-value">{formattedUser}</p>
         </div>
 
         {/* Moyenne sectorielle */}
-        <div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginBottom: '0.25rem' }}>
-            Moyenne du secteur
-          </div>
-          <div style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text)' }}>
-            {formattedSector}
-          </div>
+        <div style={{ marginTop: '0.75rem' }}>
+          <p className="app-card-sub">Moyenne du secteur</p>
+          <p className="app-card-text" style={{ fontWeight: 600 }}>{formattedSector}</p>
         </div>
 
         {/* Ecart */}
         <div
+          className="app-status-pill"
           style={{
             marginTop: 'auto',
             padding: '0.4rem 0.75rem',
             borderRadius: '6px',
-            fontSize: '0.85rem',
             fontWeight: 600,
             color,
             backgroundColor: color === '#10b981'
@@ -115,6 +107,9 @@ function KpiCard({
                 ? 'rgba(239, 68, 68, 0.1)'
                 : 'var(--social-bg)',
             textAlign: 'center',
+            display: 'block',
+            width: '100%',
+            boxSizing: 'border-box',
           }}
         >
           {formatDiff(userValue, sectorValue, unit, lowerIsBetter)}
@@ -178,7 +173,7 @@ export default function Benchmarks() {
     <div className="app-container">
       <h1 className="app-page-title">Benchmarks sectoriels</h1>
 
-      <p style={{ color: 'var(--text)', marginBottom: '1.5rem', maxWidth: 650, lineHeight: 1.6 }}>
+      <p className="app-desc" style={{ maxWidth: 650 }}>
         Comparez vos indicateurs cles avec les moyennes de votre secteur d'activite.
         Les donnees sont calculees a partir de statistiques anonymisees.
       </p>
@@ -202,26 +197,14 @@ export default function Benchmarks() {
 
       {/* Message d'erreur */}
       {error && (
-        <div style={{
-          padding: '1rem',
-          borderRadius: '6px',
-          background: 'rgba(239, 68, 68, 0.1)',
-          color: '#ef4444',
-          marginBottom: '1.5rem',
-          fontSize: '0.9rem',
-        }}>
+        <div className="app-alert app-alert--error">
           {error}
         </div>
       )}
 
       {/* Grille des 4 KPI */}
       {data && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: 'clamp(1rem, 2vw, 1.5rem)',
-          marginBottom: '2rem',
-        }}>
+        <div className="app-kpi-grid" style={{ marginBottom: '2rem' }}>
           <KpiCard
             title="Delai moyen de paiement (jours)"
             userValue={data.userPaymentDelay}
@@ -254,22 +237,17 @@ export default function Benchmarks() {
       )}
 
       {/* Mention d'anonymisation */}
-      <div style={{
-        padding: '1rem 1.25rem',
-        borderRadius: '8px',
-        background: 'var(--social-bg)',
-        border: '1px solid var(--border)',
-        fontSize: '0.85rem',
-        color: 'var(--text)',
-        lineHeight: 1.6,
-        maxWidth: 700,
-      }}>
-        <strong style={{ color: 'var(--text-h)' }}>Confidentialite des donnees</strong>
-        <br />
-        Les moyennes sectorielles sont calculees a partir de donnees strictement anonymisees
-        et agregees. Aucune donnee individuelle n'est partagee ni identifiable.
-        Les indicateurs ne sont affiches que lorsque le nombre d'entreprises
-        dans le secteur est suffisant pour garantir l'anonymat.
+      <div className="app-alert app-alert--info" style={{ maxWidth: 700 }}>
+        <div>
+          <span className="app-alert-title">Confidentialite des donnees</span>
+          <br />
+          <span className="app-alert-sub">
+            Les moyennes sectorielles sont calculees a partir de donnees strictement anonymisees
+            et agregees. Aucune donnee individuelle n'est partagee ni identifiable.
+            Les indicateurs ne sont affiches que lorsque le nombre d'entreprises
+            dans le secteur est suffisant pour garantir l'anonymat.
+          </span>
+        </div>
       </div>
     </div>
   );

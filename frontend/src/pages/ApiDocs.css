@@ -1,0 +1,262 @@
+/* ═══════════════════════════════════════════════════════════════
+   ApiDocs — Supplementary styles (beyond AppLayout design system)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Code Blocks ─── */
+.api-code-block {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 0;
+  font-family: "Fira Code", "Consolas", "Monaco", monospace;
+}
+
+.api-code-block-wrapper {
+  margin-bottom: 0.75rem;
+}
+
+.api-code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.api-code-block-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.api-copy-btn {
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.api-copy-btn--copied {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+/* ─── Inline Code ─── */
+.api-inline-code {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+/* ─── Version Badge ─── */
+.api-version-badge {
+  padding: 3px 10px;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ─── Page Header Row ─── */
+.api-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ─── Method Badge ─── */
+.api-method-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: #fff;
+  min-width: 3.2rem;
+  text-align: center;
+}
+
+.api-method-badge--get { background: #22c55e; }
+.api-method-badge--post { background: #3b82f6; }
+.api-method-badge--put { background: #f59e0b; }
+.api-method-badge--delete { background: #ef4444; }
+
+/* ─── Endpoint Card ─── */
+.api-endpoint-card {
+  padding: 0;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.api-endpoint-header {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-h);
+  flex-wrap: wrap;
+}
+
+.api-endpoint-path {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-h);
+  word-break: break-all;
+}
+
+.api-endpoint-summary {
+  font-size: 0.85rem;
+  color: var(--text);
+  flex: 1;
+  min-width: 150px;
+}
+
+.api-endpoint-chevron {
+  font-size: 1.1rem;
+  color: var(--text);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.api-endpoint-chevron--open {
+  transform: rotate(180deg);
+}
+
+.api-endpoint-body {
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── Try-It Section ─── */
+.api-try-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--social-bg);
+}
+
+.api-try-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.api-try-params-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.api-param-required {
+  color: #ef4444;
+  margin-left: 0.25rem;
+}
+
+.api-param-location {
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--text);
+  font-weight: 400;
+}
+
+/* ─── Rate Limit Grid ─── */
+.api-rate-limit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.api-rate-limit-card {
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.api-rate-limit-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.api-rate-limit-label {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-top: 0.25rem;
+}
+
+/* ─── Footer Note ─── */
+.api-footer-note {
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  background: var(--social-bg);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.6;
+  max-width: 700px;
+}
+
+.api-footer-note strong {
+  color: var(--text-h);
+}
+
+/* ─── Tab Badge ─── */
+.api-tab-count {
+  padding: 1px 6px;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.api-tab-count--active {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.api-tab-count--inactive {
+  background: var(--social-bg);
+  color: var(--text);
+}
+
+/* ─── JSON Syntax Colors ─── */
+.api-json-key { color: #89b4fa; }
+.api-json-string { color: #a6e3a1; }
+.api-json-number { color: #fab387; }
+.api-json-bool { color: #f38ba8; }
+
+/* ─── Section Card Spacing ─── */
+.api-section-card {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+}
+
+.api-section-card--large {
+  margin-bottom: 2rem;
+}

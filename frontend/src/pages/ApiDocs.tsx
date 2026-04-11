@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import './AppLayout.css';
+import './ApiDocs.css';
 
 // Groupe d'endpoints dans la navigation laterale
 type EndpointGroup = 'invoices' | 'quotes' | 'clients' | 'company' | 'webhooks';
@@ -25,14 +26,6 @@ interface EndpointParameter {
   placeholder: string;
   location: 'path' | 'query' | 'body';
 }
-
-// Couleurs associees aux methodes HTTP
-const METHOD_COLORS: Record<HttpMethod, string> = {
-  GET: '#22c55e',
-  POST: '#3b82f6',
-  PUT: '#f59e0b',
-  DELETE: '#ef4444',
-};
 
 // Libelles des groupes d'endpoints
 const GROUP_LABELS: Record<EndpointGroup, string> = {
@@ -259,19 +252,6 @@ const ENDPOINTS: Record<EndpointGroup, Endpoint[]> = {
   ],
 };
 
-// Styles partages pour les blocs de code
-const codeBlockStyle: React.CSSProperties = {
-  background: '#1e1e2e',
-  color: '#cdd6f4',
-  borderRadius: '8px',
-  padding: '1rem',
-  fontSize: '0.8rem',
-  lineHeight: 1.6,
-  overflowX: 'auto',
-  margin: 0,
-  fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
-};
-
 // Applique une coloration syntaxique basique sur du JSON
 function highlightJson(json: string): React.ReactNode[] {
   const lines = json.split('\n');
@@ -285,7 +265,7 @@ function highlightJson(json: string): React.ReactNode[] {
       const keyMatch = remaining.match(/^(\s*)"([^"]+)"(\s*:\s*)/);
       if (keyMatch) {
         parts.push(<span key={partIndex++}>{keyMatch[1]}</span>);
-        parts.push(<span key={partIndex++} style={{ color: '#89b4fa' }}>"{keyMatch[2]}"</span>);
+        parts.push(<span key={partIndex++} className="api-json-key">"{keyMatch[2]}"</span>);
         parts.push(<span key={partIndex++}>{keyMatch[3]}</span>);
         remaining = remaining.slice(keyMatch[0].length);
         continue;
@@ -294,7 +274,7 @@ function highlightJson(json: string): React.ReactNode[] {
       // Colore les valeurs chaunes de caracteres
       const stringMatch = remaining.match(/^"([^"]*)"/);
       if (stringMatch) {
-        parts.push(<span key={partIndex++} style={{ color: '#a6e3a1' }}>"{stringMatch[1]}"</span>);
+        parts.push(<span key={partIndex++} className="api-json-string">"{stringMatch[1]}"</span>);
         remaining = remaining.slice(stringMatch[0].length);
         continue;
       }
@@ -302,7 +282,7 @@ function highlightJson(json: string): React.ReactNode[] {
       // Colore les nombres
       const numberMatch = remaining.match(/^(-?\d+\.?\d*)/);
       if (numberMatch) {
-        parts.push(<span key={partIndex++} style={{ color: '#fab387' }}>{numberMatch[1]}</span>);
+        parts.push(<span key={partIndex++} className="api-json-number">{numberMatch[1]}</span>);
         remaining = remaining.slice(numberMatch[0].length);
         continue;
       }
@@ -310,7 +290,7 @@ function highlightJson(json: string): React.ReactNode[] {
       // Colore les booleens et null
       const boolMatch = remaining.match(/^(true|false|null)/);
       if (boolMatch) {
-        parts.push(<span key={partIndex++} style={{ color: '#f38ba8' }}>{boolMatch[1]}</span>);
+        parts.push(<span key={partIndex++} className="api-json-bool">{boolMatch[1]}</span>);
         remaining = remaining.slice(boolMatch[0].length);
         continue;
       }
@@ -345,28 +325,19 @@ function CodeBlock({ code, label }: { code: string; label: string }) {
   }, [code]);
 
   return (
-    <div style={{ marginBottom: '0.75rem' }}>
-      <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        marginBottom: '0.25rem',
-      }}>
-        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+    <div className="api-code-block-wrapper">
+      <div className="api-code-block-header">
+        <span className="api-code-block-label">
           {label}
         </span>
         <button
           onClick={handleCopy}
-          style={{
-            padding: '3px 10px', borderRadius: '4px', border: '1px solid var(--border)',
-            background: copied ? 'rgba(34,197,94,0.1)' : 'var(--bg)',
-            color: copied ? '#22c55e' : 'var(--text-h)',
-            cursor: 'pointer', fontSize: '0.75rem', fontWeight: 500,
-            transition: 'all 0.2s',
-          }}
+          className={`api-copy-btn ${copied ? 'api-copy-btn--copied' : ''}`}
         >
           {copied ? 'Copie !' : 'Copier'}
         </button>
       </div>
-      <pre style={codeBlockStyle}>
+      <pre className="api-code-block">
         <code>{highlightJson(code)}</code>
       </pre>
     </div>
@@ -376,18 +347,7 @@ function CodeBlock({ code, label }: { code: string; label: string }) {
 // Badge affichant la methode HTTP avec la couleur correspondante
 function MethodBadge({ method }: { method: HttpMethod }) {
   return (
-    <span style={{
-      display: 'inline-block',
-      padding: '2px 8px',
-      borderRadius: '4px',
-      fontSize: '0.75rem',
-      fontWeight: 700,
-      fontFamily: 'monospace',
-      color: '#fff',
-      background: METHOD_COLORS[method],
-      minWidth: '3.2rem',
-      textAlign: 'center',
-    }}>
+    <span className={`app-status-pill api-method-badge api-method-badge--${method.toLowerCase()}`}>
       {method}
     </span>
   );
@@ -414,47 +374,31 @@ function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
   };
 
   return (
-    <div
-      className="app-card"
-      style={{ padding: 0, overflow: 'hidden', marginBottom: '0.75rem' }}
-    >
+    <div className="app-card api-endpoint-card">
       {/* En-tete cliquable : methode + chemin + description courte */}
       <button
         onClick={() => setExpanded(!expanded)}
-        style={{
-          width: '100%', padding: '1rem 1.25rem',
-          display: 'flex', alignItems: 'center', gap: '0.75rem',
-          background: 'transparent', border: 'none', cursor: 'pointer',
-          textAlign: 'left', color: 'var(--text-h)',
-          flexWrap: 'wrap',
-        }}
+        className="api-endpoint-header"
       >
         <MethodBadge method={endpoint.method} />
-        <code style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-h)', wordBreak: 'break-all' }}>
+        <code className="api-endpoint-path">
           {endpoint.path}
         </code>
-        <span style={{
-          fontSize: '0.85rem', color: 'var(--text)', flex: 1, minWidth: '150px',
-        }}>
+        <span className="api-endpoint-summary">
           {endpoint.description.length > 80
             ? endpoint.description.slice(0, 80) + '...'
             : endpoint.description}
         </span>
-        <span style={{
-          fontSize: '1.1rem', color: 'var(--text)',
-          transform: expanded ? 'rotate(180deg)' : 'rotate(0)',
-          transition: 'transform 0.2s',
-          flexShrink: 0,
-        }}>
+        <span className={`api-endpoint-chevron ${expanded ? 'api-endpoint-chevron--open' : ''}`}>
           &#9662;
         </span>
       </button>
 
       {/* Contenu detaille, visible uniquement si l'endpoint est deplie */}
       {expanded && (
-        <div style={{ padding: '0 1.25rem 1.25rem', borderTop: '1px solid var(--border)' }}>
+        <div className="api-endpoint-body">
           {/* Description complete */}
-          <p style={{ fontSize: '0.9rem', color: 'var(--text)', lineHeight: 1.6, marginTop: '1rem' }}>
+          <p className="app-desc">
             {endpoint.description}
           </p>
 
@@ -468,41 +412,25 @@ function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
 
           {/* Section "Essayer" : formulaire de parametres */}
           {endpoint.parameters.length > 0 && (
-            <div style={{
-              marginTop: '1rem', padding: '1rem',
-              borderRadius: '8px', border: '1px solid var(--border)',
-              background: 'var(--social-bg)',
-            }}>
-              <h4 style={{
-                margin: '0 0 0.75rem', fontSize: '0.9rem', fontWeight: 600,
-                color: 'var(--text-h)',
-              }}>
+            <div className="api-try-section">
+              <h4 className="api-try-title">
                 Essayer
               </h4>
 
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                gap: '0.75rem',
-                marginBottom: '1rem',
-              }}>
+              <div className="api-try-params-grid">
                 {endpoint.parameters.map((param) => (
                   <div key={param.name} className="app-form-group" style={{ marginBottom: 0 }}>
-                    <label className="app-label" style={{ fontSize: '0.8rem' }}>
+                    <label className="app-label">
                       {param.name}
                       {param.required && (
-                        <span style={{ color: '#ef4444', marginLeft: '0.25rem' }}>*</span>
+                        <span className="api-param-required">*</span>
                       )}
-                      <span style={{
-                        marginLeft: '0.5rem', fontSize: '0.7rem',
-                        color: 'var(--text)', fontWeight: 400,
-                      }}>
+                      <span className="api-param-location">
                         ({param.location})
                       </span>
                     </label>
                     <input
                       className="app-input"
-                      style={{ fontSize: '0.85rem' }}
                       placeholder={param.placeholder}
                       value={tryValues[param.name] || ''}
                       onChange={(e) => handleParamChange(param.name, e.target.value)}
@@ -514,7 +442,6 @@ function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
               <button
                 className="app-btn-primary"
                 onClick={handleExecute}
-                style={{ fontSize: '0.85rem' }}
               >
                 Executer
               </button>
@@ -542,97 +469,65 @@ export default function ApiDocs() {
   return (
     <div className="app-container">
       {/* En-tete avec titre et badge de version */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: '0.75rem',
-        marginBottom: '0.5rem', flexWrap: 'wrap',
-      }}>
+      <div className="api-header-row">
         <h1 className="app-page-title" style={{ marginBottom: 0 }}>
           Documentation API
         </h1>
-        <span style={{
-          padding: '3px 10px', borderRadius: '1rem',
-          fontSize: '0.75rem', fontWeight: 700,
-          background: 'var(--accent)', color: '#fff',
-        }}>
+        <span className="api-version-badge">
           v1.0
         </span>
       </div>
 
-      <p style={{
-        color: 'var(--text)', marginBottom: '1.5rem',
-        maxWidth: 650, lineHeight: 1.6, fontSize: '0.95rem',
-      }}>
+      <p className="app-desc">
         Reference complete de l'API REST Factura. Toutes les requetes necessitent
         un token JWT Bearer valide sauf indication contraire.
       </p>
 
       {/* Section authentification */}
-      <div className="app-card" style={{ marginBottom: '1.5rem', padding: '1.25rem' }}>
-        <h2 className="app-section-title" style={{ marginTop: 0, marginBottom: '0.75rem', fontSize: '1.1rem' }}>
+      <div className="app-card api-section-card">
+        <h2 className="app-section-title" style={{ marginTop: 0 }}>
           Authentification
         </h2>
-        <p style={{ fontSize: '0.9rem', color: 'var(--text)', lineHeight: 1.6, margin: '0 0 1rem' }}>
-          Chaque requete doit inclure un en-tete <code style={{
-            background: '#1e1e2e', color: '#cdd6f4', padding: '2px 6px',
-            borderRadius: '4px', fontSize: '0.8rem',
-          }}>Authorization</code> contenant votre token JWT.
-          Obtenez un token via l'endpoint <code style={{
-            background: '#1e1e2e', color: '#cdd6f4', padding: '2px 6px',
-            borderRadius: '4px', fontSize: '0.8rem',
-          }}>POST /api/login</code> avec vos identifiants,
+        <p className="app-desc" style={{ margin: '0 0 1rem' }}>
+          Chaque requete doit inclure un en-tete <code className="api-inline-code">Authorization</code> contenant votre token JWT.
+          Obtenez un token via l'endpoint <code className="api-inline-code">POST /api/login</code> avec vos identifiants,
           ou utilisez une cle API generee depuis les parametres.
         </p>
-        <pre style={{ ...codeBlockStyle, marginBottom: 0 }}>
+        <pre className="api-code-block">
           <code>
-            <span style={{ color: '#89b4fa' }}>Authorization</span>
+            <span className="api-json-key">Authorization</span>
             <span>: </span>
-            <span style={{ color: '#a6e3a1' }}>Bearer eyJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3...</span>
+            <span className="api-json-string">Bearer eyJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3...</span>
           </code>
         </pre>
       </div>
 
       {/* Section limites de debit */}
-      <div className="app-card" style={{ marginBottom: '2rem', padding: '1.25rem' }}>
-        <h2 className="app-section-title" style={{ marginTop: 0, marginBottom: '0.75rem', fontSize: '1.1rem' }}>
+      <div className="app-card api-section-card api-section-card--large">
+        <h2 className="app-section-title" style={{ marginTop: 0 }}>
           Limites de debit (Rate Limiting)
         </h2>
-        <p style={{ fontSize: '0.9rem', color: 'var(--text)', lineHeight: 1.6, margin: 0 }}>
+        <p className="app-desc" style={{ marginBottom: 0 }}>
           L'API applique des limites de debit pour garantir la stabilite du service.
         </p>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-          gap: '0.75rem', marginTop: '1rem',
-        }}>
+        <div className="api-rate-limit-grid">
           {[
             { label: 'Requetes / minute', value: '60' },
             { label: 'Requetes / heure', value: '1 000' },
             { label: 'Requetes / jour', value: '10 000' },
           ].map((limit) => (
-            <div key={limit.label} style={{
-              padding: '0.75rem', borderRadius: '6px',
-              border: '1px solid var(--border)', textAlign: 'center',
-            }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-h)' }}>
+            <div key={limit.label} className="api-rate-limit-card">
+              <div className="api-rate-limit-value">
                 {limit.value}
               </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>
+              <div className="api-rate-limit-label">
                 {limit.label}
               </div>
             </div>
           ))}
         </div>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.6, marginTop: '1rem', marginBottom: 0 }}>
-          Les en-tetes <code style={{
-            background: '#1e1e2e', color: '#cdd6f4', padding: '2px 6px',
-            borderRadius: '4px', fontSize: '0.8rem',
-          }}>X-RateLimit-Limit</code>, <code style={{
-            background: '#1e1e2e', color: '#cdd6f4', padding: '2px 6px',
-            borderRadius: '4px', fontSize: '0.8rem',
-          }}>X-RateLimit-Remaining</code> et <code style={{
-            background: '#1e1e2e', color: '#cdd6f4', padding: '2px 6px',
-            borderRadius: '4px', fontSize: '0.8rem',
-          }}>X-RateLimit-Reset</code> sont inclus dans chaque reponse.
+        <p className="app-desc" style={{ marginTop: '1rem', marginBottom: 0 }}>
+          Les en-tetes <code className="api-inline-code">X-RateLimit-Limit</code>, <code className="api-inline-code">X-RateLimit-Remaining</code> et <code className="api-inline-code">X-RateLimit-Reset</code> sont inclus dans chaque reponse.
           En cas de depassement, l'API retourne un statut <strong>429 Too Many Requests</strong>.
         </p>
       </div>
@@ -641,33 +536,15 @@ export default function ApiDocs() {
       <h2 className="app-section-title" style={{ marginTop: 0 }}>Endpoints</h2>
 
       {/* Onglets de navigation des groupes */}
-      <div style={{
-        display: 'flex', gap: '0.5rem', marginBottom: '1.5rem',
-        borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem',
-        overflowX: 'auto',
-      }}>
+      <div className="app-tabs">
         {groups.map((group) => (
           <button
             key={group.key}
             onClick={() => setActiveGroup(group.key)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none',
-              background: activeGroup === group.key ? 'var(--accent)' : 'transparent',
-              color: activeGroup === group.key ? '#fff' : 'var(--text)',
-              borderRadius: '6px', cursor: 'pointer',
-              fontWeight: activeGroup === group.key ? 600 : 400,
-              fontSize: '0.9rem', whiteSpace: 'nowrap',
-              display: 'flex', alignItems: 'center', gap: '0.4rem',
-              transition: 'all 0.15s',
-            }}
+            className={`app-tab ${activeGroup === group.key ? 'app-tab--active' : ''}`}
           >
             {group.label}
-            <span style={{
-              background: activeGroup === group.key ? 'rgba(255,255,255,0.25)' : 'var(--social-bg)',
-              padding: '1px 6px', borderRadius: '1rem',
-              fontSize: '0.7rem', fontWeight: 600,
-              color: activeGroup === group.key ? '#fff' : 'var(--text)',
-            }}>
+            <span className={`api-tab-count ${activeGroup === group.key ? 'api-tab-count--active' : 'api-tab-count--inactive'}`}>
               {group.count}
             </span>
           </button>
@@ -675,30 +552,18 @@ export default function ApiDocs() {
       </div>
 
       {/* Liste des endpoints du groupe actif */}
-      <div>
+      <div className="app-list">
         {ENDPOINTS[activeGroup].map((endpoint, index) => (
           <EndpointCard key={`${endpoint.method}-${endpoint.path}-${index}`} endpoint={endpoint} />
         ))}
       </div>
 
       {/* Note de bas de page sur le format de l'API */}
-      <div style={{
-        marginTop: '2rem', padding: '1rem 1.25rem',
-        borderRadius: '8px', background: 'var(--social-bg)',
-        border: '1px solid var(--border)',
-        fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.6,
-        maxWidth: 700,
-      }}>
-        <strong style={{ color: 'var(--text-h)' }}>Format des reponses</strong>
+      <div className="api-footer-note">
+        <strong>Format des reponses</strong>
         <br />
         L'API suit la specification JSON-LD / Hydra (API Platform).
-        Toutes les reponses incluent les proprietes <code style={{
-          background: '#1e1e2e', color: '#cdd6f4', padding: '2px 6px',
-          borderRadius: '4px', fontSize: '0.8rem',
-        }}>@id</code> et <code style={{
-          background: '#1e1e2e', color: '#cdd6f4', padding: '2px 6px',
-          borderRadius: '4px', fontSize: '0.8rem',
-        }}>@type</code> conformement au standard.
+        Toutes les reponses incluent les proprietes <code className="api-inline-code">@id</code> et <code className="api-inline-code">@type</code> conformement au standard.
         Les collections sont paginees avec 30 elements par page par defaut.
       </div>
     </div>

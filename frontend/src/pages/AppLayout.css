@@ -1,167 +1,329 @@
-/* Shared layout styles for Factura inside the app (Dashboard, Settings, Invoices, etc.) */
+/* ═══════════════════════════════════════════════════════════════
+   AppLayout — Shared Design System (aligned with Landing Page)
+   Mobile-first, CSS custom properties, accessibility
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Container ─── */
 .app-container {
-  padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 5vw, 3rem);
+  padding: 1rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
-.app-page-title {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  color: var(--text-h);
-  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
-}
-
-.app-section-title {
-  font-size: clamp(1.25rem, 3vw, 1.75rem);
-  color: var(--text-h);
-  margin: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(1rem, 2vw, 1.5rem);
-}
-
-/* Fluid Flex Grids */
-.app-grid {
+/* ─── Page Header ─── */
+.app-page-header {
   display: flex;
-  gap: clamp(1rem, 2vw, 1.5rem);
-  flex-wrap: wrap; /* natural responsiveness */
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Master Dashboard 2D Grid */
-.app-dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1rem, 2vw, 1.5rem);
-  grid-auto-flow: dense;
-  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
-}
-
-.widget-kpi { grid-column: span 1; display: flex; }
-.widget-full { grid-column: 1 / -1; display: flex; }
-.widget-wide { grid-column: span 2; display: flex; }
-.widget-narrow { grid-column: span 1; display: flex; }
-
-@media (max-width: 1024px) {
-  .widget-kpi, .widget-wide, .widget-narrow {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 639px) {
-  .app-container {
-    padding: 1rem;
-  }
-
-  .app-dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .app-form-row {
-    flex-direction: column;
-  }
-
-  .app-form-row > .app-form-group {
-    min-width: 100%;
-  }
-
-  .app-table {
-    min-width: 500px;
-  }
-}
-
-.app-card {
-  padding: clamp(1rem, 2.5vw, 1.5rem);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  flex: 1;
-  min-width: clamp(200px, 25%, 100%);
-  display: flex;
-  flex-direction: column;
-}
-
-.app-card-title {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: var(--text-h);
-  margin: 0 0 0.5rem;
-}
-
-.app-card-value {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: bold;
-  color: var(--text-h);
+.app-page-header .app-page-title {
   margin: 0;
 }
 
-/* Forms inside App */
+.app-page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-h);
+  letter-spacing: -0.5px;
+  margin: 0 0 1.5rem;
+}
+
+.app-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 1.5rem 0 1rem;
+}
+
+/* ─── Grid Layouts ─── */
+.app-grid {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.app-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Cards ─── */
+.app-card {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--lp-radius-lg, 1rem);
+  background: var(--bg);
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.app-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 20px -3px rgba(0, 0, 0, 0.08);
+}
+
+.app-card-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.app-card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+
+/* ─── Tabs ─── */
+.app-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.app-tabs::-webkit-scrollbar { display: none; }
+
+.app-tab {
+  padding: 0.5rem 0.85rem;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  border-radius: var(--lp-radius, 0.75rem);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+.app-tab:hover {
+  background: var(--social-bg);
+  color: var(--text-h);
+}
+.app-tab--active {
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6, #6366f1));
+  color: #fff;
+  font-weight: 600;
+}
+.app-tab--active:hover {
+  color: #fff;
+}
+
+/* ─── View Toggle (List/Kanban, Cards/Grid) ─── */
+.app-view-toggle {
+  display: flex;
+  background: var(--social-bg);
+  border-radius: var(--lp-radius, 0.75rem);
+  padding: 3px;
+}
+.app-view-toggle-btn {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  padding: 0.35rem 0.75rem;
+  border-radius: calc(var(--lp-radius, 0.75rem) - 2px);
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 0.82rem;
+  transition: all 0.2s;
+}
+.app-view-toggle-btn--active {
+  background: var(--bg);
+  color: var(--text-h);
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* ─── Filter Pills ─── */
+.app-pills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.app-pill {
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--lp-radius-full, 9999px);
+  border: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: var(--surface);
+  color: var(--text);
+  transition: all 0.2s;
+}
+.app-pill:hover {
+  background: var(--social-bg);
+}
+.app-pill--active {
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6, #6366f1));
+  color: #fff;
+}
+
+/* ─── List Items (card-style rows) ─── */
+.app-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.app-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--lp-radius, 0.75rem);
+  background: var(--bg);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.app-list-item:hover {
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 20px -3px rgba(0, 0, 0, 0.08);
+}
+
+.app-list-item-info {
+  flex: 1;
+  min-width: 150px;
+}
+.app-list-item-title {
+  font-weight: 600;
+  color: var(--text-h);
+  font-size: 0.9rem;
+}
+.app-list-item-sub {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-top: 0.15rem;
+}
+.app-list-item-value {
+  font-weight: 600;
+  color: var(--text-h);
+  min-width: 80px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Forms ─── */
 .app-form-group {
-  margin-bottom: clamp(1rem, 2vw, 1.25rem);
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
 .app-label {
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--text-h);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.2px;
 }
 
 .app-input, .app-select {
   width: 100%;
-  padding: clamp(0.5rem, 1.5vw, 0.75rem);
+  padding: 0.6rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--lp-radius, 0.75rem);
   background: var(--bg);
   color: var(--text-h);
-  font-size: 1rem;
+  font-size: 0.9rem;
   box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .app-input:focus, .app-select:focus {
-  outline: 2px solid var(--accent);
-  border-color: transparent;
+  outline: none;
+  border-color: var(--lp-primary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }
 
-/* Fluid form rows */
 .app-form-row {
   display: flex;
-  gap: clamp(0.75rem, 2vw, 1.25rem);
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 .app-form-row > .app-form-group {
-  min-width: clamp(150px, 40%, 100%);
+  min-width: min(150px, 100%);
 }
-.app-form-row .flex-2 { flex: 2; min-width: clamp(200px, 60%, 100%); }
+.app-form-row .flex-2 { flex: 2; min-width: min(200px, 100%); }
 
-/* Buttons */
+/* ─── Buttons ─── */
 .app-btn-primary {
-  padding: clamp(0.6rem, 2vw, 0.75rem) clamp(1.25rem, 3vw, 2rem);
-  background: var(--accent);
-  color: var(--bg);
+  padding: 0.55rem 1.25rem;
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6, #6366f1));
+  color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--lp-radius-full, 9999px);
   font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s;
+  gap: 0.4rem;
+  transition: transform 0.2s, box-shadow 0.3s, filter 0.2s;
 }
 .app-btn-primary:hover:not(:disabled) {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px -3px rgba(59, 130, 246, 0.35);
+  filter: brightness(1.05);
 }
 .app-btn-primary:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+}
+
+.app-btn-outline {
+  padding: 0.55rem 1.25rem;
+  background: transparent;
+  color: var(--text-h);
+  border: 1px solid var(--border);
+  border-radius: var(--lp-radius-full, 9999px);
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.app-btn-outline:hover {
+  background: var(--social-bg);
+  border-color: var(--text);
 }
 
 .app-btn-danger, .app-btn-outline-danger {
-  padding: clamp(0.5rem, 1.5vw, 0.6rem) clamp(1rem, 2vw, 1.25rem);
+  padding: 0.5rem 1rem;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: var(--lp-radius-full, 9999px);
   font-weight: 500;
+  font-size: 0.85rem;
   transition: all 0.2s;
 }
 .app-btn-danger {
@@ -169,63 +331,74 @@
   color: white;
   border: none;
 }
-.app-btn-danger:hover {
-  background: #dc2626;
-}
+.app-btn-danger:hover { background: #dc2626; }
 .app-btn-outline-danger {
   background: transparent;
   color: #ef4444;
   border: 1px solid #ef4444;
 }
 .app-btn-outline-danger:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.08);
 }
 
-/* Tables (Responsive wrap) */
+/* ─── Tables ─── */
 .app-table-wrapper {
   overflow-x: auto;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--lp-radius, 0.75rem);
   background: var(--bg);
+  -webkit-overflow-scrolling: touch;
 }
 
 .app-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
+  min-width: 500px;
 }
 
 .app-table th, .app-table td {
-  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem);
+  padding: 0.6rem 0.75rem;
   text-align: left;
   border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
 }
 
 .app-table th {
   font-weight: 600;
   background: var(--social-bg);
-  color: var(--text-h);
+  color: var(--text);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .app-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.app-badge {
-  padding: 0.25rem 0.6rem;
-  border-radius: 1rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: white;
-  display: inline-block;
+.app-table tbody tr {
+  transition: background 0.15s;
+}
+.app-table tbody tr:hover {
+  background: var(--social-bg);
 }
 
-.app-badge-draft { background: #6b7280; }
-.app-badge-sent { background: #3b82f6; }
-.app-badge-acknowledged { background: #22c55e; }
-.app-badge-rejected { background: #ef4444; }
-.app-badge-paid { background: #10b981; }
-.app-badge-cancelled { background: #9ca3af; }
+/* ─── Badges ─── */
+.app-badge {
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--lp-radius-full, 9999px);
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.app-badge-draft { background: rgba(107, 114, 128, 0.12); color: #6b7280; }
+.app-badge-sent { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+.app-badge-acknowledged { background: rgba(16, 185, 129, 0.12); color: #059669; }
+.app-badge-rejected { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
+.app-badge-paid { background: rgba(16, 185, 129, 0.15); color: #047857; }
+.app-badge-cancelled { background: rgba(156, 163, 175, 0.12); color: #9ca3af; }
 
 [data-theme="dark"] .app-badge-draft { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
 [data-theme="dark"] .app-badge-sent { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
@@ -234,7 +407,226 @@
 [data-theme="dark"] .app-badge-paid { background: rgba(16, 185, 129, 0.2); color: #34d399; }
 [data-theme="dark"] .app-badge-cancelled { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
 
-/* Skeleton Loaders */
+/* ─── Status Pill (colored inline pill) ─── */
+.app-status-pill {
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--lp-radius-full, 9999px);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* ─── Alert Banners ─── */
+.app-alert {
+  padding: 0.75rem 1rem;
+  border-radius: var(--lp-radius, 0.75rem);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  font-size: 0.88rem;
+}
+.app-alert--success { background: rgba(34, 197, 94, 0.1); color: #059669; }
+.app-alert--error { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+.app-alert--info { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.app-alert--warning { background: rgba(249, 115, 22, 0.1); color: #ea580c; }
+.app-alert a { color: inherit; text-decoration: underline; }
+.app-alert-title { font-weight: 600; font-size: 0.9rem; }
+.app-alert-sub { font-size: 0.8rem; color: var(--text); }
+
+/* ─── Progress Bar ─── */
+.app-progress {
+  width: 100%;
+  height: 6px;
+  background: var(--social-bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.app-progress-fill {
+  height: 100%;
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6, #6366f1));
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 3px;
+}
+
+/* ─── Toggle Switch ─── */
+.app-toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: var(--border);
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.app-toggle--on {
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6, #6366f1));
+}
+.app-toggle-knob {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+.app-toggle--on .app-toggle-knob {
+  left: 23px;
+}
+
+/* ─── Integration Cards ─── */
+.app-integration-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--lp-radius, 0.75rem);
+  background: var(--bg);
+  margin-bottom: 0.5rem;
+  transition: border-color 0.2s;
+}
+.app-integration-card:hover {
+  border-color: rgba(59, 130, 246, 0.15);
+}
+
+/* ─── Timeline ─── */
+.app-timeline {
+  border-left: 2px solid var(--border);
+  padding-left: 1.25rem;
+  margin-left: 0.5rem;
+  margin-top: 1rem;
+}
+.app-timeline-item {
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+.app-timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  position: absolute;
+  left: calc(-12px / 2 - 1.25rem - 1px);
+  top: 4px;
+}
+.app-timeline-item-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.app-timeline-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+.app-timeline-date {
+  font-size: 0.82rem;
+  color: var(--text);
+  margin-left: 0.5rem;
+}
+.app-timeline-meta {
+  font-size: 0.82rem;
+  color: var(--text);
+  margin-top: 0.35rem;
+}
+
+/* ─── Totals Block ─── */
+.app-totals {
+  text-align: right;
+  color: var(--text);
+  margin: 1.5rem 0;
+}
+.app-totals p {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+}
+.app-totals-grand {
+  font-size: 1.1rem;
+}
+.app-totals strong {
+  color: var(--text-h);
+}
+
+/* ─── Bottom Action Bar ─── */
+.app-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.75rem 1rem;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.app-bottom-bar-progress {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.app-bottom-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+/* ─── Pagination ─── */
+.app-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.app-pagination-info {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--text-h);
+}
+
+/* ─── Empty State (universal) ─── */
+.app-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text);
+}
+.app-empty-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+.app-empty-title {
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+.app-empty-desc {
+  font-size: 0.88rem;
+  margin: 0;
+  max-width: 400px;
+  margin-inline: auto;
+  line-height: 1.5;
+}
+
+/* ─── Skeleton Loaders ─── */
 .app-skeleton {
   background: var(--social-bg, #f9fafb);
   background: linear-gradient(
@@ -245,7 +637,7 @@
   );
   background-size: 400% 100%;
   animation: app-skeleton-shimmer 1.5s infinite linear;
-  border-radius: 4px;
+  border-radius: var(--lp-radius, 0.75rem);
 }
 
 @keyframes app-skeleton-shimmer {
@@ -254,10 +646,10 @@
 }
 
 .app-skeleton-title {
-  height: clamp(1.5rem, 4vw, 2.5rem);
+  height: 2rem;
   width: 40%;
-  border-radius: 8px;
-  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: var(--lp-radius, 0.75rem);
+  margin-bottom: 1.5rem;
 }
 
 .app-skeleton-text {
@@ -270,15 +662,1458 @@
 .app-skeleton-text.medium { width: 70%; }
 
 .app-skeleton-card {
-  height: 120px;
-  border-radius: 8px;
+  height: 100px;
+  border-radius: var(--lp-radius-lg, 1rem);
   flex: 1;
-  min-width: clamp(200px, 25%, 100%);
+  min-width: min(200px, 100%);
 }
 
 .app-skeleton-table-row {
   height: 3rem;
   width: 100%;
-  border-radius: 6px;
+  border-radius: var(--lp-radius, 0.75rem);
   margin-bottom: 0.5rem;
+}
+
+/* ─── Page Entrance Animation ─── */
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.app-container {
+  animation: page-fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-container { animation: none; }
+}
+
+/* ─── Card Body Text ─── */
+.app-card-text {
+  margin: 0 0 0.25rem;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+.app-card-text:last-child {
+  margin-bottom: 0;
+}
+.app-card-text--muted {
+  color: var(--text-h);
+}
+
+/* ─── Dates / Meta Card ─── */
+.app-meta-card {
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+.app-meta-line {
+  margin: 0 0 0.5rem;
+  color: var(--text-h);
+  font-size: 0.9rem;
+}
+.app-meta-line:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── Table Alignment ─── */
+.app-table .text-right { text-align: right; }
+.app-table .text-center { text-align: center; }
+
+/* ─── Legal Mention ─── */
+.app-legal {
+  margin-top: clamp(1rem, 3vw, 2rem);
+  font-style: italic;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+/* ─── Factoring CTA ─── */
+.app-factoring-card {
+  margin-top: clamp(1rem, 3vw, 2rem);
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(139, 92, 246, 0.05));
+  border-color: rgba(37, 99, 235, 0.2);
+}
+.app-factoring-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.app-factoring-title {
+  font-weight: 600;
+  color: var(--text-h);
+  margin-bottom: 0.25rem;
+}
+.app-factoring-desc {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.app-factoring-commission {
+  opacity: 0.7;
+}
+
+/* ─── Action Buttons Row ─── */
+.app-actions-row {
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ─── PAF Section Wrapper ─── */
+.app-paf-section {
+  margin-top: clamp(2rem, 5vw, 3rem);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet (640px+)
+   ═══════════════════════════════════════════════════════════════ */
+@media (min-width: 640px) {
+  .app-container {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .app-page-title {
+    font-size: 1.75rem;
+  }
+
+  .app-kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .app-card {
+    padding: 1.25rem;
+  }
+
+  .app-card-value {
+    font-size: 1.75rem;
+  }
+
+  .app-bottom-bar {
+    padding: 1rem 1.5rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Desktop (1024px+)
+   ═══════════════════════════════════════════════════════════════ */
+@media (min-width: 1024px) {
+  .app-container {
+    padding: 2rem 2.5rem;
+  }
+
+  .app-page-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .app-section-title {
+    font-size: 1.25rem;
+    margin: 2rem 0 1.25rem;
+  }
+
+  .app-kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+
+  .app-grid {
+    gap: 1.25rem;
+  }
+
+  .app-card {
+    padding: 1.5rem;
+    border-radius: var(--lp-radius-xl, 1.5rem);
+  }
+
+  .app-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .app-card-value {
+    font-size: 2rem;
+  }
+
+  .app-table th, .app-table td {
+    padding: 0.75rem 1rem;
+  }
+
+  .app-bottom-bar {
+    left: auto;
+    width: 50vw;
+    border-right: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+  }
+}
+
+/* ─── Table alignment utilities ─── */
+.app-table .text-right { text-align: right; }
+.app-table .text-center { text-align: center; }
+
+/* ─── Clickable row ─── */
+.app-table-row-link {
+  cursor: pointer;
+}
+
+/* ─── Link inside table ─── */
+.app-table-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.app-table-link:hover {
+  text-decoration: underline;
+}
+
+/* ─── Page header title reset ─── */
+.app-page-header .app-page-title {
+  margin: 0;
+}
+
+/* ─── Header actions ─── */
+.app-page-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* ─── Responsive display utilities ─── */
+.app-mobile-only { display: flex; }
+.app-desktop-only { display: none; }
+
+/* ─── Skeleton header ─── */
+.app-skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Skeleton pill row ─── */
+.app-skeleton-pills {
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Skeleton table container ─── */
+.app-skeleton-table {
+  padding: 1rem;
+  border: none;
+}
+
+/* ─── Filter Bar ─── */
+.app-filter-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.app-filter-bar .app-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.app-filter-bar .app-select {
+  width: auto;
+}
+
+/* ─── Cards Grid (auto-fill) ─── */
+.app-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+/* ─── Client Card internals ─── */
+.app-client-card {
+  padding: 1.25rem;
+  gap: 0.75rem;
+}
+
+.app-client-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.app-client-card-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-h);
+}
+
+.app-client-card-sub {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-top: 2px;
+}
+
+.app-health-indicator {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.app-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.app-stat-box {
+  padding: 0.5rem;
+  background: var(--social-bg);
+  border-radius: 6px;
+}
+
+.app-stat-box-label {
+  color: var(--text);
+}
+
+.app-stat-box-value {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.app-client-card-meta {
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
+.app-client-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+/* ─── Text Link Button (danger) ─── */
+.app-text-link-danger {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0;
+}
+.app-text-link-danger:hover {
+  text-decoration: underline;
+}
+
+/* ─── KPI Card internals ─── */
+.app-kpi-card {
+  padding: 1rem;
+  text-align: center;
+}
+
+.app-card-sub {
+  font-size: 0.75rem;
+  color: var(--text);
+  margin-top: 0.15rem;
+}
+
+/* ─── Drawer Form Layout ─── */
+.app-drawer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.app-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.app-form-actions .app-btn-primary {
+  width: 100%;
+}
+
+/* ─── No Results ─── */
+.app-no-results {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text);
+}
+
+/* ─── Status Pill Variants ─── */
+.app-status-pill--connected {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+.app-status-pill--muted {
+  background: rgba(156, 163, 175, 0.1);
+  color: var(--text);
+}
+.app-status-pill--closed {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+[data-theme="dark"] .app-status-pill--connected {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+[data-theme="dark"] .app-status-pill--muted {
+  background: rgba(156, 163, 175, 0.2);
+  color: #9ca3af;
+}
+[data-theme="dark"] .app-status-pill--closed {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+/* ─── Integration Card Inner ─── */
+.app-integration-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.app-integration-card-name {
+  font-weight: 600;
+  color: var(--text-h);
+  font-size: 0.95rem;
+}
+.app-integration-card-desc {
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+/* ─── Toggle Row ─── */
+.app-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.app-toggle-label {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+/* ─── Section Separator ─── */
+.app-section-separator {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── Description Text ─── */
+.app-desc {
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* ─── Settings: Logo Upload ─── */
+.app-logo-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.app-logo-dropzone {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.8rem;
+  text-align: center;
+  transition: border-color 0.2s;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.app-logo-dropzone:hover {
+  border-color: var(--accent);
+}
+.app-logo-meta {
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.app-logo-meta p {
+  margin: 0;
+}
+.app-logo-meta p + p {
+  margin-top: 0.25rem;
+  opacity: 0.7;
+}
+.app-logo-remove-btn {
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--danger, #ef4444);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.85rem;
+}
+.app-logo-remove-btn:hover {
+  text-decoration: underline;
+}
+
+/* ─── Settings: Color Picker ─── */
+.app-color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.app-color-swatch {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+}
+.app-color-hex-input {
+  width: 100px;
+}
+
+/* ─── Settings: Invoice Preview ─── */
+.app-invoice-preview {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: #fff;
+  color: #000;
+  max-width: 500px;
+}
+.app-invoice-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+.app-invoice-preview-logo-placeholder {
+  width: 100px;
+  height: 30px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+.app-invoice-preview-right {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+.app-invoice-preview-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.app-invoice-preview-separator {
+  height: 1px;
+  margin: 0.5rem 0 1rem;
+}
+.app-invoice-preview-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+.app-invoice-preview-amount {
+  font-weight: 600;
+}
+.app-invoice-preview-footer {
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+/* ─── Settings: Billing Summary ─── */
+.app-billing-summary {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, var(--accent-bg) 0%, var(--surface) 100%);
+}
+.app-billing-summary-label {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.app-billing-summary-values {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.app-billing-summary-total {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+.app-billing-summary-fees {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.app-billing-summary-unit {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.app-billing-summary-arrow {
+  font-size: 1.2rem;
+  color: var(--text);
+  margin: 0 0.25rem;
+}
+.app-billing-summary-count {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-top: 0.5rem;
+}
+
+/* ─── Settings: Plan Card ─── */
+.app-plan-card {
+  padding: 1.25rem;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+.app-plan-card--selected {
+  border-color: var(--accent);
+}
+.app-plan-card-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.app-plan-card-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-h);
+  margin-bottom: 0.25rem;
+}
+.app-plan-card-price {
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+.app-plan-card-desc {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+.app-plan-card-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8rem;
+}
+.app-plan-card-features li {
+  padding: 2px 0;
+  color: var(--text-h);
+}
+
+/* ─── Settings: Payment Mode Row ─── */
+.app-payment-mode-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.app-payment-mode-info-title {
+  font-weight: 600;
+  color: var(--text-h);
+  font-size: 0.9rem;
+}
+.app-payment-mode-info-desc {
+  font-size: 0.8rem;
+  color: var(--text);
+}
+.app-payment-mode-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ─── Settings: Empty History ─── */
+.app-empty-history {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text);
+}
+.app-empty-history p {
+  font-size: 0.9rem;
+  margin: 0;
+}
+.app-empty-history p + p {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/* ─── Settings: Subsection title ─── */
+.app-subsection-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin-bottom: 1rem;
+}
+
+/* ─── Settings: Plan description ─── */
+.app-plan-info {
+  margin-bottom: 1rem;
+  color: var(--text-h);
+}
+.app-plan-detail {
+  color: var(--text);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* ─── Settings: Factoring card desc ─── */
+.app-factoring-desc {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ─── Settings: Factoring container ─── */
+.app-factoring-container {
+  max-width: 600px;
+}
+
+/* ─── Settings: Reminder hint ─── */
+.app-reminder-hint {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-top: 0.25rem;
+}
+
+/* ─── Settings: Reminder timeline pills ─── */
+.app-reminder-timeline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+.app-reminder-pill {
+  padding: 4px 10px;
+  border-radius: 1rem;
+  font-weight: 600;
+}
+.app-reminder-pill--due {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+.app-reminder-pill--first {
+  background: rgba(234, 179, 8, 0.15);
+  color: #ca8a04;
+}
+.app-reminder-pill--second {
+  background: rgba(249, 115, 22, 0.15);
+  color: #ea580c;
+}
+.app-reminder-pill--formal {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+.app-reminder-arrow {
+  color: var(--text);
+}
+
+/* ─── Settings: Spacing utilities ─── */
+.app-mt-0 { margin-top: 0; }
+.app-mt-2 { margin-top: 2rem; }
+.app-mb-2 { margin-bottom: 2rem; }
+
+/* ─── Settings: Btn compact ─── */
+.app-btn-compact {
+  font-size: 0.8rem;
+  padding: 6px 14px;
+}
+
+/* ─── Settings: Secondary button ─── */
+.app-btn-secondary {
+  padding: 0.55rem 1.25rem;
+  background: var(--text-h);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--lp-radius-full, 9999px);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: transform 0.2s, box-shadow 0.3s, filter 0.2s;
+}
+.app-btn-secondary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+/* ─── Utility: Hidden ─── */
+.app-hidden { display: none; }
+
+/* ─── Settings: Logo preview img ─── */
+.app-logo-preview-img {
+  max-height: 50px;
+  max-width: 150px;
+}
+
+/* ─── Mobile specific ─── */
+@media (max-width: 639px) {
+  .app-form-row {
+    flex-direction: column;
+  }
+
+  .app-form-row > .app-form-group {
+    min-width: 100%;
+  }
+
+  .app-table {
+    min-width: 450px;
+  }
+
+  .app-grid > .app-card {
+    min-width: 100%;
+  }
+
+  .app-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Desktop breakpoint ─── */
+@media (min-width: 640px) {
+  .app-mobile-only { display: none; }
+  .app-desktop-only { display: block; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OnboardingWizard — Step Indicators & Layout
+   ═══════════════════════════════════════════════════════════════ */
+
+.onboarding-container {
+  max-width: 800px;
+}
+
+.onboarding-title {
+  text-align: center;
+}
+
+.onboarding-progress-bar {
+  margin-bottom: 2rem;
+}
+
+/* ─── Step Indicator Row ─── */
+.onboarding-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.onboarding-step {
+  display: flex;
+  align-items: center;
+}
+
+.onboarding-step-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.onboarding-step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  transition: background 0.3s, color 0.3s;
+  background: var(--border);
+  color: var(--text);
+}
+
+.onboarding-step-circle--active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.onboarding-step-label {
+  font-size: 0.7rem;
+  margin-top: 0.35rem;
+  text-align: center;
+  color: var(--text);
+  font-weight: 400;
+}
+
+.onboarding-step-label--active {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+.onboarding-step-label--done {
+  color: var(--text-h);
+}
+
+.onboarding-step-connector {
+  height: 2px;
+  width: clamp(20px, 8vw, 60px);
+  background: var(--border);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+.onboarding-step-connector--done {
+  background: var(--accent);
+}
+
+/* ─── Legal Form Grid ─── */
+.onboarding-legal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+/* ─── Selectable Card ─── */
+.onboarding-selectable-card {
+  cursor: pointer;
+  border: 2px solid var(--border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: 1rem;
+  text-align: left;
+}
+
+.onboarding-selectable-card--selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.onboarding-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.onboarding-card-label {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text-h);
+}
+
+.onboarding-card-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.onboarding-card-desc {
+  font-size: 0.8rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* ─── VAT Radio Card ─── */
+.onboarding-radio-card {
+  cursor: pointer;
+  border: 2px solid var(--border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: 1rem;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.onboarding-radio-card--selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.onboarding-radio-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  transition: border 0.2s;
+  margin-top: 2px;
+}
+
+.onboarding-radio-dot--selected {
+  border: 6px solid var(--accent);
+}
+
+.onboarding-radio-label {
+  font-weight: 600;
+  color: var(--text-h);
+  margin-bottom: 0.25rem;
+}
+
+.onboarding-radio-desc {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.onboarding-vat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.onboarding-exercise-group {
+  margin-bottom: 1rem;
+}
+
+/* ─── Logo Upload ─── */
+.onboarding-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.onboarding-logo-dropzone {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: var(--social-bg);
+  color: var(--text);
+  font-size: 0.8rem;
+  text-align: center;
+  transition: border-color 0.2s;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.onboarding-logo-meta {
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.onboarding-logo-meta p {
+  margin: 0;
+}
+
+.onboarding-logo-meta p + p {
+  margin-top: 0.25rem;
+  opacity: 0.7;
+}
+
+/* ─── Color Picker ─── */
+.onboarding-color-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.onboarding-color-swatch {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.onboarding-color-hex {
+  width: 110px;
+}
+
+.onboarding-color-preview {
+  height: 8px;
+  flex: 1;
+  border-radius: 4px;
+}
+
+/* ─── Summary Card ─── */
+.onboarding-summary-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.onboarding-summary-line:first-child {
+  padding-top: 0;
+}
+
+.onboarding-summary-line:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.onboarding-summary-label {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.onboarding-summary-value {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.onboarding-summary-color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.onboarding-summary-color-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.onboarding-summary-logo {
+  max-height: 32px;
+  max-width: 100px;
+  border-radius: 4px;
+}
+
+/* ─── Welcome Banner ─── */
+.onboarding-welcome-banner {
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--accent-bg);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.onboarding-welcome-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 0.5rem;
+}
+
+.onboarding-welcome-desc {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─── Navigation Footer ─── */
+.onboarding-nav-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.onboarding-btn-back {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.onboarding-btn-finish {
+  min-width: 200px;
+}
+
+/* ─── Hint Text ─── */
+.onboarding-hint {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-top: 0.25rem;
+}
+
+.onboarding-summary-card {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ClientPortal — Public Invoice View
+   ═══════════════════════════════════════════════════════════════ */
+
+.portal-bg {
+  min-height: 100vh;
+  background: var(--social-bg, #f9fafb);
+}
+
+.portal-container {
+  padding-top: clamp(1.5rem, 4vw, 3rem);
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+/* ─── Header ─── */
+.portal-header {
+  text-align: center;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.portal-seller-logo {
+  max-height: 60px;
+  max-width: 200px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.portal-invoice-title {
+  margin: 0 0 0.75rem;
+}
+
+/* ─── Entity Cards ─── */
+.portal-entities-row {
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+/* ─── Dates Card ─── */
+.portal-dates-card {
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+.portal-dates-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1rem, 3vw, 2rem);
+}
+
+.portal-date-label {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.portal-date-value {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+/* ─── Table ─── */
+.portal-table-section {
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+/* ─── Totals ─── */
+.portal-totals-card {
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+.portal-totals-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.portal-totals-line {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 300px;
+}
+
+.portal-totals-line-label {
+  color: var(--text);
+}
+
+.portal-totals-line-value {
+  color: var(--text-h);
+}
+
+.portal-totals-grand {
+  padding-top: 0.5rem;
+  border-top: 2px solid var(--border);
+  font-size: 1.15rem;
+}
+
+.portal-totals-grand .portal-totals-line-label {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+/* ─── Legal ─── */
+.portal-legal {
+  font-style: italic;
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+/* ─── Payment Terms Card ─── */
+.portal-payment-terms-card {
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.portal-payment-terms-title {
+  font-size: 0.95rem;
+}
+
+/* ─── Bank Card ─── */
+.portal-bank-card {
+  margin-bottom: clamp(1.5rem, 4vw, 2rem);
+}
+
+.portal-bank-title {
+  font-size: 0.95rem;
+}
+
+/* ─── Action Buttons ─── */
+.portal-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: clamp(1rem, 3vw, 2rem);
+}
+
+.portal-btn-download {
+  min-width: 200px;
+}
+
+.portal-btn-pay {
+  min-width: 200px;
+  background: #10b981;
+}
+
+/* ─── Footer ─── */
+.portal-footer {
+  text-align: center;
+  margin-top: clamp(2rem, 5vw, 4rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.portal-footer p {
+  margin: 0;
+}
+
+/* ─── Loading State ─── */
+.portal-loading {
+  min-height: 100vh;
+}
+
+.portal-skeleton-header {
+  text-align: center;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.portal-skeleton-logo {
+  width: 120px;
+  height: 40px;
+  border-radius: 8px;
+  margin: 0 auto 1rem;
+}
+
+.portal-skeleton-title {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.portal-skeleton-dates {
+  height: 80px;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.portal-skeleton-section-title {
+  width: 20%;
+}
+
+.portal-skeleton-rows {
+  padding: 1rem;
+}
+
+.portal-skeleton-totals {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.portal-skeleton-totals-box {
+  width: 200px;
+  height: 60px;
+  border-radius: 8px;
+}
+
+/* ─── Error State ─── */
+.portal-error-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.portal-error-inner {
+  text-align: center;
+  max-width: 480px;
+}
+
+.portal-error-code {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+.portal-error-title {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  color: var(--text-h);
+  margin-bottom: 1rem;
+}
+
+.portal-error-desc {
+  color: var(--text);
+  line-height: 1.6;
 }

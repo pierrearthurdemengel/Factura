@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import api from './api/factura';
 import { AnimatePresence } from 'framer-motion';
@@ -72,11 +72,27 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
   const [companies, setCompanies] = useState<{ id: string; name: string; siren: string }[]>([]);
   const [activeCompany, setActiveCompany] = useState<{ id: string; name: string; siren: string } | null>(null);
   const location = useLocation();
+  const companyRef = useRef<HTMLDivElement>(null);
+  const localeRef = useRef<HTMLDivElement>(null);
 
   // Fermer le menu mobile lors d'un changement de page
   useEffect(() => {
     setMobileMenuOpen(false); // eslint-disable-line react-hooks/set-state-in-effect
   }, [location.pathname]);
+
+  // Fermer les dropdowns au clic exterieur
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (companyRef.current && !companyRef.current.contains(e.target as Node)) {
+        setCompanySelectorOpen(false);
+      }
+      if (localeRef.current && !localeRef.current.contains(e.target as Node)) {
+        setLocaleSelectorOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Charger les entreprises de l'utilisateur
   useEffect(() => {
@@ -104,7 +120,7 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
 
       {/* Selecteur d'entreprise */}
       {activeCompany && (
-        <div style={{ position: 'relative', marginLeft: '0.5rem' }}>
+        <div ref={companyRef} style={{ position: 'relative', marginLeft: '0.5rem' }}>
           <button
             onClick={() => setCompanySelectorOpen(!companySelectorOpen)}
             style={{
@@ -182,7 +198,7 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
       </button>
 
       {/* Selecteur de langue */}
-      <div style={{ position: 'relative' }}>
+      <div ref={localeRef} style={{ position: 'relative' }}>
         <button
           onClick={() => setLocaleSelectorOpen(!localeSelectorOpen)}
           className="navbar-icon-btn"
@@ -220,10 +236,10 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
 
       {/* Liens desktop */}
       <div className="navbar-links">
-        <Link to="/invoices" className="navbar-link">Factures</Link>
-        <Link to="/quotes" className="navbar-link">Devis</Link>
-        <Link to="/clients" className="navbar-link">Clients</Link>
-        <Link to="/settings" className="navbar-link">Parametres</Link>
+        <Link to="/invoices" className={`navbar-link${location.pathname.startsWith('/invoices') ? ' active' : ''}`}>Factures</Link>
+        <Link to="/quotes" className={`navbar-link${location.pathname.startsWith('/quotes') ? ' active' : ''}`}>Devis</Link>
+        <Link to="/clients" className={`navbar-link${location.pathname.startsWith('/clients') ? ' active' : ''}`}>Clients</Link>
+        <Link to="/settings" className={`navbar-link${location.pathname === '/settings' ? ' active' : ''}`}>Parametres</Link>
       </div>
 
       {/* Bouton hamburger mobile */}
@@ -276,8 +292,8 @@ function AnimatedAppCore() {
         // Une ecoute specifique locale gérera la logique
       }
 
-      // 3. Raccourcis C pour creer (hors inputs)
-      if (!isInput && e.key.toLowerCase() === 'c') {
+      // 3. Raccourcis Shift+C pour creer (hors inputs)
+      if (!isInput && e.shiftKey && e.key === 'C') {
         e.preventDefault();
         window.location.href = '/invoices/new';
       }

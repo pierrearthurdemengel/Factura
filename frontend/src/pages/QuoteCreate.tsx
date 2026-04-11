@@ -128,9 +128,9 @@ export default function QuoteCreate() {
         <h2 className="app-section-title">Lignes</h2>
 
         {lines.map((line) => (
-          <div key={line.id} className="app-card" style={{ marginBottom: '1rem' }}>
+          <div key={line.id} className="app-card app-mb-2">
             <div className="app-form-row">
-              <div className="app-form-group" style={{ flex: 2 }}>
+              <div className="app-form-group flex-2">
                 <label className="app-label">Description</label>
                 <input type="text" value={line.description} onChange={(e) => updateLine(line.id, 'description', e.target.value)} required className="app-input" />
               </div>
@@ -163,7 +163,7 @@ export default function QuoteCreate() {
                 </select>
               </div>
               <div className="app-form-group" style={{ alignItems: 'flex-end' }}>
-                <p style={{ margin: '0 0 10px', fontWeight: 600 }}>{computeLineTotal(line).ht.toFixed(2)} EUR HT</p>
+                <p className="app-label app-mt-0">{computeLineTotal(line).ht.toFixed(2)} EUR HT</p>
                 <button type="button" onClick={() => removeLine(line.id)} disabled={lines.length === 1} className="app-btn-outline-danger">
                   Supprimer
                 </button>
@@ -172,7 +172,7 @@ export default function QuoteCreate() {
           </div>
         ))}
 
-        <button type="button" onClick={addLine} className="app-btn-outline-danger" style={{ marginBottom: '1.5rem', color: 'var(--text-h)', borderColor: 'var(--border)' }}>
+        <button type="button" onClick={addLine} className="app-btn-outline" style={{ marginBottom: '1.5rem' }}>
           + Ajouter une ligne
         </button>
 
@@ -186,28 +186,28 @@ export default function QuoteCreate() {
           <textarea value={legalMention} onChange={(e) => setLegalMention(e.target.value)} placeholder="TVA non applicable - art. 293 B du CGI" className="app-input" style={{ resize: 'vertical', minHeight: '80px' }} />
         </div>
 
-        <div className="app-card" style={{ marginBottom: '2rem', background: 'var(--social-bg)' }}>
-          <p style={{ margin: '0 0 0.5rem', color: 'var(--text)' }}>Total HT : <strong style={{ color: 'var(--text-h)' }}>{totals.ht.toFixed(2)} EUR</strong></p>
-          <p style={{ margin: '0 0 0.5rem', color: 'var(--text)' }}>Total TVA : <strong style={{ color: 'var(--text-h)' }}>{totals.vat.toFixed(2)} EUR</strong></p>
-          <p style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-h)' }}>Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
+        <div className="app-card app-totals" style={{ background: 'var(--social-bg)' }}>
+          <p>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
+          <p>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
+          <p className="app-totals-grand">Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
         </div>
 
         {/* Barre de progression */}
-        <div style={{ marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-h)', fontWeight: 600, marginBottom: '0.5rem' }}>
+        <div className="app-bottom-bar-progress" style={{ marginBottom: '1rem' }}>
+          <div className="app-bottom-bar-label">
             <span>Progression ({completionRate}%)</span>
             <span>{completionRate === 100 ? 'Pret a valider' : 'Champs manquants'}</span>
           </div>
-          <div style={{ width: '100%', height: '6px', background: 'var(--social-bg)', borderRadius: '3px', overflow: 'hidden' }}>
-            <div style={{ width: `${completionRate}%`, background: 'var(--accent)', height: '100%', transition: 'width 0.4s ease' }} />
+          <div className="app-progress">
+            <div className="app-progress-fill" style={{ width: `${completionRate}%` }} />
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button type="button" onClick={() => navigate('/quotes')} className="app-btn-outline" style={{ padding: '12px 24px' }}>
+        <div className="app-actions-row">
+          <button type="button" onClick={() => navigate('/quotes')} className="app-btn-outline">
             Annuler
           </button>
-          <button type="submit" disabled={completionRate < 100} className="app-btn-primary" style={{ padding: '12px 24px', opacity: completionRate === 100 ? 1 : 0.5 }}>
+          <button type="submit" disabled={completionRate < 100} className="app-btn-primary">
             Creer le devis
           </button>
         </div>

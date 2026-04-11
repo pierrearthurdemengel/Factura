@@ -29,31 +29,15 @@ function SortableLineItem({ id, children }: { id: string, children: React.ReactN
     boxShadow: isDragging ? '0 10px 25px rgba(0,0,0,0.1)' : 'none',
     zIndex: isDragging ? 100 : 1,
     position: 'relative' as const,
-    marginBottom: '1rem', 
-    padding: '0', 
-    display: 'flex',
-    background: 'var(--bg)',
-    borderRadius: '8px',
-    border: '1px solid var(--border)'
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
-      <div 
-        {...attributes} 
-        {...listeners} 
-        style={{ 
-          cursor: isDragging ? 'grabbing' : 'grab', 
-          padding: '0 1rem', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          borderRight: '1px solid var(--border)', 
-          backgroundColor: 'var(--social-bg)', 
-          borderTopLeftRadius: '8px', 
-          borderBottomLeftRadius: '8px', 
-          color: 'var(--l-gray)' 
-        }}
+    <div ref={setNodeRef} style={style} className="ic-sortable-line">
+      <div
+        {...attributes}
+        {...listeners}
+        className="ic-drag-handle"
+        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="9" cy="12" r="1.5"></circle>
@@ -64,7 +48,7 @@ function SortableLineItem({ id, children }: { id: string, children: React.ReactN
           <circle cx="15" cy="19" r="1.5"></circle>
         </svg>
       </div>
-      <div style={{ flex: 1, padding: '1rem' }}>
+      <div className="ic-sortable-line-content">
         {children}
       </div>
     </div>
@@ -83,7 +67,7 @@ export default function InvoiceCreate() {
     { id: crypto.randomUUID(), description: '', quantity: '1', unit: 'EA', unitPriceExcludingTax: '', vatRate: '20' },
   ]);
   const { error, success } = useToast();
-  
+
   // Holographic 3D state
   const previewRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50 });
@@ -95,11 +79,11 @@ export default function InvoiceCreate() {
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    
+
     // Rotate max 8 degrees
     const rotateX = ((y - centerY) / centerY) * -8;
     const rotateY = ((x - centerX) / centerX) * 8;
-    
+
     // Glare position
     const glareX = (x / rect.width) * 100;
     const glareY = (y / rect.height) * 100;
@@ -236,7 +220,7 @@ export default function InvoiceCreate() {
             </div>
 
             <h2 className="app-section-title">Lignes</h2>
-            
+
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={lines.map(l => l.id)} strategy={verticalListSortingStrategy}>
                 {lines.map((line) => (
@@ -272,7 +256,7 @@ export default function InvoiceCreate() {
                         </select>
                       </div>
                     </div>
-                    <div className="app-form-row" style={{ alignItems: 'flex-end', marginTop: '1rem' }}>
+                    <div className="app-form-row ic-line-bottom-row">
                       <div className="app-form-group">
                         <label className="app-label">Prix HT</label>
                         <input
@@ -294,8 +278,8 @@ export default function InvoiceCreate() {
                           <option value="0">0% (exoneration)</option>
                         </select>
                       </div>
-                      <div className="app-form-group" style={{ alignItems: 'flex-end' }}>
-                        <p style={{ margin: '0 0 10px', fontWeight: 600 }}>{computeLineTotal(line).ht.toFixed(2)} EUR HT</p>
+                      <div className="app-form-group ic-line-actions">
+                        <p className="ic-line-total">{computeLineTotal(line).ht.toFixed(2)} EUR HT</p>
                         <button type="button" onClick={() => removeLine(line.id)} disabled={lines.length === 1} className="app-btn-outline-danger">
                           Supprimer
                         </button>
@@ -306,7 +290,7 @@ export default function InvoiceCreate() {
               </SortableContext>
             </DndContext>
 
-            <button type="button" onClick={addLine} className="app-btn-outline-danger" style={{ marginBottom: 'clamp(1.5rem, 3vw, 2rem)', color: 'var(--text-h)', borderColor: 'var(--border)' }}>
+            <button type="button" onClick={addLine} className="app-btn-outline ic-add-line-btn">
               + Ajouter une ligne
             </button>
 
@@ -327,46 +311,45 @@ export default function InvoiceCreate() {
                 value={legalMention}
                 onChange={(e) => setLegalMention(e.target.value)}
                 placeholder="TVA non applicable - art. 293 B du CGI"
-                className="app-input"
-                style={{ resize: 'vertical', minHeight: '80px' }}
+                className="app-input ic-textarea"
               />
             </div>
 
-            <div className="app-card" style={{ marginBottom: 'clamp(2.5rem, 5vw, 4rem)', alignItems: 'flex-end', background: 'var(--social-bg)' }}>
-              <p style={{ margin: '0 0 0.5rem', color: 'var(--text)' }}>Total HT : <strong style={{ color: 'var(--text-h)' }}>{totals.ht.toFixed(2)} EUR</strong></p>
-              <p style={{ margin: '0 0 0.5rem', color: 'var(--text)' }}>Total TVA : <strong style={{ color: 'var(--text-h)' }}>{totals.vat.toFixed(2)} EUR</strong></p>
-              <p style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-h)' }}>Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
+            <div className="app-card app-totals ic-totals-card">
+              <p>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
+              <p>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
+              <p className="app-totals-grand">Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
             </div>
 
             {/* Barre de Progression / Focus Bottom Bar */}
-            <div style={{ position: 'fixed', bottom: 0, left: 0, width: '50vw', padding: '24px', background: 'var(--bg)', borderTop: '1px solid var(--border)', display: 'flex', gap: '20px', alignItems: 'center', zIndex: 100, borderRight: '1px solid var(--border)' }}>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-h)', fontWeight: 600 }}>
+            <div className="app-bottom-bar">
+              <div className="app-bottom-bar-progress">
+                <div className="app-bottom-bar-label">
                   <span>Progression ({completionRate}%)</span>
                   <span>{completionRate === 100 ? 'Prêt à valider' : 'Champs manquants'}</span>
                 </div>
-                <div style={{ width: '100%', height: '6px', background: 'var(--social-bg)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ width: `${completionRate}%`, background: 'var(--accent)', height: '100%', transition: 'width 0.4s cubic-bezier(0.22, 1, 0.36, 1)' }} />
+                <div className="app-progress">
+                  <div className="app-progress-fill" style={{ width: `${completionRate}%` }} />
                 </div>
               </div>
-              <button type="button" onClick={() => navigate('/invoices')} className="app-btn-outline" style={{ padding: '12px 24px' }}>
+              <button type="button" onClick={() => navigate('/invoices')} className="app-btn-outline ic-bottom-btn">
                 Annuler
               </button>
-              <button type="submit" disabled={completionRate < 100} className="app-btn-primary" style={{ padding: '12px 24px', opacity: completionRate === 100 ? 1 : 0.5 }}>
+              <button type="submit" disabled={completionRate < 100} className="app-btn-primary ic-bottom-btn">
                 Creer la facture
               </button>
             </div>
-            
-            <div className="app-form-row" style={{ marginTop: '0.5rem', marginBottom: '8rem' }}>
-              <button type="button" onClick={handlePreviewPdf} className="app-btn-outline" style={{ width: '100%', padding: '12px' }}>
-                ⬇️ Télécharger Aperçu PDF (Ultra-HD)
+
+            <div className="app-form-row ic-pdf-row">
+              <button type="button" onClick={handlePreviewPdf} className="app-btn-outline ic-pdf-btn">
+                Telecharger Apercu PDF (Ultra-HD)
               </button>
             </div>
           </form>
         </div>
 
         <div className="invoice-create-preview-sticky" style={{ perspective: '1500px' }}>
-          <motion.div 
+          <motion.div
             ref={previewRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
@@ -408,12 +391,12 @@ export default function InvoiceCreate() {
               <table className="app-table">
                 <thead>
                   <tr>
-                    <th style={{ fontSize: '0.85rem' }}>Description</th>
-                    <th style={{ textAlign: 'right', fontSize: '0.85rem' }}>Qte</th>
-                    <th style={{ textAlign: 'center', fontSize: '0.85rem' }}>Unite</th>
-                    <th style={{ textAlign: 'right', fontSize: '0.85rem' }}>Prix HT</th>
-                    <th style={{ textAlign: 'right', fontSize: '0.85rem' }}>TVA</th>
-                    <th style={{ textAlign: 'right', fontSize: '0.85rem' }}>Total HT</th>
+                    <th>Description</th>
+                    <th className="text-right">Qte</th>
+                    <th className="text-center">Unite</th>
+                    <th className="text-right">Prix HT</th>
+                    <th className="text-right">TVA</th>
+                    <th className="text-right">Total HT</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -421,12 +404,12 @@ export default function InvoiceCreate() {
                     const t = computeLineTotal(line);
                     return (
                       <tr key={i}>
-                        <td style={{ fontSize: '0.85rem' }}>{line.description || '—'}</td>
-                        <td style={{ textAlign: 'right', fontSize: '0.85rem' }}>{line.quantity}</td>
-                        <td style={{ textAlign: 'center', fontSize: '0.85rem' }}>{line.unit}</td>
-                        <td style={{ textAlign: 'right', fontSize: '0.85rem' }}>{parseFloat(line.unitPriceExcludingTax || '0').toFixed(2)} EUR</td>
-                        <td style={{ textAlign: 'right', fontSize: '0.85rem' }}>{line.vatRate}%</td>
-                        <td style={{ textAlign: 'right', fontSize: '0.85rem' }}>{t.ht.toFixed(2)} EUR</td>
+                        <td>{line.description || '—'}</td>
+                        <td className="text-right">{line.quantity}</td>
+                        <td className="text-center">{line.unit}</td>
+                        <td className="text-right">{parseFloat(line.unitPriceExcludingTax || '0').toFixed(2)} EUR</td>
+                        <td className="text-right">{line.vatRate}%</td>
+                        <td className="text-right">{t.ht.toFixed(2)} EUR</td>
                       </tr>
                     );
                   })}
@@ -434,10 +417,10 @@ export default function InvoiceCreate() {
               </table>
             </div>
 
-            <div style={{ textAlign: 'right', marginBottom: '1.5rem', color: '#111' }}>
-              <p style={{ margin: '0 0 0.25rem' }}>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
-              <p style={{ margin: '0 0 0.25rem' }}>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
-              <p style={{ margin: 0, fontSize: '1.15rem' }}>Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
+            <div className="app-totals">
+              <p>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
+              <p>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
+              <p className="app-totals-grand">Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
             </div>
 
             {paymentTerms && <p style={{ fontSize: '0.85rem', color: '#444', margin: '0 0 0.5rem' }}>Conditions : {paymentTerms}</p>}

@@ -77,20 +77,23 @@ export default function QuoteDetail() {
 
   return (
     <div className="app-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
-        <h1 className="app-page-title" style={{ margin: 0 }}>Devis {quote.number || 'Brouillon'}</h1>
-        <span style={{ padding: '4px 14px', borderRadius: '1rem', fontSize: '0.85rem', fontWeight: 600, background: cfg.bg, color: cfg.color }}>
+      <div className="app-page-header">
+        <h1 className="app-page-title">Devis {quote.number || 'Brouillon'}</h1>
+        <span
+          className="app-status-pill"
+          style={{ background: cfg.bg, color: cfg.color }}
+        >
           {cfg.label}
         </span>
       </div>
 
       {/* Badge "Issu du devis" si le devis a ete converti */}
       {quote.invoiceId && (
-        <div style={{ marginBottom: '1.5rem', padding: '0.75rem', background: 'rgba(139,92,246,0.1)', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.9rem', color: '#8b5cf6', fontWeight: 600 }}>
+        <div className="app-alert app-alert--info">
+          <span className="app-alert-title">
             Facture generee
           </span>
-          <Link to={`/invoices/${quote.invoiceId}`} style={{ color: '#8b5cf6', textDecoration: 'underline', fontSize: '0.9rem' }}>
+          <Link to={`/invoices/${quote.invoiceId}`}>
             Voir la facture
           </Link>
         </div>
@@ -99,24 +102,24 @@ export default function QuoteDetail() {
       <div className="app-grid">
         <div className="app-card">
           <h3 className="app-card-title">Vendeur</h3>
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>{quote.seller?.name}</p>
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>SIREN : {quote.seller?.siren}</p>
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>{quote.seller?.addressLine1}</p>
-          <p style={{ margin: 0, color: 'var(--text)' }}>{quote.seller?.postalCode} {quote.seller?.city}</p>
+          <p className="app-card-text">{quote.seller?.name}</p>
+          <p className="app-card-text">SIREN : {quote.seller?.siren}</p>
+          <p className="app-card-text">{quote.seller?.addressLine1}</p>
+          <p className="app-card-text">{quote.seller?.postalCode} {quote.seller?.city}</p>
         </div>
         <div className="app-card">
           <h3 className="app-card-title">Client</h3>
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>{quote.buyer?.name}</p>
-          {quote.buyer?.siren && <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>SIREN : {quote.buyer.siren}</p>}
-          <p style={{ margin: '0 0 0.25rem', color: 'var(--text)' }}>{quote.buyer?.addressLine1}</p>
-          <p style={{ margin: 0, color: 'var(--text)' }}>{quote.buyer?.postalCode} {quote.buyer?.city}</p>
+          <p className="app-card-text">{quote.buyer?.name}</p>
+          {quote.buyer?.siren && <p className="app-card-text">SIREN : {quote.buyer.siren}</p>}
+          <p className="app-card-text">{quote.buyer?.addressLine1}</p>
+          <p className="app-card-text">{quote.buyer?.postalCode} {quote.buyer?.city}</p>
         </div>
       </div>
 
-      <div className="app-card" style={{ marginBottom: '1.5rem' }}>
-        <p style={{ margin: '0 0 0.5rem', color: 'var(--text-h)' }}>Date d'emission : <strong>{new Date(quote.issueDate).toLocaleDateString('fr-FR')}</strong></p>
+      <div className="app-card app-meta-card">
+        <p className="app-meta-line">Date d'emission : <strong>{new Date(quote.issueDate).toLocaleDateString('fr-FR')}</strong></p>
         {quote.validUntil && (
-          <p style={{ margin: 0, color: 'var(--text-h)' }}>Valide jusqu'au : <strong>{new Date(quote.validUntil).toLocaleDateString('fr-FR')}</strong></p>
+          <p className="app-meta-line">Valide jusqu'au : <strong>{new Date(quote.validUntil).toLocaleDateString('fr-FR')}</strong></p>
         )}
       </div>
 
@@ -126,40 +129,40 @@ export default function QuoteDetail() {
           <thead>
             <tr>
               <th>Description</th>
-              <th style={{ textAlign: 'right' }}>Quantite</th>
-              <th style={{ textAlign: 'center' }}>Unite</th>
-              <th style={{ textAlign: 'right' }}>Prix HT</th>
-              <th style={{ textAlign: 'right' }}>TVA</th>
-              <th style={{ textAlign: 'right' }}>Total HT</th>
+              <th className="text-right">Quantite</th>
+              <th className="text-center">Unite</th>
+              <th className="text-right">Prix HT</th>
+              <th className="text-right">TVA</th>
+              <th className="text-right">Total HT</th>
             </tr>
           </thead>
           <tbody>
             {quote.lines?.map((line) => (
               <tr key={line.id}>
                 <td>{line.description}</td>
-                <td style={{ textAlign: 'right' }}>{line.quantity}</td>
-                <td style={{ textAlign: 'center' }}>{line.unit}</td>
-                <td style={{ textAlign: 'right' }}>{line.unitPriceExcludingTax} EUR</td>
-                <td style={{ textAlign: 'right' }}>{line.vatRate}%</td>
-                <td style={{ textAlign: 'right' }}>{line.lineAmount} EUR</td>
+                <td className="text-right">{line.quantity}</td>
+                <td className="text-center">{line.unit}</td>
+                <td className="text-right">{line.unitPriceExcludingTax} EUR</td>
+                <td className="text-right">{line.vatRate}%</td>
+                <td className="text-right">{line.lineAmount} EUR</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div style={{ marginTop: '1.5rem', textAlign: 'right', color: 'var(--text)' }}>
-        <p style={{ marginBottom: '0.5rem' }}>Total HT : <strong style={{ color: 'var(--text-h)' }}>{quote.totalExcludingTax} EUR</strong></p>
-        <p style={{ marginBottom: '0.5rem' }}>Total TVA : <strong style={{ color: 'var(--text-h)' }}>{quote.totalTax} EUR</strong></p>
-        <p style={{ fontSize: '1.15rem' }}>Total TTC : <strong style={{ color: 'var(--text-h)' }}>{quote.totalIncludingTax} EUR</strong></p>
+      <div className="app-totals">
+        <p>Total HT : <strong>{quote.totalExcludingTax} EUR</strong></p>
+        <p>Total TVA : <strong>{quote.totalTax} EUR</strong></p>
+        <p className="app-totals-grand">Total TTC : <strong>{quote.totalIncludingTax} EUR</strong></p>
       </div>
 
       {quote.legalMention && (
-        <p style={{ marginTop: '1.5rem', fontStyle: 'italic', color: 'var(--text)' }}>{quote.legalMention}</p>
+        <p className="app-legal">{quote.legalMention}</p>
       )}
 
       {/* Actions */}
-      <div style={{ marginTop: '2rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+      <div className="app-actions-row">
         {quote.status === 'DRAFT' && (
           <button onClick={handleSend} disabled={actionLoading} className="app-btn-primary">
             Envoyer au client

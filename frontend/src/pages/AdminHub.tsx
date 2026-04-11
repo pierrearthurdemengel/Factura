@@ -89,28 +89,27 @@ export default function AdminHub() {
   };
 
   return (
-    <div className="app-container" style={{ textAlign: 'left' }}>
+    <div className="app-container">
       <h1 className="app-page-title">Hub administratif</h1>
-      <p style={{ color: 'var(--text)', marginBottom: '2rem', maxWidth: 650, lineHeight: 1.6 }}>
+      <p className="app-desc">
         Accedez a tous les services administratifs depuis un point d'entree unique.
       </p>
 
       {/* Recherche INSEE */}
-      <div className="app-card" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
-        <h2 style={{ margin: '0 0 0.5rem', color: 'var(--text-h)', fontSize: '1rem' }}>
+      <div className="app-card" style={{ marginBottom: '2rem' }}>
+        <h2 className="app-subsection-title app-mt-0">
           Recherche INSEE Sirene
         </h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '1rem' }}>
+        <p className="app-card-text">
           Recherchez une entreprise par SIREN, SIRET ou denomination.
         </p>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div className="app-filter-bar">
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="Ex: 443061841 ou GOOGLE FRANCE"
             className="app-input"
-            style={{ flex: 1, minWidth: 200 }}
           />
           <button onClick={handleSearch} disabled={searching} className="app-btn-primary">
             {searching ? 'Recherche...' : 'Rechercher'}
@@ -118,29 +117,25 @@ export default function AdminHub() {
         </div>
 
         {searchError && (
-          <div style={{ marginTop: '0.75rem', color: '#ef4444', fontSize: '0.85rem' }}>{searchError}</div>
+          <div className="app-alert app-alert--error">{searchError}</div>
         )}
 
         {searchResults.length > 0 && (
-          <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="app-list">
             {searchResults.map((r) => (
-              <div key={r.siret || r.siren} style={{
-                padding: '0.75rem', background: 'var(--surface)', borderRadius: '6px',
-                border: '1px solid var(--border)', fontSize: '0.9rem',
-              }}>
-                <div style={{ fontWeight: 600, color: 'var(--text-h)' }}>{r.denomination || 'Inconnu'}</div>
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.25rem', fontSize: '0.8rem', color: 'var(--text)' }}>
-                  <span>SIREN : {r.siren}</span>
-                  {r.siret && <span>SIRET : {r.siret}</span>}
-                  {r.codeNaf && <span>NAF : {r.codeNaf}</span>}
-                  {r.adresse && <span>{r.adresse}</span>}
-                  <span style={{
-                    color: r.etatAdministratif === 'A' ? '#22c55e' : '#ef4444',
-                    fontWeight: 600,
-                  }}>
-                    {r.etatAdministratif === 'A' ? 'Active' : 'Fermee'}
-                  </span>
+              <div key={r.siret || r.siren} className="app-list-item">
+                <div className="app-list-item-info">
+                  <div className="app-list-item-title">{r.denomination || 'Inconnu'}</div>
+                  <div className="app-list-item-sub">
+                    <span>SIREN : {r.siren}</span>
+                    {r.siret && <span> &middot; SIRET : {r.siret}</span>}
+                    {r.codeNaf && <span> &middot; NAF : {r.codeNaf}</span>}
+                    {r.adresse && <span> &middot; {r.adresse}</span>}
+                  </div>
                 </div>
+                <span className={`app-status-pill ${r.etatAdministratif === 'A' ? 'app-status-pill--connected' : 'app-status-pill--closed'}`}>
+                  {r.etatAdministratif === 'A' ? 'Active' : 'Fermee'}
+                </span>
               </div>
             ))}
           </div>
@@ -148,14 +143,10 @@ export default function AdminHub() {
       </div>
 
       {/* Filtres par categorie */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      <div className="app-pills">
         <button
           onClick={() => setCategoryFilter('')}
-          style={{
-            padding: '4px 12px', borderRadius: '1rem', border: 'none', cursor: 'pointer',
-            background: !categoryFilter ? 'var(--accent)' : 'var(--surface)',
-            color: !categoryFilter ? '#fff' : 'var(--text)', fontSize: '0.85rem',
-          }}
+          className={`app-pill ${!categoryFilter ? 'app-pill--active' : ''}`}
         >
           Tous
         </button>
@@ -163,11 +154,7 @@ export default function AdminHub() {
           <button
             key={cat}
             onClick={() => setCategoryFilter(cat)}
-            style={{
-              padding: '4px 12px', borderRadius: '1rem', border: 'none', cursor: 'pointer',
-              background: categoryFilter === cat ? 'var(--accent)' : 'var(--surface)',
-              color: categoryFilter === cat ? '#fff' : 'var(--text)', fontSize: '0.85rem',
-            }}
+            className={`app-pill ${categoryFilter === cat ? 'app-pill--active' : ''}`}
           >
             {cat}
           </button>
@@ -175,21 +162,18 @@ export default function AdminHub() {
       </div>
 
       {/* Liste des services */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="app-list">
         {filtered.map((service) => (
-          <div key={service.id} className="app-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-            <div style={{ flex: 1, minWidth: 200 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>{service.name}</span>
-                <span style={{
-                  padding: '2px 8px', borderRadius: '1rem', fontSize: '0.7rem', fontWeight: 600,
-                  background: service.status === 'integrated' ? 'rgba(34,197,94,0.1)' : 'rgba(156,163,175,0.1)',
-                  color: service.status === 'integrated' ? '#22c55e' : '#9ca3af',
-                }}>
+          <div key={service.id} className="app-list-item">
+            <div className="app-list-item-info">
+              <div className="app-list-item-title">
+                {service.name}
+                {' '}
+                <span className={`app-status-pill ${service.status === 'integrated' ? 'app-status-pill--connected' : 'app-status-pill--muted'}`}>
                   {service.status === 'integrated' ? 'Integre' : 'Lien'}
                 </span>
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text)', marginTop: '0.25rem' }}>
+              <div className="app-list-item-sub">
                 {service.description}
               </div>
             </div>
@@ -198,7 +182,6 @@ export default function AdminHub() {
               target="_blank"
               rel="noopener noreferrer"
               className="app-btn-outline"
-              style={{ textDecoration: 'none', fontSize: '0.85rem', whiteSpace: 'nowrap' }}
             >
               Acceder
             </a>

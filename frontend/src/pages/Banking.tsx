@@ -101,7 +101,7 @@ export default function Banking() {
     <div className="app-container">
       <div className="app-skeleton app-skeleton-title" />
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="app-skeleton app-skeleton-table-row" style={{ marginTop: '0.75rem' }} />
+        <div key={i} className="app-skeleton app-skeleton-table-row" />
       ))}
     </div>
   );
@@ -111,40 +111,34 @@ export default function Banking() {
       <h1 className="app-page-title">Banque</h1>
 
       {/* KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div className="app-card" style={{ textAlign: 'center', padding: '1rem' }}>
-          <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#22c55e' }}>
+      <div className="app-kpi-grid">
+        <div className="app-card app-kpi-card">
+          <p className="app-card-value" style={{ color: '#22c55e' }}>
             +{totalCredit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Encaissements</div>
+          </p>
+          <p className="app-card-sub">Encaissements</p>
         </div>
-        <div className="app-card" style={{ textAlign: 'center', padding: '1rem' }}>
-          <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ef4444' }}>
+        <div className="app-card app-kpi-card">
+          <p className="app-card-value" style={{ color: '#ef4444' }}>
             -{totalDebit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Decaissements</div>
+          </p>
+          <p className="app-card-sub">Decaissements</p>
         </div>
-        <div className="app-card" style={{ textAlign: 'center', padding: '1rem' }}>
-          <div style={{ fontSize: '1.3rem', fontWeight: 700, color: unreconciledCount > 0 ? '#f59e0b' : '#22c55e' }}>
+        <div className="app-card app-kpi-card">
+          <p className="app-card-value" style={{ color: unreconciledCount > 0 ? '#f59e0b' : '#22c55e' }}>
             {unreconciledCount}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Non reconciliees</div>
+          </p>
+          <p className="app-card-sub">Non reconciliees</p>
         </div>
       </div>
 
       {/* Onglets */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', overflowX: 'auto' }}>
+      <div className="app-tabs">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none',
-              background: activeTab === tab.key ? 'var(--accent)' : 'transparent',
-              color: activeTab === tab.key ? '#fff' : 'var(--text)',
-              borderRadius: '6px', cursor: 'pointer', fontWeight: activeTab === tab.key ? 600 : 400,
-              fontSize: '0.9rem', whiteSpace: 'nowrap',
-            }}
+            className={`app-tab${activeTab === tab.key ? ' app-tab--active' : ''}`}
           >
             {tab.label}
           </button>
@@ -154,7 +148,7 @@ export default function Banking() {
       {/* Onglet Transactions */}
       {activeTab === 'transactions' && (
         <>
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <div className="app-pills">
             {[
               { key: 'all' as const, label: `Toutes (${transactions.length})` },
               { key: 'unreconciled' as const, label: `Non reconciliees (${unreconciledCount})` },
@@ -163,11 +157,7 @@ export default function Banking() {
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                style={{
-                  padding: '4px 12px', borderRadius: '1rem', border: 'none', cursor: 'pointer',
-                  background: filter === f.key ? 'var(--accent)' : 'var(--surface)',
-                  color: filter === f.key ? '#fff' : 'var(--text)', fontSize: '0.85rem',
-                }}
+                className={`app-pill${filter === f.key ? ' app-pill--active' : ''}`}
               >
                 {f.label}
               </button>
@@ -175,40 +165,38 @@ export default function Banking() {
           </div>
 
           {filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.5rem' }}>Aucune transaction</p>
-              <p style={{ fontSize: '0.9rem' }}>Connectez votre banque via GoCardless pour synchroniser vos transactions.</p>
-              <button className="app-btn-primary" style={{ marginTop: '1rem' }} onClick={() => setActiveTab('connect')}>
+            <div className="app-empty">
+              <p className="app-empty-title">Aucune transaction</p>
+              <p className="app-empty-desc">Connectez votre banque via GoCardless pour synchroniser vos transactions.</p>
+              <button className="app-btn-primary app-mt-2" onClick={() => setActiveTab('connect')}>
                 Connecter ma banque
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="app-list">
               {filtered.map((tx) => (
                 <div
                   key={tx.id}
-                  className="app-card"
+                  className="app-list-item"
                   style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    flexWrap: 'wrap', gap: '0.5rem',
                     borderLeft: tx.suggestedInvoice ? '3px solid var(--accent)' : undefined,
-                    cursor: 'pointer', background: selectedTx === tx.id ? 'var(--accent-bg)' : undefined,
+                    cursor: 'pointer',
+                    background: selectedTx === tx.id ? 'var(--accent-bg)' : undefined,
                   }}
                   onClick={() => setSelectedTx(selectedTx === tx.id ? null : tx.id)}
                 >
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ fontWeight: 500, color: 'var(--text-h)', fontSize: '0.9rem' }}>{tx.label}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.15rem' }}>
+                  <div className="app-list-item-info">
+                    <div className="app-list-item-title">{tx.label}</div>
+                    <div className="app-list-item-sub">
                       {new Date(tx.date).toLocaleDateString('fr-FR')}
-                      {tx.category && <span style={{ marginLeft: '0.5rem', background: 'var(--accent-bg)', color: 'var(--accent)', padding: '1px 6px', borderRadius: '4px', fontSize: '0.75rem' }}>{tx.category}</span>}
-                      {tx.receiptId && <span style={{ marginLeft: '0.5rem', background: 'rgba(34,197,94,0.1)', color: '#22c55e', padding: '1px 6px', borderRadius: '4px', fontSize: '0.75rem' }}>Justificatif</span>}
+                      {tx.category && <span className="app-status-pill" style={{ marginLeft: '0.5rem', background: 'var(--accent-bg)', color: 'var(--accent)' }}>{tx.category}</span>}
+                      {tx.receiptId && <span className="app-status-pill app-status-pill--connected" style={{ marginLeft: '0.5rem' }}>Justificatif</span>}
                     </div>
                   </div>
-                  <div style={{ fontWeight: 600, fontSize: '0.95rem', color: tx.type === 'credit' ? '#22c55e' : '#ef4444' }}>
+                  <div className="app-list-item-value" style={{ color: tx.type === 'credit' ? '#22c55e' : '#ef4444' }}>
                     {tx.type === 'credit' ? '+' : '-'}{Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
                   </div>
-                  <span style={{
-                    padding: '3px 8px', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600,
+                  <span className="app-status-pill" style={{
                     background: tx.reconciled ? 'rgba(34,197,94,0.1)' : tx.suggestedInvoice ? 'rgba(37,99,235,0.1)' : 'rgba(156,163,175,0.1)',
                     color: tx.reconciled ? '#22c55e' : tx.suggestedInvoice ? '#2563eb' : '#9ca3af',
                   }}>
@@ -224,61 +212,62 @@ export default function Banking() {
       {/* Onglet Reconciliation */}
       {activeTab === 'reconciliation' && (
         <div>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <p className="app-desc">
             Rapprochez vos transactions bancaires avec vos factures. Les suggestions automatiques sont affichees a droite.
           </p>
           {transactions.filter((t) => !t.reconciled).length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text)' }}>
-              <p style={{ fontWeight: 600, color: 'var(--text-h)' }}>Toutes les transactions sont reconciliees</p>
+            <div className="app-empty">
+              <p className="app-empty-title">Toutes les transactions sont reconciliees</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div className="app-list">
               {transactions.filter((t) => !t.reconciled).map((tx) => (
-                <div key={tx.id} style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '1rem', alignItems: 'center' }}>
+                <div key={tx.id} className="app-list-item" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '1rem', alignItems: 'center' }}>
                   {/* Transaction a gauche */}
-                  <div className="app-card" style={{ padding: '1rem' }}>
-                    <div style={{ fontWeight: 500, color: 'var(--text-h)', fontSize: '0.9rem' }}>{tx.label}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>
+                  <div className="app-card">
+                    <div className="app-list-item-title">{tx.label}</div>
+                    <div className="app-list-item-sub">
                       {new Date(tx.date).toLocaleDateString('fr-FR')}
                     </div>
-                    <div style={{ fontWeight: 600, fontSize: '1rem', marginTop: '0.5rem', color: tx.type === 'credit' ? '#22c55e' : '#ef4444' }}>
+                    <p className="app-card-value" style={{ fontSize: '1rem', marginTop: '0.5rem', color: tx.type === 'credit' ? '#22c55e' : '#ef4444' }}>
                       {tx.type === 'credit' ? '+' : '-'}{Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
-                    </div>
+                    </p>
                     {/* Selecteur de categorie */}
-                    <select
-                      value={tx.category || ''}
-                      onChange={(e) => handleCategorize(tx.id, e.target.value)}
-                      className="app-select"
-                      style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}
-                    >
-                      <option value="">Categoriser...</option>
-                      {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <div className="app-form-group" style={{ marginTop: '0.5rem', marginBottom: 0 }}>
+                      <select
+                        value={tx.category || ''}
+                        onChange={(e) => handleCategorize(tx.id, e.target.value)}
+                        className="app-select"
+                      >
+                        <option value="">Categoriser...</option>
+                        {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
                   </div>
 
                   {/* Fleche au centre */}
                   <div style={{ fontSize: '1.5rem', color: 'var(--accent)' }}>→</div>
 
                   {/* Facture suggeree a droite */}
-                  <div className="app-card" style={{ padding: '1rem', borderColor: tx.suggestedInvoice ? 'var(--accent)' : undefined, borderWidth: tx.suggestedInvoice ? 2 : undefined }}>
+                  <div className="app-card" style={{ borderColor: tx.suggestedInvoice ? 'var(--accent)' : undefined, borderWidth: tx.suggestedInvoice ? 2 : undefined }}>
                     {tx.suggestedInvoice ? (
                       <>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-h)', fontWeight: 600 }}>
+                        <div className="app-list-item-title">
                           Facture {tx.suggestedInvoiceNumber || tx.suggestedInvoice}
                         </div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>
+                        <div className="app-list-item-sub">
                           Correspondance detectee automatiquement
                         </div>
                         <button
                           onClick={() => handleReconcile(tx.id, tx.suggestedInvoice!)}
-                          className="app-btn-primary"
-                          style={{ marginTop: '0.5rem', fontSize: '0.8rem', padding: '4px 12px' }}
+                          className="app-btn-primary app-btn-compact"
+                          style={{ marginTop: '0.5rem' }}
                         >
                           Valider
                         </button>
                       </>
                     ) : (
-                      <div style={{ color: 'var(--text)', fontSize: '0.85rem' }}>
+                      <div className="app-card-sub">
                         Aucune facture suggeree
                       </div>
                     )}
@@ -293,7 +282,7 @@ export default function Banking() {
       {/* Onglet Justificatifs */}
       {activeTab === 'receipts' && (
         <div>
-          <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <p className="app-desc">
             Importez vos justificatifs (tickets, factures fournisseur) et associez-les a vos transactions.
           </p>
 
@@ -303,40 +292,44 @@ export default function Banking() {
             onDragLeave={() => setDragOver(false)}
             onDrop={(e) => { e.preventDefault(); setDragOver(false); handleReceiptUpload(e.dataTransfer.files); }}
             onClick={() => fileInputRef.current?.click()}
+            className="app-logo-dropzone"
             style={{
-              border: `2px dashed ${dragOver ? 'var(--accent)' : 'var(--border)'}`,
-              borderRadius: '12px', padding: '3rem 1rem', textAlign: 'center',
-              cursor: 'pointer', marginBottom: '2rem',
+              width: '100%',
+              height: 'auto',
+              padding: '3rem 1rem',
+              borderRadius: 'var(--lp-radius-lg, 1rem)',
+              borderColor: dragOver ? 'var(--accent)' : undefined,
               background: dragOver ? 'var(--accent-bg)' : 'transparent',
-              transition: 'all 0.2s',
+              marginBottom: '2rem',
+              flexDirection: 'column',
             }}
           >
-            <input ref={fileInputRef} type="file" accept="image/*,.pdf" style={{ display: 'none' }} onChange={(e) => handleReceiptUpload(e.target.files)} />
-            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📎</div>
-            <p style={{ fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.25rem' }}>
+            <input ref={fileInputRef} type="file" accept="image/*,.pdf" className="app-hidden" onChange={(e) => handleReceiptUpload(e.target.files)} />
+            <div className="app-empty-icon">📎</div>
+            <p className="app-empty-title">
               Deposez vos justificatifs ici
             </p>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
+            <p className="app-empty-desc">
               ou cliquez pour parcourir (PDF, images)
             </p>
           </div>
 
           {/* Liste des transactions avec lien justificatif */}
-          <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-h)', marginBottom: '1rem' }}>
+          <h3 className="app-section-title app-mt-0">
             Associer un justificatif a une transaction
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="app-list">
             {transactions.slice(0, 20).map((tx) => (
-              <div key={tx.id} className="app-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <div style={{ fontWeight: 500, color: 'var(--text-h)', fontSize: '0.85rem' }}>{tx.label}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text)' }}>{new Date(tx.date).toLocaleDateString('fr-FR')} — {Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR</div>
+              <div key={tx.id} className="app-list-item">
+                <div className="app-list-item-info">
+                  <div className="app-list-item-title">{tx.label}</div>
+                  <div className="app-list-item-sub">{new Date(tx.date).toLocaleDateString('fr-FR')} — {Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR</div>
                 </div>
                 {tx.receiptId ? (
-                  <span style={{ fontSize: '0.8rem', color: '#22c55e', fontWeight: 600 }}>Justificatif lie</span>
+                  <span className="app-status-pill app-status-pill--connected">Justificatif lie</span>
                 ) : (
-                  <label style={{ fontSize: '0.8rem', color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}>
-                    <input type="file" accept="image/*,.pdf" style={{ display: 'none' }} onChange={(e) => handleReceiptUpload(e.target.files, tx.id)} />
+                  <label className="app-table-link" style={{ cursor: 'pointer' }}>
+                    <input type="file" accept="image/*,.pdf" className="app-hidden" onChange={(e) => handleReceiptUpload(e.target.files, tx.id)} />
                     + Ajouter
                   </label>
                 )}
@@ -349,25 +342,25 @@ export default function Banking() {
       {/* Onglet Connexion bancaire */}
       {activeTab === 'connect' && (
         <div style={{ maxWidth: 500 }}>
-          <h2 className="app-section-title" style={{ marginTop: 0 }}>Connecter votre banque</h2>
-          <p style={{ color: 'var(--text)', marginBottom: '2rem', fontSize: '0.9rem', lineHeight: 1.6 }}>
+          <h2 className="app-section-title app-mt-0">Connecter votre banque</h2>
+          <p className="app-desc">
             Synchronisez automatiquement vos transactions bancaires via GoCardless (anciennement Nordigen).
             La connexion est securisee et conforme a la DSP2.
           </p>
 
           {/* Etapes du wizard */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="app-list">
             {/* Etape 1 */}
-            <div className="app-card" style={{ padding: '1.5rem', opacity: connectStep >= 0 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                <span style={{ width: 28, height: 28, borderRadius: '50%', background: connectStep >= 1 ? '#22c55e' : 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700 }}>
+            <div className="app-card" style={{ opacity: connectStep >= 0 ? 1 : 0.5 }}>
+              <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
+                <span className="app-health-indicator" style={{ background: connectStep >= 1 ? '#22c55e' : 'var(--accent)', color: '#fff' }}>
                   {connectStep >= 1 ? '✓' : '1'}
                 </span>
-                <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>Choisir votre banque</span>
+                <span className="app-list-item-title">Choisir votre banque</span>
               </div>
               {connectStep === 0 && (
-                <div>
-                  <select className="app-select" style={{ marginBottom: '1rem' }}>
+                <div className="app-form-group" style={{ marginTop: '0.75rem' }}>
+                  <select className="app-select">
                     <option value="">Selectionnez votre banque</option>
                     <option value="bnp">BNP Paribas</option>
                     <option value="sg">Societe Generale</option>
@@ -380,7 +373,7 @@ export default function Banking() {
                     <option value="qonto">Qonto</option>
                     <option value="shine">Shine</option>
                   </select>
-                  <button className="app-btn-primary" onClick={() => setConnectStep(1)}>
+                  <button className="app-btn-primary" style={{ marginTop: '1rem' }} onClick={() => setConnectStep(1)}>
                     Continuer
                   </button>
                 </div>
@@ -388,16 +381,16 @@ export default function Banking() {
             </div>
 
             {/* Etape 2 */}
-            <div className="app-card" style={{ padding: '1.5rem', opacity: connectStep >= 1 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                <span style={{ width: 28, height: 28, borderRadius: '50%', background: connectStep >= 2 ? '#22c55e' : connectStep >= 1 ? 'var(--accent)' : 'var(--border)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700 }}>
+            <div className="app-card" style={{ opacity: connectStep >= 1 ? 1 : 0.5 }}>
+              <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
+                <span className="app-health-indicator" style={{ background: connectStep >= 2 ? '#22c55e' : connectStep >= 1 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
                   {connectStep >= 2 ? '✓' : '2'}
                 </span>
-                <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>Authentification DSP2</span>
+                <span className="app-list-item-title">Authentification DSP2</span>
               </div>
               {connectStep === 1 && (
-                <div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '1rem' }}>
+                <div style={{ marginTop: '0.75rem' }}>
+                  <p className="app-card-sub" style={{ marginBottom: '1rem' }}>
                     Vous allez etre redirige vers votre banque pour autoriser l'acces en lecture seule a vos comptes.
                   </p>
                   <button className="app-btn-primary" onClick={() => setConnectStep(2)}>
@@ -408,16 +401,16 @@ export default function Banking() {
             </div>
 
             {/* Etape 3 */}
-            <div className="app-card" style={{ padding: '1.5rem', opacity: connectStep >= 2 ? 1 : 0.5 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                <span style={{ width: 28, height: 28, borderRadius: '50%', background: connectStep >= 3 ? '#22c55e' : connectStep >= 2 ? 'var(--accent)' : 'var(--border)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 700 }}>
+            <div className="app-card" style={{ opacity: connectStep >= 2 ? 1 : 0.5 }}>
+              <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
+                <span className="app-health-indicator" style={{ background: connectStep >= 3 ? '#22c55e' : connectStep >= 2 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
                   {connectStep >= 3 ? '✓' : '3'}
                 </span>
-                <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>Synchronisation</span>
+                <span className="app-list-item-title">Synchronisation</span>
               </div>
               {connectStep === 2 && (
-                <div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text)', marginBottom: '1rem' }}>
+                <div style={{ marginTop: '0.75rem' }}>
+                  <p className="app-card-sub" style={{ marginBottom: '1rem' }}>
                     Vos transactions seront synchronisees quotidiennement. La premiere synchronisation importe les 90 derniers jours.
                   </p>
                   <button className="app-btn-primary" onClick={() => { setConnectStep(3); success('Banque connectee avec succes !'); }}>
@@ -426,7 +419,7 @@ export default function Banking() {
                 </div>
               )}
               {connectStep === 3 && (
-                <p style={{ fontSize: '0.85rem', color: '#22c55e', fontWeight: 600 }}>
+                <p className="app-status-pill app-status-pill--connected" style={{ marginTop: '0.75rem', fontWeight: 600 }}>
                   Connexion etablie. Vos transactions arrivent.
                 </p>
               )}

@@ -166,33 +166,24 @@ export default function CameraScanner() {
 
       {/* Message d'erreur global */}
       {errorMessage && (
-        <div
-          className="app-card"
-          style={{
-            background: 'rgba(239, 68, 68, 0.08)',
-            borderColor: '#ef4444',
-            color: '#ef4444',
-            marginBottom: '1.5rem',
-            fontSize: '0.9rem',
-            lineHeight: 1.5,
-          }}
-        >
+        <div className="app-alert app-alert--error">
           {errorMessage}
         </div>
       )}
 
       {/* Etat initial : proposer de lancer la camera ou de selectionner un fichier */}
       {status === 'idle' && (
-        <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+        <div className="app-empty">
           <div
             className="app-card"
             style={{
               maxWidth: 400,
               margin: '0 auto',
               padding: '2rem 1.5rem',
+              textAlign: 'center',
             }}
           >
-            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
+            <div className="app-empty-icon">
               <svg
                 viewBox="0 0 24 24"
                 width="48"
@@ -207,57 +198,40 @@ export default function CameraScanner() {
                 <circle cx="12" cy="13" r="4" />
               </svg>
             </div>
-            <p
-              style={{
-                color: 'var(--text-h)',
-                fontWeight: 600,
-                fontSize: '1.05rem',
-                marginBottom: '0.5rem',
-              }}
-            >
+            <p className="app-empty-title">
               Photographiez votre justificatif
             </p>
-            <p
-              style={{
-                color: 'var(--text)',
-                fontSize: '0.9rem',
-                marginBottom: '1.5rem',
-                lineHeight: 1.5,
-              }}
-            >
+            <p className="app-desc" style={{ marginBottom: '1.5rem' }}>
               Ticket de caisse, facture fournisseur, note de frais... Le montant,
               la date et le fournisseur seront extraits automatiquement.
             </p>
 
-            <button
-              className="app-btn-primary"
-              onClick={startCamera}
-              style={{ width: '100%', marginBottom: '0.75rem' }}
-            >
-              Ouvrir la camera
-            </button>
+            <div className="app-pills" style={{ flexDirection: 'column', gap: '0.75rem' }}>
+              <button
+                className="app-btn-primary"
+                onClick={startCamera}
+                style={{ width: '100%' }}
+              >
+                Ouvrir la camera
+              </button>
 
-            {/* Fallback pour les appareils sans camera ou les navigateurs desktop */}
-            <button
-              className="app-btn-primary"
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                width: '100%',
-                background: 'transparent',
-                color: 'var(--accent)',
-                border: '1px solid var(--accent)',
-              }}
-            >
-              Choisir un fichier
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              style={{ display: 'none' }}
-              onChange={handleFileSelect}
-            />
+              {/* Fallback pour les appareils sans camera ou les navigateurs desktop */}
+              <button
+                className="app-btn-outline"
+                onClick={() => fileInputRef.current?.click()}
+                style={{ width: '100%' }}
+              >
+                Choisir un fichier
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="app-hidden"
+                onChange={handleFileSelect}
+              />
+            </div>
           </div>
         </div>
       )}
@@ -309,14 +283,7 @@ export default function CameraScanner() {
           </div>
 
           {/* Bouton de capture circulaire */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '1.5rem',
-            }}
-          >
+          <div className="app-actions-row" style={{ justifyContent: 'center', marginTop: 0 }}>
             <button
               onClick={() => {
                 stopStream();
@@ -333,7 +300,6 @@ export default function CameraScanner() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'var(--text)',
-                fontSize: '1.2rem',
               }}
               title="Annuler"
             >
@@ -394,7 +360,7 @@ export default function CameraScanner() {
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              style={{ display: 'none' }}
+              className="app-hidden"
               onChange={handleFileSelect}
             />
           </div>
@@ -402,7 +368,7 @@ export default function CameraScanner() {
       )}
 
       {/* Canvas cache utilise pour la capture d'image */}
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
+      <canvas ref={canvasRef} className="app-hidden" />
 
       {/* Etat apercu : image capturee avec actions reprendre / envoyer */}
       {status === 'preview' && capturedImage && (
@@ -434,14 +400,7 @@ export default function CameraScanner() {
             />
           </div>
 
-          <div
-            style={{
-              display: 'flex',
-              gap: '1rem',
-              width: '100%',
-              maxWidth: 500,
-            }}
-          >
+          <div className="app-actions-row" style={{ maxWidth: 500, width: '100%', marginTop: 0 }}>
             <button
               className="app-btn-outline-danger"
               onClick={retake}
@@ -466,7 +425,7 @@ export default function CameraScanner() {
 
       {/* Etat envoi en cours */}
       {status === 'uploading' && (
-        <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+        <div className="app-empty">
           <div
             style={{
               width: 48,
@@ -479,16 +438,10 @@ export default function CameraScanner() {
             }}
           />
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          <p
-            style={{
-              color: 'var(--text-h)',
-              fontWeight: 600,
-              fontSize: '1rem',
-            }}
-          >
+          <p className="app-empty-title">
             Analyse en cours...
           </p>
-          <p style={{ color: 'var(--text)', fontSize: '0.9rem' }}>
+          <p className="app-empty-desc">
             Extraction des informations du justificatif
           </p>
         </div>
@@ -529,20 +482,9 @@ export default function CameraScanner() {
             style={{
               width: '100%',
               maxWidth: 500,
-              padding: '1.5rem',
             }}
           >
-            <h2
-              style={{
-                fontSize: '1.1rem',
-                fontWeight: 700,
-                color: 'var(--text-h)',
-                marginBottom: '1.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
+            <h2 className="app-section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: 0 }}>
               <svg
                 viewBox="0 0 24 24"
                 width="20"
@@ -557,34 +499,13 @@ export default function CameraScanner() {
               Informations extraites
             </h2>
 
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
-              }}
-            >
+            <div className="app-list">
               {/* Montant */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '0.75rem 1rem',
-                  background: 'var(--social-bg)',
-                  borderRadius: '8px',
-                }}
-              >
-                <span style={{ color: 'var(--text)', fontSize: '0.9rem' }}>
+              <div className="app-list-item">
+                <span className="app-list-item-sub">
                   Montant
                 </span>
-                <span
-                  style={{
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    color: ocrResult.amount ? 'var(--text-h)' : 'var(--text)',
-                  }}
-                >
+                <span className="app-list-item-value" style={{ color: ocrResult.amount ? 'var(--text-h)' : 'var(--text)' }}>
                   {ocrResult.amount
                     ? `${ocrResult.amount} EUR`
                     : 'Non detecte'}
@@ -592,25 +513,11 @@ export default function CameraScanner() {
               </div>
 
               {/* Date */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '0.75rem 1rem',
-                  background: 'var(--social-bg)',
-                  borderRadius: '8px',
-                }}
-              >
-                <span style={{ color: 'var(--text)', fontSize: '0.9rem' }}>
+              <div className="app-list-item">
+                <span className="app-list-item-sub">
                   Date
                 </span>
-                <span
-                  style={{
-                    fontWeight: 600,
-                    color: ocrResult.date ? 'var(--text-h)' : 'var(--text)',
-                  }}
-                >
+                <span className="app-list-item-value" style={{ color: ocrResult.date ? 'var(--text-h)' : 'var(--text)' }}>
                   {ocrResult.date
                     ? new Date(ocrResult.date).toLocaleDateString('fr-FR')
                     : 'Non detectee'}
@@ -618,25 +525,11 @@ export default function CameraScanner() {
               </div>
 
               {/* Fournisseur */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '0.75rem 1rem',
-                  background: 'var(--social-bg)',
-                  borderRadius: '8px',
-                }}
-              >
-                <span style={{ color: 'var(--text)', fontSize: '0.9rem' }}>
+              <div className="app-list-item">
+                <span className="app-list-item-sub">
                   Fournisseur
                 </span>
-                <span
-                  style={{
-                    fontWeight: 600,
-                    color: ocrResult.vendor ? 'var(--text-h)' : 'var(--text)',
-                  }}
-                >
+                <span className="app-list-item-value" style={{ color: ocrResult.vendor ? 'var(--text-h)' : 'var(--text)' }}>
                   {ocrResult.vendor || 'Non detecte'}
                 </span>
               </div>
@@ -644,14 +537,7 @@ export default function CameraScanner() {
           </div>
 
           {/* Actions apres resultat */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '1rem',
-              width: '100%',
-              maxWidth: 500,
-            }}
-          >
+          <div className="app-actions-row" style={{ maxWidth: 500, width: '100%', marginTop: 0 }}>
             <button
               className="app-btn-primary"
               onClick={reset}
@@ -669,18 +555,11 @@ export default function CameraScanner() {
           className="app-card"
           style={{
             textAlign: 'center',
-            padding: '2rem 1.5rem',
             maxWidth: 400,
             margin: '1rem auto 0',
           }}
         >
-          <p
-            style={{
-              color: 'var(--text)',
-              fontSize: '0.9rem',
-              marginBottom: '1rem',
-            }}
-          >
+          <p className="app-desc" style={{ marginBottom: '1rem' }}>
             Selectionnez une photo de votre justificatif depuis votre appareil.
           </p>
           <button
@@ -694,7 +573,7 @@ export default function CameraScanner() {
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            style={{ display: 'none' }}
+            className="app-hidden"
             onChange={handleFileSelect}
           />
         </div>

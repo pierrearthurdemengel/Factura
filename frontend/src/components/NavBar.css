@@ -86,6 +86,11 @@
   opacity: 0.7;
 }
 
+.navbar-link.active {
+  color: var(--accent);
+  opacity: 1;
+}
+
 /* Hamburger masque sur desktop */
 .navbar-hamburger {
   display: none;

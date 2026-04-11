@@ -174,56 +174,27 @@ export default function OnboardingWizard() {
   const progressPercent = ((currentStep + 1) / TOTAL_STEPS) * 100;
 
   return (
-    <div className="app-container" style={{ maxWidth: 800 }}>
+    <div className="app-container onboarding-container">
       {/* Titre de la page */}
-      <h1 className="app-page-title" style={{ textAlign: 'center' }}>
+      <h1 className="app-page-title onboarding-title">
         Configuration de votre compte
       </h1>
 
       {/* Barre de progression */}
-      <div style={{
-        width: '100%',
-        height: 6,
-        background: 'var(--border)',
-        borderRadius: 3,
-        marginBottom: '2rem',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          width: `${progressPercent}%`,
-          height: '100%',
-          background: 'var(--accent)',
-          borderRadius: 3,
-          transition: 'width 0.3s ease',
-        }} />
+      <div className="app-progress onboarding-progress-bar">
+        <div
+          className="app-progress-fill"
+          style={{ width: `${progressPercent}%` }}
+        />
       </div>
 
       {/* Indicateur d'etapes : cercles numerotes relies par une ligne */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '2.5rem',
-        gap: 0,
-      }}>
+      <div className="onboarding-steps">
         {STEP_LABELS.map((label, index) => (
-          <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+          <div key={index} className="onboarding-step">
             {/* Cercle numerote */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 60 }}>
-              <div style={{
-                width: 36,
-                height: 36,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                background: index <= currentStep ? 'var(--accent)' : 'var(--border)',
-                color: index <= currentStep ? '#fff' : 'var(--text)',
-                transition: 'background 0.3s, color 0.3s',
-                flexShrink: 0,
-              }}>
+            <div className="onboarding-step-col">
+              <div className={`onboarding-step-circle${index <= currentStep ? ' onboarding-step-circle--active' : ''}`}>
                 {index < currentStep ? (
                   // Coche pour les etapes completees
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -233,39 +204,14 @@ export default function OnboardingWizard() {
                   index + 1
                 )}
               </div>
-              {/* Label de l'etape (masque sur mobile pour gagner de la place) */}
-              <span style={{
-                fontSize: '0.7rem',
-                color: index <= currentStep ? 'var(--text-h)' : 'var(--text)',
-                marginTop: '0.35rem',
-                textAlign: 'center',
-                fontWeight: index === currentStep ? 600 : 400,
-                display: 'none',
-              }}>
-                {label}
-              </span>
-              {/* Label visible a partir de 640px (tablette+) */}
-              <span style={{
-                fontSize: '0.7rem',
-                color: index <= currentStep ? 'var(--text-h)' : 'var(--text)',
-                marginTop: '0.35rem',
-                textAlign: 'center',
-                fontWeight: index === currentStep ? 600 : 400,
-              }}
-                className="onboarding-step-label"
-              >
+              {/* Label de l'etape */}
+              <span className={`onboarding-step-label${index === currentStep ? ' onboarding-step-label--active' : ''}${index < currentStep ? ' onboarding-step-label--done' : ''}`}>
                 {label}
               </span>
             </div>
             {/* Ligne de connexion entre les cercles */}
             {index < TOTAL_STEPS - 1 && (
-              <div style={{
-                height: 2,
-                width: 'clamp(20px, 8vw, 60px)',
-                background: index < currentStep ? 'var(--accent)' : 'var(--border)',
-                transition: 'background 0.3s',
-                flexShrink: 0,
-              }} />
+              <div className={`onboarding-step-connector${index < currentStep ? ' onboarding-step-connector--done' : ''}`} />
             )}
           </div>
         ))}
@@ -273,14 +219,7 @@ export default function OnboardingWizard() {
 
       {/* Message d'erreur */}
       {error && (
-        <div style={{
-          color: '#ef4444',
-          padding: '1rem',
-          background: 'rgba(239, 68, 68, 0.1)',
-          borderRadius: '6px',
-          marginBottom: '1rem',
-          fontSize: '0.9rem',
-        }}>
+        <div className="app-alert app-alert--error">
           {error}
         </div>
       )}
@@ -288,67 +227,33 @@ export default function OnboardingWizard() {
       {/* Etape 1 : Forme juridique */}
       {currentStep === 0 && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0, textAlign: 'center' }}>
+          <h2 className="app-section-title onboarding-title app-mt-0">
             Votre statut juridique
           </h2>
-          <p style={{ color: 'var(--text)', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <p className="app-desc onboarding-title">
             Selectionnez la forme juridique de votre entreprise. Ce choix peut etre modifie plus tard dans les parametres.
           </p>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-            gap: '0.75rem',
-          }}>
+          <div className="onboarding-legal-grid">
             {LEGAL_FORMS.map((form) => (
               <div
                 key={form.value}
                 onClick={() => setSelectedLegalForm(form.value)}
-                className="app-card"
-                style={{
-                  cursor: 'pointer',
-                  border: selectedLegalForm === form.value
-                    ? '2px solid var(--accent)'
-                    : '2px solid var(--border)',
-                  transition: 'border-color 0.2s, box-shadow 0.2s',
-                  boxShadow: selectedLegalForm === form.value
-                    ? '0 0 0 3px var(--accent-bg)'
-                    : 'none',
-                  padding: '1rem',
-                  textAlign: 'left',
-                }}
+                className={`app-card onboarding-selectable-card${selectedLegalForm === form.value ? ' onboarding-selectable-card--selected' : ''}`}
               >
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '0.35rem',
-                }}>
-                  <span style={{
-                    fontWeight: 700,
-                    fontSize: '1.05rem',
-                    color: 'var(--text-h)',
-                  }}>
+                <div className="onboarding-card-header">
+                  <span className="onboarding-card-label">
                     {form.label}
                   </span>
                   {selectedLegalForm === form.value && (
-                    <div style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: '50%',
-                      background: 'var(--accent)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}>
+                    <div className="onboarding-card-check">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3">
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </div>
                   )}
                 </div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text)', lineHeight: 1.4 }}>
+                <span className="onboarding-card-desc">
                   {form.description}
                 </span>
               </div>
@@ -360,56 +265,32 @@ export default function OnboardingWizard() {
       {/* Etape 2 : Informations fiscales */}
       {currentStep === 1 && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0, textAlign: 'center' }}>
+          <h2 className="app-section-title onboarding-title app-mt-0">
             Informations fiscales
           </h2>
-          <p style={{ color: 'var(--text)', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <p className="app-desc onboarding-title">
             Configurez votre regime de TVA et vos dates d'exercice comptable.
           </p>
 
           {/* Regime de TVA */}
-          <div style={{ marginBottom: '2rem' }}>
-            <label className="app-label" style={{ marginBottom: '0.75rem', display: 'block' }}>
+          <div className="app-form-group app-mb-2">
+            <label className="app-label">
               Regime de TVA
             </label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div className="onboarding-vat-list">
               {VAT_REGIMES.map((regime) => (
                 <div
                   key={regime.value}
                   onClick={() => setVatRegime(regime.value)}
-                  className="app-card"
-                  style={{
-                    cursor: 'pointer',
-                    border: vatRegime === regime.value
-                      ? '2px solid var(--accent)'
-                      : '2px solid var(--border)',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    boxShadow: vatRegime === regime.value
-                      ? '0 0 0 3px var(--accent-bg)'
-                      : 'none',
-                    padding: '1rem',
-                    flexDirection: 'row',
-                    alignItems: 'flex-start',
-                    gap: '0.75rem',
-                  }}
+                  className={`app-card onboarding-radio-card${vatRegime === regime.value ? ' onboarding-radio-card--selected' : ''}`}
                 >
                   {/* Indicateur radio */}
-                  <div style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    border: vatRegime === regime.value
-                      ? '6px solid var(--accent)'
-                      : '2px solid var(--border)',
-                    flexShrink: 0,
-                    transition: 'border 0.2s',
-                    marginTop: 2,
-                  }} />
+                  <div className={`onboarding-radio-dot${vatRegime === regime.value ? ' onboarding-radio-dot--selected' : ''}`} />
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.25rem' }}>
+                    <div className="onboarding-radio-label">
                       {regime.label}
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text)', lineHeight: 1.5 }}>
+                    <div className="onboarding-radio-desc">
                       {regime.description}
                     </div>
                   </div>
@@ -419,13 +300,13 @@ export default function OnboardingWizard() {
           </div>
 
           {/* Dates d'exercice comptable */}
-          <div style={{ marginBottom: '1rem' }}>
-            <label className="app-label" style={{ marginBottom: '0.75rem', display: 'block' }}>
+          <div className="onboarding-exercise-group">
+            <label className="app-label">
               Exercice comptable
             </label>
             <div className="app-form-row">
               <div className="app-form-group">
-                <label className="app-label" style={{ fontSize: '0.85rem' }}>Debut</label>
+                <label className="app-label">Debut</label>
                 <select
                   value={exerciseStartMonth}
                   onChange={(e) => setExerciseStartMonth(e.target.value)}
@@ -438,7 +319,7 @@ export default function OnboardingWizard() {
                 </select>
               </div>
               <div className="app-form-group">
-                <label className="app-label" style={{ fontSize: '0.85rem' }}>Fin</label>
+                <label className="app-label">Fin</label>
                 <select
                   value={exerciseEndMonth}
                   onChange={(e) => setExerciseEndMonth(e.target.value)}
@@ -451,7 +332,7 @@ export default function OnboardingWizard() {
                 </select>
               </div>
             </div>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.25rem' }}>
+            <p className="onboarding-hint">
               La plupart des entreprises utilisent l'annee civile (janvier a decembre).
             </p>
           </div>
@@ -461,41 +342,21 @@ export default function OnboardingWizard() {
       {/* Etape 3 : Personnalisation */}
       {currentStep === 2 && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0, textAlign: 'center' }}>
+          <h2 className="app-section-title onboarding-title app-mt-0">
             Personnalisation
           </h2>
-          <p style={{ color: 'var(--text)', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <p className="app-desc onboarding-title">
             Ajoutez votre identite visuelle a vos factures.
           </p>
 
           {/* Upload du logo */}
-          <div className="app-form-group" style={{ marginBottom: '2rem' }}>
+          <div className="app-form-group app-mb-2">
             <label className="app-label">Logo de l'entreprise (optionnel)</label>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '1rem',
-              flexWrap: 'wrap',
-            }}>
+            <div className="onboarding-logo-row">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                style={{
-                  width: 120,
-                  height: 120,
-                  border: '2px dashed var(--border)',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  background: logoPreview
-                    ? `url(${logoPreview}) center/contain no-repeat`
-                    : 'var(--social-bg)',
-                  color: 'var(--text)',
-                  fontSize: '0.8rem',
-                  textAlign: 'center',
-                  transition: 'border-color 0.2s',
-                }}
+                className="onboarding-logo-dropzone"
+                style={logoPreview ? { background: `url(${logoPreview}) center/contain no-repeat` } : undefined}
               >
                 {!logoPreview && <span>Cliquez pour<br />ajouter</span>}
               </div>
@@ -504,21 +365,16 @@ export default function OnboardingWizard() {
                 type="file"
                 accept="image/png,image/jpeg,image/svg+xml"
                 onChange={handleLogoUpload}
-                style={{ display: 'none' }}
+                className="app-hidden"
               />
-              <div style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
-                <p style={{ margin: 0 }}>PNG, JPG ou SVG</p>
-                <p style={{ margin: '0.25rem 0 0', opacity: 0.7 }}>Max 2 Mo, recommande : 400x200px</p>
+              <div className="onboarding-logo-meta">
+                <p>PNG, JPG ou SVG</p>
+                <p>Max 2 Mo, recommande : 400x200px</p>
                 {logoPreview && (
                   <button
                     type="button"
                     onClick={() => setLogoPreview(null)}
-                    className="app-btn-outline-danger"
-                    style={{
-                      marginTop: '0.5rem',
-                      fontSize: '0.8rem',
-                      padding: '4px 10px',
-                    }}
+                    className="app-btn-outline-danger app-btn-compact"
                   >
                     Supprimer
                   </button>
@@ -528,36 +384,26 @@ export default function OnboardingWizard() {
           </div>
 
           {/* Couleur primaire */}
-          <div className="app-form-group" style={{ marginBottom: '2rem' }}>
+          <div className="app-form-group app-mb-2">
             <label className="app-label">Couleur primaire des factures</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div className="onboarding-color-row">
               <input
                 type="color"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
-                style={{
-                  width: 44,
-                  height: 44,
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  padding: 0,
-                }}
+                className="onboarding-color-swatch"
               />
               <input
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
-                className="app-input"
-                style={{ width: 110 }}
+                className="app-input onboarding-color-hex"
                 maxLength={7}
               />
               {/* Previsualisation de la couleur */}
-              <div style={{
-                height: 8,
-                flex: 1,
-                background: primaryColor,
-                borderRadius: 4,
-              }} />
+              <div
+                className="onboarding-color-preview"
+                style={{ background: primaryColor }}
+              />
             </div>
           </div>
 
@@ -573,7 +419,7 @@ export default function OnboardingWizard() {
                 <option key={term.value} value={term.value}>{term.label}</option>
               ))}
             </select>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '0.35rem' }}>
+            <p className="onboarding-hint">
               Ce delai sera pre-rempli sur chaque nouvelle facture. Vous pourrez le modifier au cas par cas.
             </p>
           </div>
@@ -583,143 +429,82 @@ export default function OnboardingWizard() {
       {/* Etape 4 : Recapitulatif */}
       {currentStep === 3 && (
         <div>
-          <h2 className="app-section-title" style={{ marginTop: 0, textAlign: 'center' }}>
+          <h2 className="app-section-title onboarding-title app-mt-0">
             Pret a facturer !
           </h2>
-          <p style={{ color: 'var(--text)', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          <p className="app-desc onboarding-title">
             Voici un recapitulatif de vos choix. Vous pourrez tout modifier a tout moment dans les parametres.
           </p>
 
           {/* Recapitulatif sous forme de carte */}
-          <div className="app-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+          <div className="app-card onboarding-summary-card">
             {/* Ligne : forme juridique */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingBottom: '1rem',
-              borderBottom: '1px solid var(--border)',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-            }}>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>Forme juridique</span>
-              <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>
-                {LEGAL_FORMS.find((f) => f.value === selectedLegalForm)?.label || '—'}
+            <div className="onboarding-summary-line">
+              <span className="onboarding-summary-label">Forme juridique</span>
+              <span className="onboarding-summary-value">
+                {LEGAL_FORMS.find((f) => f.value === selectedLegalForm)?.label || '\u2014'}
               </span>
             </div>
 
             {/* Ligne : regime TVA */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '1rem 0',
-              borderBottom: '1px solid var(--border)',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-            }}>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>Regime de TVA</span>
-              <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>
-                {VAT_REGIMES.find((r) => r.value === vatRegime)?.label || '—'}
+            <div className="onboarding-summary-line">
+              <span className="onboarding-summary-label">Regime de TVA</span>
+              <span className="onboarding-summary-value">
+                {VAT_REGIMES.find((r) => r.value === vatRegime)?.label || '\u2014'}
               </span>
             </div>
 
             {/* Ligne : exercice comptable */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '1rem 0',
-              borderBottom: '1px solid var(--border)',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-            }}>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>Exercice comptable</span>
-              <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>
+            <div className="onboarding-summary-line">
+              <span className="onboarding-summary-label">Exercice comptable</span>
+              <span className="onboarding-summary-value">
                 {monthLabel(exerciseStartMonth)} — {monthLabel(exerciseEndMonth)}
               </span>
             </div>
 
             {/* Ligne : logo */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '1rem 0',
-              borderBottom: '1px solid var(--border)',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-            }}>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>Logo</span>
+            <div className="onboarding-summary-line">
+              <span className="onboarding-summary-label">Logo</span>
               {logoPreview ? (
                 <img
                   src={logoPreview}
                   alt="Logo"
-                  style={{ maxHeight: 32, maxWidth: 100, borderRadius: 4 }}
+                  className="onboarding-summary-logo"
                 />
               ) : (
-                <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>Non renseigne</span>
+                <span className="onboarding-summary-value">Non renseigne</span>
               )}
             </div>
 
             {/* Ligne : couleur primaire */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '1rem 0',
-              borderBottom: '1px solid var(--border)',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-            }}>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>Couleur primaire</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: 4,
-                  background: primaryColor,
-                  border: '1px solid var(--border)',
-                }} />
-                <span style={{ fontWeight: 600, color: 'var(--text-h)', fontSize: '0.9rem' }}>
+            <div className="onboarding-summary-line">
+              <span className="onboarding-summary-label">Couleur primaire</span>
+              <div className="onboarding-summary-color-group">
+                <div
+                  className="onboarding-summary-color-swatch"
+                  style={{ background: primaryColor }}
+                />
+                <span className="onboarding-summary-value">
                   {primaryColor}
                 </span>
               </div>
             </div>
 
             {/* Ligne : conditions de paiement */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingTop: '1rem',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-            }}>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text)' }}>Conditions de paiement</span>
-              <span style={{ fontWeight: 600, color: 'var(--text-h)' }}>
-                {PAYMENT_TERMS.find((t) => t.value === defaultPaymentTerms)?.label || '—'}
+            <div className="onboarding-summary-line">
+              <span className="onboarding-summary-label">Conditions de paiement</span>
+              <span className="onboarding-summary-value">
+                {PAYMENT_TERMS.find((t) => t.value === defaultPaymentTerms)?.label || '\u2014'}
               </span>
             </div>
           </div>
 
           {/* Message de bienvenue */}
-          <div style={{
-            textAlign: 'center',
-            padding: '1.5rem',
-            background: 'var(--accent-bg)',
-            borderRadius: 8,
-            marginBottom: '1rem',
-          }}>
-            <p style={{
-              fontSize: '1.1rem',
-              fontWeight: 600,
-              color: 'var(--text-h)',
-              margin: '0 0 0.5rem',
-            }}>
+          <div className="onboarding-welcome-banner">
+            <p className="onboarding-welcome-title">
               Tout est pret !
             </p>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text)', margin: 0, lineHeight: 1.5 }}>
+            <p className="onboarding-welcome-desc">
               Cliquez sur le bouton ci-dessous pour creer votre premiere facture.
               Vous pouvez modifier ces parametres a tout moment depuis la page Parametres.
             </p>
@@ -728,26 +513,13 @@ export default function OnboardingWizard() {
       )}
 
       {/* Boutons de navigation */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: '2rem',
-        paddingTop: '1.5rem',
-        borderTop: '1px solid var(--border)',
-        gap: '0.75rem',
-        flexWrap: 'wrap',
-      }}>
+      <div className="onboarding-nav-footer">
         {/* Bouton Retour */}
         {currentStep > 0 ? (
           <button
             type="button"
             onClick={goBack}
-            className="app-btn-outline-danger"
-            style={{
-              color: 'var(--text)',
-              borderColor: 'var(--border)',
-            }}
+            className="app-btn-outline onboarding-btn-back"
           >
             Retour
           </button>
@@ -771,8 +543,7 @@ export default function OnboardingWizard() {
             type="button"
             onClick={handleFinish}
             disabled={saving}
-            className="app-btn-primary"
-            style={{ minWidth: 200 }}
+            className="app-btn-primary onboarding-btn-finish"
           >
             {saving ? 'Enregistrement...' : 'Creer ma premiere facture'}
           </button>

@@ -162,10 +162,10 @@ export default function ClientList() {
   return (
     <div className="app-container">
       {/* En-tete avec KPIs */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <h1 className="app-page-title" style={{ margin: 0 }}>Clients</h1>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <button onClick={handleExportCsv} className="app-btn-outline-danger" style={{ fontSize: '0.85rem' }}>
+      <div className="app-page-header">
+        <h1 className="app-page-title">Clients</h1>
+        <div className="app-page-header-actions">
+          <button onClick={handleExportCsv} className="app-btn-outline-danger">
             Exporter CSV
           </button>
           <button onClick={() => setShowForm(!showForm)} className="app-btn-primary">
@@ -176,16 +176,16 @@ export default function ClientList() {
 
       {/* KPIs globaux */}
       {clients.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+        <div className="app-kpi-grid">
           {[
             { label: 'Clients', value: globalKpis.totalClients.toString(), sub: `${globalKpis.activeClients} actifs` },
             { label: 'CA total TTC', value: `${globalKpis.totalRevenue.toFixed(0)} €`, sub: 'Toutes factures' },
             { label: 'En attente', value: `${globalKpis.totalPending.toFixed(0)} €`, sub: 'Non regles' },
           ].map((kpi) => (
-            <div key={kpi.label} className="app-card" style={{ padding: '1rem', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginBottom: '0.25rem' }}>{kpi.label}</div>
-              <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-h)' }}>{kpi.value}</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text)', marginTop: '0.15rem' }}>{kpi.sub}</div>
+            <div key={kpi.label} className="app-card app-kpi-card">
+              <div className="app-card-title">{kpi.label}</div>
+              <div className="app-card-value">{kpi.value}</div>
+              <div className="app-card-sub">{kpi.sub}</div>
             </div>
           ))}
         </div>
@@ -193,35 +193,34 @@ export default function ClientList() {
 
       {/* Barre de recherche et filtres */}
       {clients.length > 0 && (
-        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <div className="app-filter-bar">
           <input
             type="text"
             placeholder="Rechercher un client (nom, SIREN, ville)..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="app-input"
-            style={{ flex: 1, minWidth: 200 }}
           />
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as 'name' | 'amount' | 'health')} className="app-select" style={{ width: 'auto' }}>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as 'name' | 'amount' | 'health')} className="app-select">
             <option value="name">Trier : Nom</option>
             <option value="amount">Trier : CA</option>
             <option value="health">Trier : Sante</option>
           </select>
-          <div style={{ display: 'flex', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+          <div className="app-view-toggle">
             <button
               onClick={() => setViewMode('cards')}
-              style={{ padding: '6px 12px', border: 'none', background: viewMode === 'cards' ? 'var(--accent)' : 'var(--surface)', color: viewMode === 'cards' ? '#fff' : 'var(--text)', cursor: 'pointer', fontSize: '0.8rem' }}
+              className={`app-view-toggle-btn${viewMode === 'cards' ? ' app-view-toggle-btn--active' : ''}`}
             >Cartes</button>
             <button
               onClick={() => setViewMode('grid')}
-              style={{ padding: '6px 12px', border: 'none', borderLeft: '1px solid var(--border)', background: viewMode === 'grid' ? 'var(--accent)' : 'var(--surface)', color: viewMode === 'grid' ? '#fff' : 'var(--text)', cursor: 'pointer', fontSize: '0.8rem' }}
+              className={`app-view-toggle-btn${viewMode === 'grid' ? ' app-view-toggle-btn--active' : ''}`}
             >Tableau</button>
           </div>
         </div>
       )}
 
       <Drawer isOpen={showForm} onClose={() => setShowForm(false)} title="Ajouter un client">
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', height: '100%' }}>
+        <form onSubmit={handleSubmit} className="app-drawer-form">
 
           <div className="app-form-group">
             <label className="app-label">Raison sociale</label>
@@ -237,81 +236,81 @@ export default function ClientList() {
             <input type="text" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} required className="app-input" placeholder="123 Rue de la Paix" />
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <div className="app-form-group" style={{ flex: 1 }}>
+          <div className="app-form-row">
+            <div className="app-form-group">
               <label className="app-label">Code postal</label>
               <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} required className="app-input" placeholder="75000" />
             </div>
-            <div className="app-form-group" style={{ flex: 2 }}>
+            <div className="app-form-group flex-2">
               <label className="app-label">Ville</label>
               <input type="text" value={city} onChange={(e) => setCity(e.target.value)} required className="app-input" placeholder="Paris" />
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
-            <button type="submit" className="app-btn-primary" style={{ width: '100%' }}>Créer le client</button>
+          <div className="app-form-actions">
+            <button type="submit" className="app-btn-primary">Créer le client</button>
           </div>
         </form>
       </Drawer>
 
       {/* Vue Cartes enrichies */}
       {viewMode === 'cards' && filteredClients.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+        <div className="app-cards-grid">
           {filteredClients.map(client => {
             const stats = clientStats.get(client.id);
             const score = stats?.healthScore || 0;
             return (
-              <div key={client.id} className="app-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div key={client.id} className="app-card app-client-card">
+                <div className="app-client-card-header">
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-h)' }}>{client.name}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text)', marginTop: '2px' }}>
+                    <div className="app-client-card-name">{client.name}</div>
+                    <div className="app-client-card-sub">
                       {client.siren ? `SIREN ${client.siren}` : 'Pas de SIREN'} — {client.city}
                     </div>
                   </div>
                   {/* Indicateur de sante */}
-                  <div style={{
-                    width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: `${healthColor(score)}20`, color: healthColor(score), fontWeight: 700, fontSize: '0.8rem',
-                  }}>
+                  <div
+                    className="app-health-indicator"
+                    style={{ background: `${healthColor(score)}20`, color: healthColor(score) }}
+                  >
                     {score}
                   </div>
                 </div>
 
                 {/* Statistiques */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.8rem' }}>
-                  <div style={{ padding: '0.5rem', background: 'var(--social-bg)', borderRadius: '6px' }}>
-                    <div style={{ color: 'var(--text)' }}>Factures</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-h)' }}>{stats?.totalInvoices || 0}</div>
+                <div className="app-stat-grid">
+                  <div className="app-stat-box">
+                    <div className="app-stat-box-label">Factures</div>
+                    <div className="app-stat-box-value">{stats?.totalInvoices || 0}</div>
                   </div>
-                  <div style={{ padding: '0.5rem', background: 'var(--social-bg)', borderRadius: '6px' }}>
-                    <div style={{ color: 'var(--text)' }}>CA TTC</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-h)' }}>{(stats?.totalAmount || 0).toFixed(0)} EUR</div>
+                  <div className="app-stat-box">
+                    <div className="app-stat-box-label">CA TTC</div>
+                    <div className="app-stat-box-value">{(stats?.totalAmount || 0).toFixed(0)} EUR</div>
                   </div>
-                  <div style={{ padding: '0.5rem', background: 'var(--social-bg)', borderRadius: '6px' }}>
-                    <div style={{ color: 'var(--text)' }}>En attente</div>
-                    <div style={{ fontWeight: 600, color: stats?.pendingAmount ? '#f59e0b' : 'var(--text-h)' }}>
+                  <div className="app-stat-box">
+                    <div className="app-stat-box-label">En attente</div>
+                    <div className="app-stat-box-value" style={{ color: stats?.pendingAmount ? '#f59e0b' : undefined }}>
                       {(stats?.pendingAmount || 0).toFixed(0)} EUR
                     </div>
                   </div>
-                  <div style={{ padding: '0.5rem', background: 'var(--social-bg)', borderRadius: '6px' }}>
-                    <div style={{ color: 'var(--text)' }}>Delai moy.</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-h)' }}>{stats?.avgPaymentDelay || 0}j</div>
+                  <div className="app-stat-box">
+                    <div className="app-stat-box-label">Delai moy.</div>
+                    <div className="app-stat-box-value">{stats?.avgPaymentDelay || 0}j</div>
                   </div>
                 </div>
 
                 {/* Derniere facture */}
                 {stats?.lastInvoiceDate && (
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text)' }}>
+                  <div className="app-client-card-meta">
                     Derniere facture : {new Date(stats.lastInvoiceDate).toLocaleDateString('fr-FR')}
                   </div>
                 )}
 
                 {/* Actions */}
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
+                <div className="app-client-card-actions">
                   <button
                     onClick={() => handleDelete(client.id)}
-                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, padding: 0 }}
+                    className="app-text-link-danger"
                   >
                     Supprimer
                   </button>
@@ -332,7 +331,7 @@ export default function ClientList() {
       )}
 
       {filteredClients.length === 0 && clients.length > 0 && (
-        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text)' }}>
+        <div className="app-no-results">
           Aucun client ne correspond a la recherche.
         </div>
       )}
