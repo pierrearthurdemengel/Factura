@@ -1673,6 +1673,10 @@
   flex-direction: column;
   gap: 0;
 }
+.lp-faq-col {
+  display: flex;
+  flex-direction: column;
+}
 .lp-faq-item { border-bottom: 1px solid var(--lp-gray-200); }
 .lp-faq-item:first-child { border-top: 1px solid var(--lp-gray-200); }
 .lp-faq-q {
@@ -1925,12 +1929,16 @@
   .lp-testimonials-grid > :last-child { grid-column: auto; max-width: none; }
 
   .lp-faq-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    flex-direction: row;
     gap: 0 2rem;
   }
-  .lp-faq-item:first-child { border-top: 1px solid var(--lp-gray-200); }
-  .lp-faq-item:nth-child(5) { border-top: 1px solid var(--lp-gray-200); }
+  .lp-faq-col {
+    flex: 1;
+  }
+  .lp-faq-col:first-child .lp-faq-item:first-child,
+  .lp-faq-col:last-child .lp-faq-item:first-child {
+    border-top: 1px solid var(--lp-gray-200);
+  }
 
   .lp-final-cta { padding: 5rem 2.5rem; }
   .lp-final-cta h2 { font-size: 2.25rem; }

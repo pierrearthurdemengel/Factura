@@ -779,13 +779,20 @@ export default function Landing() {
           <div className="lp-faq-inner">
             <h2 className="reveal">Vos questions, nos réponses</h2>
             <div className="lp-faq-grid">
-              {faqItems.map((item, i) => (
-                <div key={i} className={`lp-faq-item${openFaq === i ? ' open' : ''}`}>
-                  <button className="lp-faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)} aria-expanded={openFaq === i}>
-                    <span>{item.q}</span>
-                    <svg className="lp-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
-                  </button>
-                  <div className="lp-faq-a" role="region"><p>{item.a}</p></div>
+              {[faqItems.slice(0, Math.ceil(faqItems.length / 2)), faqItems.slice(Math.ceil(faqItems.length / 2))].map((col, colIdx) => (
+                <div key={colIdx} className="lp-faq-col">
+                  {col.map((item, i) => {
+                    const idx = colIdx * Math.ceil(faqItems.length / 2) + i;
+                    return (
+                      <div key={idx} className={`lp-faq-item${openFaq === idx ? ' open' : ''}`}>
+                        <button className="lp-faq-q" onClick={() => setOpenFaq(openFaq === idx ? null : idx)} aria-expanded={openFaq === idx}>
+                          <span>{item.q}</span>
+                          <svg className="lp-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                        </button>
+                        <div className="lp-faq-a" role="region"><p>{item.a}</p></div>
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
             </div>
