@@ -1,23 +1,33 @@
 import { useEffect, useState } from 'react';
 import { getInvoices, getInvoiceEvents, type Invoice, type InvoiceEvent } from '../api/factura';
 import { Link } from 'react-router-dom';
-import { LineChart, Line, ResponsiveContainer } from 'recharts';
 import RevenueChart from '../components/RevenueChart';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import './Dashboard.css';
 
-// --- Sparkline ---
+// --- Sparkline (SVG pur) ---
 function Sparkline({ data, color }: { data: number[], color: string }) {
-  const chartData = data.map((v, i) => ({ index: i, value: v }));
+  const w = 64;
+  const h = 28;
+  const pad = 2;
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data, 0);
+  const range = max - min || 1;
+  const points = data
+    .map((v, i) => {
+      const x = pad + (i / Math.max(data.length - 1, 1)) * (w - pad * 2);
+      const y = pad + (1 - (v - min) / range) * (h - pad * 2);
+      return `${x},${y}`;
+    })
+    .join(' ');
+
   return (
     <div className="dash-sparkline">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
-          <Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={false} isAnimationActive={true} />
-        </LineChart>
-      </ResponsiveContainer>
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ display: 'block', width: '100%', height: '100%' }}>
+        <polyline points={points} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
     </div>
   );
 }
