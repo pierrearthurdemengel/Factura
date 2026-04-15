@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/factura';
+import { useToast } from '../context/ToastContext';
 import './AppLayout.css';
 
 // Facture en retard avec historique de relances
@@ -24,10 +25,11 @@ interface ReminderEntry {
 export default function Unpaid() {
   const [invoices, setInvoices] = useState<OverdueInvoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const { error: toastError } = useToast();
 
   useEffect(() => {
     api.get('/invoices', { params: { status: 'SENT', 'dueDate[before]': new Date().toISOString().split('T')[0] } })
-      .then((res) => {
+      .then(async (res) => {
         const raw = res.data['hydra:member'] || [];
         const now = new Date();
         const mapped: OverdueInvoice[] = raw.map((inv: Record<string, unknown>) => {
@@ -40,13 +42,26 @@ export default function Unpaid() {
             totalIncludingTax: inv.totalIncludingTax || '0',
             dueDate: inv.dueDate,
             daysOverdue,
-            reminders: [],
+            reminders: (inv as { reminders?: ReminderEntry[] }).reminders || [],
           };
         });
-        setInvoices(mapped.sort((a: OverdueInvoice, b: OverdueInvoice) => b.daysOverdue - a.daysOverdue));
+        // Charger les relances pour chaque facture si le champ est vide
+        const withReminders = await Promise.all(
+          mapped.map(async (inv) => {
+            if (inv.reminders.length > 0) return inv;
+            try {
+              const r = await api.get<{ 'hydra:member': ReminderEntry[] }>(`/invoices/${inv.id}/reminders`);
+              return { ...inv, reminders: r.data['hydra:member'] || [] };
+            } catch {
+              return inv;
+            }
+          })
+        );
+        setInvoices(withReminders.sort((a, b) => b.daysOverdue - a.daysOverdue));
       })
-      .catch(() => {/* Pas de factures en retard */})
+      .catch(() => toastError('Impossible de charger les factures en retard.'))
       .finally(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const totalUnpaid = invoices.reduce((s, inv) => s + parseFloat(inv.totalIncludingTax), 0);
@@ -124,7 +139,14 @@ export default function Unpaid() {
               >
                 <div className="app-list-item-info">
                   <div className="app-list-item-title">{inv.number}</div>
-                  <div className="app-list-item-sub">{inv.buyer.name}</div>
+                  <div className="app-list-item-sub">
+                    {inv.buyer.name}
+                    {inv.reminders.length > 0 && (
+                      <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', color: 'var(--text)' }}>
+                        ({inv.reminders.length} relance{inv.reminders.length > 1 ? 's' : ''})
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="app-list-item-sub">
                   Echeance : {new Date(inv.dueDate).toLocaleDateString('fr-FR')}

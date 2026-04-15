@@ -54,10 +54,17 @@ export default function Settings() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Charger les factures pour l'onglet facturation
+  // Charger les factures et le plan pour l'onglet facturation
   useEffect(() => {
     if (activeTab === 'billing') {
-      getInvoices().then(res => setBillingInvoices(res.data['hydra:member'])).catch(() => setBillingInvoices([]));
+      getInvoices()
+        .then(res => setBillingInvoices(res.data['hydra:member']))
+        .catch(() => setBillingInvoices([]));
+      api.get<{ plan: 'free' | 'pro' | 'success' }>('/subscription/current')
+        .then(res => {
+          if (res.data?.plan) setCurrentPlan(res.data.plan);
+        })
+        .catch(() => {/* Plan par defaut si endpoint non disponible */});
     }
   }, [activeTab]);
 

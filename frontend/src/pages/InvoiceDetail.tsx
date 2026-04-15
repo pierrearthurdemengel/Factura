@@ -60,6 +60,7 @@ export default function InvoiceDetail() {
   const [events, setEvents] = useState<InvoiceEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [factoringRate, setFactoringRate] = useState(5);
 
   const load = () => {
     if (!id) return;
@@ -67,10 +68,14 @@ export default function InvoiceDetail() {
     Promise.all([
       getInvoice(id),
       getInvoiceEvents(id).catch(() => ({ data: [] as InvoiceEvent[] })),
+      api.get<{ commissionRate: number }>('/factoring/rates').catch(() => null),
     ])
-      .then(([invoiceRes, eventsRes]) => {
+      .then(([invoiceRes, eventsRes, factoringRes]) => {
         setInvoice(invoiceRes.data);
         setEvents(eventsRes.data);
+        if (factoringRes?.data?.commissionRate) {
+          setFactoringRate(factoringRes.data.commissionRate);
+        }
       })
       .catch(() => navigate('/invoices'))
       .finally(() => setLoading(false));
@@ -279,8 +284,8 @@ export default function InvoiceDetail() {
                 Recevoir le paiement maintenant
               </div>
               <div className="app-factoring-desc">
-                Financez cette facture et recevez {(parseFloat(invoice.totalIncludingTax) * 0.95).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR sous 48h
-                <span className="app-factoring-commission"> (commission de 5%)</span>
+                Financez cette facture et recevez {(parseFloat(invoice.totalIncludingTax) * (1 - factoringRate / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR sous 48h
+                <span className="app-factoring-commission"> (commission de {factoringRate}%)</span>
               </div>
             </div>
             <button

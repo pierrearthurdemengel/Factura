@@ -157,6 +157,30 @@ export default function QuoteDetail() {
         <p className="app-totals-grand">Total TTC : <strong>{quote.totalIncludingTax} EUR</strong></p>
       </div>
 
+      {quote.depositPercent != null && quote.depositPercent > 0 && (
+        <div className="app-card" style={{ marginTop: '1rem' }}>
+          <h3 className="app-card-title">Acompte demande</h3>
+          <div className="app-kpi-grid">
+            <div className="app-kpi-card">
+              <div className="app-card-sub">Pourcentage</div>
+              <div className="app-card-value">{quote.depositPercent}%</div>
+            </div>
+            <div className="app-kpi-card">
+              <div className="app-card-sub">Montant acompte TTC</div>
+              <div className="app-card-value" style={{ color: 'var(--accent)' }}>
+                {quote.depositAmount || (parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100).toFixed(2)} EUR
+              </div>
+            </div>
+            <div className="app-kpi-card">
+              <div className="app-card-sub">Solde restant TTC</div>
+              <div className="app-card-value">
+                {(parseFloat(quote.totalIncludingTax) - (parseFloat(quote.depositAmount || '0') || parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100)).toFixed(2)} EUR
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {quote.legalMention && (
         <p className="app-legal">{quote.legalMention}</p>
       )}

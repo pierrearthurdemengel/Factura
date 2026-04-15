@@ -20,29 +20,85 @@ interface VatBalance {
   period: string;
 }
 
+// Genere les echeances fiscales standard pour l'annee courante (fallback si API indisponible)
+function getDefaultDeadlines(year: number): Deadline[] {
+  const now = new Date();
+  const deadlines: Deadline[] = [];
+  // TVA CA3 mensuelle (le 24 du mois suivant)
+  for (let m = 1; m <= 12; m++) {
+    const dueDate = `${year}-${String(m + 1 > 12 ? 1 : m + 1).padStart(2, '0')}-24`;
+    const due = new Date(dueDate);
+    const monthName = new Date(year, m - 1).toLocaleDateString('fr-FR', { month: 'long' });
+    deadlines.push({
+      id: `tva-${m}`,
+      type: 'tva',
+      label: `Declaration TVA CA3 — ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`,
+      dueDate: m + 1 > 12 ? `${year + 1}-01-24` : dueDate,
+      status: due < now ? 'done' : 'pending',
+      amount: null,
+    });
+  }
+  // URSSAF trimestriel
+  const urssafDates = [
+    { q: 'T1', date: `${year}-04-30` },
+    { q: 'T2', date: `${year}-07-31` },
+    { q: 'T3', date: `${year}-10-31` },
+    { q: 'T4', date: `${year + 1}-01-31` },
+  ];
+  urssafDates.forEach((u, i) => {
+    const due = new Date(u.date);
+    deadlines.push({
+      id: `urssaf-${i}`,
+      type: 'urssaf',
+      label: `Declaration URSSAF ${u.q}`,
+      dueDate: u.date,
+      status: due < now ? 'done' : 'pending',
+      amount: null,
+    });
+  });
+  // CFE (15 juin et 15 decembre)
+  deadlines.push(
+    { id: 'cfe-1', type: 'cfe', label: 'Acompte CFE', dueDate: `${year}-06-15`, status: new Date(`${year}-06-15`) < now ? 'done' : 'pending', amount: null },
+    { id: 'cfe-2', type: 'cfe', label: 'Solde CFE', dueDate: `${year}-12-15`, status: new Date(`${year}-12-15`) < now ? 'done' : 'pending', amount: null },
+  );
+  // IR (declaration de revenus, debut juin)
+  deadlines.push({
+    id: 'ir-1',
+    type: 'ir',
+    label: 'Declaration de revenus',
+    dueDate: `${year}-06-08`,
+    status: new Date(`${year}-06-08`) < now ? 'done' : 'pending',
+    amount: null,
+  });
+  return deadlines;
+}
+
 export default function Declarations() {
   const [activeSection, setActiveSection] = useState<'calendar' | 'tva' | 'urssaf'>('calendar');
   const [vatBalance, setVatBalance] = useState<VatBalance | null>(null);
   const [urssafAmount, setUrssafAmount] = useState<string | null>(null);
+  const [deadlines, setDeadlines] = useState<Deadline[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Echeances fictives basees sur le calendrier fiscal standard
   const currentYear = new Date().getFullYear();
-  const deadlines: Deadline[] = [
-    { id: '1', type: 'tva', label: 'Declaration TVA CA3 — Avril', dueDate: `${currentYear}-05-24`, status: 'pending', amount: null },
-    { id: '2', type: 'urssaf', label: 'Declaration URSSAF T1', dueDate: `${currentYear}-04-30`, status: 'pending', amount: null },
-    { id: '3', type: 'tva', label: 'Declaration TVA CA3 — Mars', dueDate: `${currentYear}-04-24`, status: 'done', amount: '1 250.00' },
-    { id: '4', type: 'urssaf', label: 'Declaration URSSAF — Mars', dueDate: `${currentYear}-03-31`, status: 'done', amount: '2 340.00' },
-    { id: '5', type: 'cfe', label: 'Acompte CFE', dueDate: `${currentYear}-06-15`, status: 'pending', amount: null },
-    { id: '6', type: 'ir', label: 'Declaration de revenus', dueDate: `${currentYear}-06-08`, status: 'pending', amount: null },
-  ];
 
   useEffect(() => {
+    // Tenter de charger les echeances depuis l'API, sinon utiliser le calendrier par defaut
     Promise.all([
-      api.get('/tax/vat/balance', { params: { year: currentYear, month: new Date().getMonth() + 1 } }).catch(() => null),
-      api.get('/tax/urssaf/contributions', { params: { year: currentYear } }).catch(() => null),
-    ]).then(([vatRes, urssafRes]) => {
-      if (vatRes?.data) setVatBalance(vatRes.data);
+      api.get<{ 'hydra:member': Deadline[] }>('/declarations/deadlines', { params: { year: currentYear } })
+        .then(res => res.data['hydra:member'] || res.data)
+        .catch(() => null),
+      api.get<VatBalance>('/tax/vat/balance', { params: { year: currentYear, month: new Date().getMonth() + 1 } })
+        .catch(() => null),
+      api.get<{ totalContributions: string }>('/tax/urssaf/contributions', { params: { year: currentYear } })
+        .catch(() => null),
+    ]).then(([deadlinesRes, vatRes, urssafRes]) => {
+      if (Array.isArray(deadlinesRes) && deadlinesRes.length > 0) {
+        setDeadlines(deadlinesRes);
+      } else {
+        setDeadlines(getDefaultDeadlines(currentYear));
+      }
+      if (vatRes?.data) setVatBalance(vatRes.data as VatBalance);
       if (urssafRes?.data?.totalContributions) setUrssafAmount(urssafRes.data.totalContributions);
     }).finally(() => setLoading(false));
   }, [currentYear]);
@@ -93,7 +149,14 @@ export default function Declarations() {
           </p>
 
           <div className="app-list">
-            {deadlines.sort((a, b) => a.dueDate.localeCompare(b.dueDate)).map((d) => {
+            {[...deadlines].sort((a, b) => a.dueDate.localeCompare(b.dueDate)).filter((d) => {
+              const due = new Date(d.dueDate);
+              const threeMonthsAgo = new Date();
+              threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+              const sixMonthsAhead = new Date();
+              sixMonthsAhead.setMonth(sixMonthsAhead.getMonth() + 6);
+              return due >= threeMonthsAgo && due <= sixMonthsAhead;
+            }).map((d) => {
               const cfg = statusConfig[d.status];
               const isUpcoming = d.status === 'pending' && new Date(d.dueDate) > new Date();
               return (

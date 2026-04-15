@@ -26,6 +26,8 @@ export default function QuoteCreate() {
   });
   const [legalMention, setLegalMention] = useState('');
   const [paymentTerms, setPaymentTerms] = useState('');
+  const [depositEnabled, setDepositEnabled] = useState(false);
+  const [depositPercent, setDepositPercent] = useState('30');
   const [lines, setLines] = useState<LineForm[]>([
     { id: crypto.randomUUID(), description: '', quantity: '1', unit: 'EA', unitPriceExcludingTax: '', vatRate: '20' },
   ]);
@@ -76,7 +78,7 @@ export default function QuoteCreate() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const data = {
+      const data: Record<string, unknown> = {
         buyer: selectedClient,
         issueDate,
         validUntil: validUntil || undefined,
@@ -91,6 +93,11 @@ export default function QuoteCreate() {
           vatRate: line.vatRate,
         })),
       };
+      if (depositEnabled) {
+        const pct = parseFloat(depositPercent) || 0;
+        data.depositPercent = pct;
+        data.depositAmount = (totals.ttc * pct / 100).toFixed(2);
+      }
       await createQuote(data);
       success('Devis cree avec succes.');
       navigate('/quotes');
@@ -175,6 +182,52 @@ export default function QuoteCreate() {
         <button type="button" onClick={addLine} className="app-btn-outline" style={{ marginBottom: '1.5rem' }}>
           + Ajouter une ligne
         </button>
+
+        {/* Acompte */}
+        <div className="app-card" style={{ marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: depositEnabled ? '1rem' : 0 }}>
+            <input
+              type="checkbox"
+              id="deposit-toggle"
+              checked={depositEnabled}
+              onChange={(e) => setDepositEnabled(e.target.checked)}
+              style={{ width: 18, height: 18, accentColor: 'var(--accent)' }}
+            />
+            <label htmlFor="deposit-toggle" className="app-label" style={{ margin: 0, cursor: 'pointer' }}>
+              Demander un acompte
+            </label>
+          </div>
+          {depositEnabled && (
+            <div className="app-form-row">
+              <div className="app-form-group">
+                <label className="app-label">Pourcentage</label>
+                <select
+                  value={depositPercent}
+                  onChange={(e) => setDepositPercent(e.target.value)}
+                  className="app-select"
+                >
+                  <option value="10">10%</option>
+                  <option value="20">20%</option>
+                  <option value="30">30%</option>
+                  <option value="40">40%</option>
+                  <option value="50">50%</option>
+                </select>
+              </div>
+              <div className="app-form-group">
+                <label className="app-label">Montant de l'acompte TTC</label>
+                <p className="app-card-value" style={{ margin: 0 }}>
+                  {(totals.ttc * (parseFloat(depositPercent) || 0) / 100).toFixed(2)} EUR
+                </p>
+              </div>
+              <div className="app-form-group">
+                <label className="app-label">Solde restant TTC</label>
+                <p className="app-card-value" style={{ margin: 0 }}>
+                  {(totals.ttc - totals.ttc * (parseFloat(depositPercent) || 0) / 100).toFixed(2)} EUR
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="app-form-group">
           <label className="app-label">Conditions de paiement</label>

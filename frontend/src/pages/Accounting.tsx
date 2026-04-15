@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api/factura';
+import { useToast } from '../context/ToastContext';
 import './AppLayout.css';
 
 // Types pour le journal comptable
@@ -26,12 +27,14 @@ export default function Accounting() {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   });
+  const { error: toastError } = useToast();
 
   useEffect(() => {
     api.get('/accounting/entries', { params: { period: periodFilter } })
       .then((res) => setEntries(res.data['hydra:member'] || []))
-      .catch(() => {/* Pas d'ecritures */})
+      .catch(() => toastError('Impossible de charger les ecritures comptables.'))
       .finally(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [periodFilter]);
 
   // Calcul du grand livre par compte

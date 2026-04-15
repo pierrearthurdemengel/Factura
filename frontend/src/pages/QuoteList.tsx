@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/factura';
+import { useToast } from '../context/ToastContext';
 import './AppLayout.css';
 
 // Type simplifie pour les devis
@@ -28,12 +29,14 @@ export default function QuoteList() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
+  const { error: toastError } = useToast();
 
   useEffect(() => {
     api.get('/quotes')
       .then((res) => setQuotes(res.data['hydra:member'] || []))
-      .catch(() => {/* Pas de devis disponibles */})
+      .catch(() => toastError('Impossible de charger la liste des devis.'))
       .finally(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = filter

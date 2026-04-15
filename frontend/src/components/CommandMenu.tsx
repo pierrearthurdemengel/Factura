@@ -15,7 +15,7 @@ export default function CommandMenu({ isOpen, onClose }: { isOpen: boolean, onCl
       setQuery(''); // eslint-disable-line react-hooks/set-state-in-effect
       getInvoices({ itemsPerPage: '50' })
         .then(res => setInvoices(res.data['hydra:member']))
-        .catch(() => {});
+        .catch(() => setInvoices([]));
 
       setTimeout(() => inputRef.current?.focus(), 50);
     }

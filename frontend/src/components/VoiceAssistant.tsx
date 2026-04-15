@@ -93,7 +93,6 @@ export default function VoiceAssistant() {
       window.removeEventListener('keyup', handleKeyUp);
       recognition.abort();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- displayedText volontairement exclu pour eviter la re-initialisation
   }, [audio, navigate, success, info]);
 
   return (

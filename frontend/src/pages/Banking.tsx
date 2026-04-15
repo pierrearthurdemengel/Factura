@@ -40,8 +40,9 @@ export default function Banking() {
   useEffect(() => {
     api.get('/bank/transactions')
       .then((res) => setTransactions(res.data['hydra:member'] || []))
-      .catch(() => {/* Pas de transactions */})
+      .catch(() => error('Impossible de charger les transactions bancaires.'))
       .finally(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = filter === 'all' ? transactions

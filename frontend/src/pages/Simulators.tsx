@@ -1,17 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '../api/factura';
 import './AppLayout.css';
 
-// Simulateur micro vs reel
-function simulateMicroVsReel(ca: number, charges: number, activity: 'service' | 'vente') {
-  // Micro-entreprise
-  const microAbatement = activity === 'vente' ? 0.71 : 0.50;
+// Configuration fiscale (chargee depuis l'API ou valeurs par defaut 2026)
+interface TaxConfig {
+  microAbatementService: number;
+  microAbatementVente: number;
+  microUrssafService: number;
+  microUrssafVente: number;
+  reelUrssafRate: number;
+  sasuChargesRate: number;
+  sasuRemunerationRate: number;
+  sasuISRate: number;
+  eiUrssafRate: number;
+  irBrackets: { limit: number; rate: number }[];
+  year: number;
+}
+
+const defaultTaxConfig: TaxConfig = {
+  microAbatementService: 0.50,
+  microAbatementVente: 0.71,
+  microUrssafService: 0.212,
+  microUrssafVente: 0.123,
+  reelUrssafRate: 0.45,
+  sasuChargesRate: 0.30,
+  sasuRemunerationRate: 0.60,
+  sasuISRate: 0.25,
+  eiUrssafRate: 0.212,
+  irBrackets: [
+    { limit: 11497, rate: 0 },
+    { limit: 29315, rate: 0.11 },
+    { limit: 82341, rate: 0.30 },
+    { limit: 177106, rate: 0.41 },
+    { limit: Infinity, rate: 0.45 },
+  ],
+  year: 2026,
+};
+
+function simulateMicroVsReel(ca: number, charges: number, activity: 'service' | 'vente', config: TaxConfig) {
+  const microAbatement = activity === 'vente' ? config.microAbatementVente : config.microAbatementService;
   const microTaxableIncome = ca * (1 - microAbatement);
-  const microUrssaf = ca * (activity === 'vente' ? 0.123 : 0.212);
+  const microUrssaf = ca * (activity === 'vente' ? config.microUrssafVente : config.microUrssafService);
   const microNet = ca - microUrssaf;
 
-  // Regime reel simplifie
   const reelTaxableIncome = ca - charges;
-  const reelUrssaf = Math.max(0, reelTaxableIncome * 0.45);
+  const reelUrssaf = Math.max(0, reelTaxableIncome * config.reelUrssafRate);
   const reelNet = ca - charges - reelUrssaf;
 
   return {
@@ -21,16 +54,18 @@ function simulateMicroVsReel(ca: number, charges: number, activity: 'service' | 
   };
 }
 
-// Simulateur IR (bareme simplifie 2026)
-function simulateIR(revenuNet: number, parts: number) {
+function simulateIR(revenuNet: number, parts: number, config: TaxConfig) {
   const quotient = revenuNet / parts;
   let impot = 0;
+  let prev = 0;
 
-  // Bareme progressif simplifie
-  if (quotient > 177106) impot += (quotient - 177106) * 0.45;
-  if (quotient > 82341 && quotient <= 177106) impot += (Math.min(quotient, 177106) - 82341) * 0.41;
-  if (quotient > 29315 && quotient <= 82341) impot += (Math.min(quotient, 82341) - 29315) * 0.30;
-  if (quotient > 11497 && quotient <= 29315) impot += (Math.min(quotient, 29315) - 11497) * 0.11;
+  for (const bracket of config.irBrackets) {
+    if (quotient > prev) {
+      const taxable = Math.min(quotient, bracket.limit) - prev;
+      impot += taxable * bracket.rate;
+    }
+    prev = bracket.limit;
+  }
 
   return { impot: impot * parts, tauxEffectif: revenuNet > 0 ? (impot * parts / revenuNet) * 100 : 0 };
 }
@@ -39,24 +74,33 @@ type SimType = 'micro-reel' | 'ir' | 'ei-sasu';
 
 export default function Simulators() {
   const [activeSim, setActiveSim] = useState<SimType>('micro-reel');
+  const [taxConfig, setTaxConfig] = useState<TaxConfig>(defaultTaxConfig);
+
+  useEffect(() => {
+    api.get<TaxConfig>('/tax/config')
+      .then(res => {
+        if (res.data?.irBrackets) setTaxConfig(res.data);
+      })
+      .catch(() => {/* Utiliser la configuration par defaut */});
+  }, []);
 
   // Micro vs Reel
   const [ca, setCa] = useState(60000);
   const [charges, setCharges] = useState(15000);
   const [activity, setActivity] = useState<'service' | 'vente'>('service');
-  const microResult = simulateMicroVsReel(ca, charges, activity);
+  const microResult = simulateMicroVsReel(ca, charges, activity, taxConfig);
 
   // IR
   const [irRevenu, setIrRevenu] = useState(40000);
   const [irParts, setIrParts] = useState(1);
-  const irResult = simulateIR(irRevenu, irParts);
+  const irResult = simulateIR(irRevenu, irParts, taxConfig);
 
   // EI vs SASU
   const [sasuCa, setSasuCa] = useState(80000);
-  const sasuCharges = sasuCa * 0.30;
-  const sasuRemuneration = (sasuCa - sasuCharges) * 0.60;
-  const sasuDividendes = sasuCa - sasuCharges - sasuRemuneration - ((sasuCa - sasuCharges) * 0.25);
-  const eiNet = sasuCa - sasuCa * 0.212;
+  const sasuCharges = sasuCa * taxConfig.sasuChargesRate;
+  const sasuRemuneration = (sasuCa - sasuCharges) * taxConfig.sasuRemunerationRate;
+  const sasuDividendes = sasuCa - sasuCharges - sasuRemuneration - ((sasuCa - sasuCharges) * taxConfig.sasuISRate);
+  const eiNet = sasuCa - sasuCa * taxConfig.eiUrssafRate;
 
   const sims: { key: SimType; label: string }[] = [
     { key: 'micro-reel', label: 'Micro vs Reel' },
@@ -70,7 +114,7 @@ export default function Simulators() {
     <div className="app-container">
       <h1 className="app-page-title">Simulateurs</h1>
       <p className="app-desc" style={{ maxWidth: 650 }}>
-        Estimez votre situation fiscale avec nos simulateurs. Ces calculs sont indicatifs et ne remplacent pas les conseils d'un expert-comptable.
+        Estimez votre situation fiscale avec nos simulateurs (bareme {taxConfig.year}). Ces calculs sont indicatifs et ne remplacent pas les conseils d'un expert-comptable.
       </p>
 
       {/* Onglets */}
@@ -186,12 +230,12 @@ export default function Simulators() {
           <div className="app-kpi-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <div className="app-card">
               <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>EI (micro)</h3>
-              <div className="app-card-text">URSSAF (21.2%) : <strong>{fmt(sasuCa * 0.212)} EUR</strong></div>
+              <div className="app-card-text">URSSAF ({(taxConfig.eiUrssafRate * 100).toFixed(1)}%) : <strong>{fmt(sasuCa * taxConfig.eiUrssafRate)} EUR</strong></div>
               <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(eiNet)} EUR</p>
             </div>
             <div className="app-card">
               <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>SASU</h3>
-              <div className="app-card-text">Charges (~30%) : <strong>{fmt(sasuCharges)} EUR</strong></div>
+              <div className="app-card-text">Charges (~{(taxConfig.sasuChargesRate * 100).toFixed(0)}%) : <strong>{fmt(sasuCharges)} EUR</strong></div>
               <div className="app-card-text">Remuneration : <strong>{fmt(sasuRemuneration)} EUR</strong></div>
               <div className="app-card-text">Dividendes (apres IS) : <strong>{fmt(Math.max(0, sasuDividendes))} EUR</strong></div>
               <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>

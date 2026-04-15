@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import api from './api/factura';
 import { AnimatePresence } from 'framer-motion';
@@ -12,40 +12,54 @@ import CommandMenu from './components/CommandMenu';
 import FloatingActionButton from './components/FloatingActionButton';
 import VoiceAssistant from './components/VoiceAssistant';
 import AmbientBackground from './components/AmbientBackground';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import './components/NavBar.css';
+
+// Pages critiques chargees immediatement (parcours principal)
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
-import InvoiceList from './pages/InvoiceList';
-import InvoiceCreate from './pages/InvoiceCreate';
-import InvoiceDetail from './pages/InvoiceDetail';
-import ClientList from './pages/ClientList';
-import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import CompanyCreation from './pages/CompanyCreation';
-import Experts from './pages/Experts';
-import QuoteList from './pages/QuoteList';
-import QuoteCreate from './pages/QuoteCreate';
-import QuoteDetail from './pages/QuoteDetail';
-import Pricing from './pages/Pricing';
-import AdminHub from './pages/AdminHub';
-import Accounting from './pages/Accounting';
-import Declarations from './pages/Declarations';
-import Banking from './pages/Banking';
-import Simulators from './pages/Simulators';
-import Unpaid from './pages/Unpaid';
-import AccountantPortal from './pages/AccountantPortal';
-import ApiSettings from './pages/ApiSettings';
-import AssistantPage from './pages/AssistantPage';
-import ClientPortal from './pages/ClientPortal';
-import Benchmarks from './pages/Benchmarks';
-import AutopilotConfig from './pages/AutopilotConfig';
-import Network from './pages/Network';
-import OnboardingWizard from './pages/OnboardingWizard';
-import CameraScanner from './pages/CameraScanner';
-import ApiDocs from './pages/ApiDocs';
-import Guide from './pages/Guide';
+
+// Pages secondaires chargees a la demande (code splitting)
+const InvoiceList = lazy(() => import('./pages/InvoiceList'));
+const InvoiceCreate = lazy(() => import('./pages/InvoiceCreate'));
+const InvoiceDetail = lazy(() => import('./pages/InvoiceDetail'));
+const ClientList = lazy(() => import('./pages/ClientList'));
+const Settings = lazy(() => import('./pages/Settings'));
+const CompanyCreation = lazy(() => import('./pages/CompanyCreation'));
+const Experts = lazy(() => import('./pages/Experts'));
+const QuoteList = lazy(() => import('./pages/QuoteList'));
+const QuoteCreate = lazy(() => import('./pages/QuoteCreate'));
+const QuoteDetail = lazy(() => import('./pages/QuoteDetail'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const AdminHub = lazy(() => import('./pages/AdminHub'));
+const Accounting = lazy(() => import('./pages/Accounting'));
+const Declarations = lazy(() => import('./pages/Declarations'));
+const Banking = lazy(() => import('./pages/Banking'));
+const Simulators = lazy(() => import('./pages/Simulators'));
+const Unpaid = lazy(() => import('./pages/Unpaid'));
+const AccountantPortal = lazy(() => import('./pages/AccountantPortal'));
+const ApiSettings = lazy(() => import('./pages/ApiSettings'));
+const AssistantPage = lazy(() => import('./pages/AssistantPage'));
+const ClientPortal = lazy(() => import('./pages/ClientPortal'));
+const Benchmarks = lazy(() => import('./pages/Benchmarks'));
+const AutopilotConfig = lazy(() => import('./pages/AutopilotConfig'));
+const Network = lazy(() => import('./pages/Network'));
+const OnboardingWizard = lazy(() => import('./pages/OnboardingWizard'));
+const CameraScanner = lazy(() => import('./pages/CameraScanner'));
+const ApiDocs = lazy(() => import('./pages/ApiDocs'));
+const Guide = lazy(() => import('./pages/Guide'));
+
+// Fallback de chargement pour les pages lazy
+function LazyFallback() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
+      <div className="app-skeleton" style={{ width: 200, height: 24, borderRadius: 8 }} />
+    </div>
+  );
+}
 
 // Route protegee : redirige vers /login si non authentifie
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -313,6 +327,7 @@ function AnimatedAppCore() {
         </>
       )}
       <CommandMenu isOpen={cmdOpen} onClose={() => setCmdOpen(false)} />
+      <Suspense fallback={<LazyFallback />}>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
@@ -348,25 +363,28 @@ function AnimatedAppCore() {
           <Route path="/guide" element={<PageTransition><Guide /></PageTransition>} />
         </Routes>
       </AnimatePresence>
+      </Suspense>
     </>
   );
 }
 
 function App() {
   return (
-    <ThemeProvider>
-      <AppIntlProvider>
-        <AuthProvider>
-          <AudioProvider>
-            <ToastProvider>
-              <BrowserRouter>
-                <AnimatedAppCore />
-              </BrowserRouter>
-            </ToastProvider>
-          </AudioProvider>
-        </AuthProvider>
-      </AppIntlProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AppIntlProvider>
+          <AuthProvider>
+            <AudioProvider>
+              <ToastProvider>
+                <BrowserRouter>
+                  <AnimatedAppCore />
+                </BrowserRouter>
+              </ToastProvider>
+            </AudioProvider>
+          </AuthProvider>
+        </AppIntlProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

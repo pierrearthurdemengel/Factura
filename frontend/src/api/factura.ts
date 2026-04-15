@@ -300,6 +300,8 @@ export interface Quote {
   legalMention: string | null;
   paymentTerms: string | null;
   invoiceId: string | null;
+  depositPercent: number | null;
+  depositAmount: string | null;
   createdAt: string;
 }
 
