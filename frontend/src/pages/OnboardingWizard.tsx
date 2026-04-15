@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { updateCompany, getCompany } from '../api/factura';
+import api, { updateCompany, getCompany } from '../api/factura';
 import './AppLayout.css';
 
 // Formes juridiques disponibles pour l'etape 1
@@ -135,12 +135,37 @@ export default function OnboardingWizard() {
     try {
       const res = await getCompany();
       const company = res.data;
-      await updateCompany(company.id, {
+      // Sauvegarder toutes les donnees collectees dans l'assistant
+      const payload: Record<string, unknown> = {
         legalForm: selectedLegalForm,
-      });
+      };
+      // Les champs fiscaux et personnalisation sont sauvegardes dans les
+      // preferences utilisateur cote serveur s'ils existent sur l'endpoint.
+      // On les envoie tous : le backend ignorera ceux qu'il ne connait pas.
+      if (vatRegime) payload.vatRegime = vatRegime;
+      if (exerciseStartMonth) payload.exerciseStartMonth = exerciseStartMonth;
+      if (exerciseEndMonth) payload.exerciseEndMonth = exerciseEndMonth;
+      if (primaryColor) payload.primaryColor = primaryColor;
+      if (defaultPaymentTerms) payload.defaultPaymentTerms = defaultPaymentTerms;
+      await updateCompany(company.id, payload as Partial<import('../api/factura').Company>);
+
+      // Upload du logo si present (base64 -> FormData)
+      if (logoPreview) {
+        try {
+          const blob = await fetch(logoPreview).then(r => r.blob());
+          const formData = new FormData();
+          formData.append('logo', blob, 'logo.png');
+          await api.post(`/companies/${company.id}/logo`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+        } catch {
+          // Le logo est optionnel, on continue meme si l'upload echoue
+        }
+      }
       navigate('/invoices/new');
     } catch {
       setError('Erreur lors de la sauvegarde. Veuillez reessayer.');
+    } finally {
       setSaving(false);
     }
   };

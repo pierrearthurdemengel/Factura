@@ -46,7 +46,7 @@ export default function VoiceAssistant() {
     recognition.onend = () => {
       setIsListening(false);
       isSpaceDown = false;
-      const finalWord = transcriptRef.current.toLowerCase() || displayedText.toLowerCase();
+      const finalWord = transcriptRef.current.toLowerCase();
 
       if (!finalWord) return;
 
@@ -93,7 +93,8 @@ export default function VoiceAssistant() {
       window.removeEventListener('keyup', handleKeyUp);
       recognition.abort();
     };
-  }, [audio, navigate, success, info, displayedText]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- displayedText volontairement exclu pour eviter la re-initialisation
+  }, [audio, navigate, success, info]);
 
   return (
     <AnimatePresence>

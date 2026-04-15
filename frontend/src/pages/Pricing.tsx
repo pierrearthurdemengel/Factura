@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AppLayout.css';
 
 // Simulateur de prix pour le plan Succes Partage
@@ -22,6 +23,7 @@ function simulate(annualRevenue: number): { fee: number; effectiveRate: number; 
 }
 
 export default function Pricing() {
+  const navigate = useNavigate();
   const [revenue, setRevenue] = useState(80000);
   const result = simulate(revenue);
 
@@ -115,7 +117,11 @@ export default function Pricing() {
                 </li>
               ))}
             </ul>
-            <button className={plan.highlighted ? 'app-btn-primary' : 'app-btn-outline'} style={{ width: '100%' }}>
+            <button
+              className={plan.highlighted ? 'app-btn-primary' : 'app-btn-outline'}
+              style={{ width: '100%' }}
+              onClick={() => navigate('/register')}
+            >
               {plan.cta}
             </button>
           </div>

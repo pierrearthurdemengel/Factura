@@ -69,7 +69,7 @@ export default function CommandMenu({ isOpen, onClose }: { isOpen: boolean, onCl
                   <span className="command-item-icon">📄</span>
                   <div className="command-item-content">
                     <span className="command-item-title">{inv.number || 'Brouillon'}</span>
-                    <span className="command-item-subtitle">{inv.buyer?.name} - {inv.totalIncludingTax} EUR</span>
+                    <span className="command-item-subtitle">{inv.buyer?.name} - {inv.totalIncludingTax} {inv.currency || 'EUR'}</span>
                   </div>
                 </button>
               ))}

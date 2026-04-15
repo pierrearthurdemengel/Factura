@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getCompany, updateCompany, getStripePortalUrl, getInvoices, type Company, type Invoice } from '../api/factura';
+import api, { getCompany, updateCompany, getStripePortalUrl, getInvoices, type Company, type Invoice } from '../api/factura';
 import './AppLayout.css';
 
 // Onglets disponibles dans les parametres
@@ -405,9 +405,37 @@ export default function Settings() {
 
           <button
             className="app-btn-primary"
-            onClick={() => setMessage('Personnalisation enregistree.')}
+            disabled={saving}
+            onClick={async () => {
+              if (!company) return;
+              setSaving(true);
+              setMessage('');
+              setError('');
+              try {
+                await updateCompany(company.id, {
+                  primaryColor,
+                  secondaryColor,
+                  footerText,
+                } as unknown as Partial<Company>);
+
+                // Upload du logo si present
+                if (logoPreview && logoPreview.startsWith('data:')) {
+                  const blob = await fetch(logoPreview).then(r => r.blob());
+                  const formData = new FormData();
+                  formData.append('logo', blob, 'logo.png');
+                  await api.post(`/companies/${company.id}/logo`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                  });
+                }
+                setMessage('Personnalisation enregistree.');
+              } catch {
+                setError('Erreur lors de la sauvegarde de la personnalisation.');
+              } finally {
+                setSaving(false);
+              }
+            }}
           >
-            Enregistrer la personnalisation
+            {saving ? 'Enregistrement...' : 'Enregistrer la personnalisation'}
           </button>
         </div>
       )}
@@ -499,9 +527,28 @@ export default function Settings() {
 
               <button
                 className="app-btn-primary"
-                onClick={() => setMessage('Parametres de relance enregistres.')}
+                disabled={saving}
+                onClick={async () => {
+                  if (!company) return;
+                  setSaving(true);
+                  setMessage('');
+                  setError('');
+                  try {
+                    await api.put(`/companies/${company.id}/reminders`, {
+                      enabled: remindersEnabled,
+                      firstDelay: parseInt(reminderDelays.first),
+                      secondDelay: parseInt(reminderDelays.second),
+                      formalDelay: parseInt(reminderDelays.formal),
+                    });
+                    setMessage('Parametres de relance enregistres.');
+                  } catch {
+                    setError('Erreur lors de la sauvegarde des relances.');
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
               >
-                Enregistrer les relances
+                {saving ? 'Enregistrement...' : 'Enregistrer les relances'}
               </button>
             </>
           )}

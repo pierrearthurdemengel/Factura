@@ -273,12 +273,27 @@ export default function Network() {
                 </div>
               </div>
 
-              {/* Espace reserve pour le graphique de croissance */}
+              {/* Croissance du reseau */}
               <div className="app-card">
                 <h3 className="app-card-title">Croissance du reseau</h3>
-                <div className="app-empty">
-                  Graphique de croissance a venir. Les donnees sont en cours de collecte
-                  pour afficher l'evolution mensuelle du nombre d'entreprises et du volume de factures.
+                <div style={{ padding: '1.5rem', textAlign: 'center' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
+                    <div>
+                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent)' }}>{stats.totalCompanies}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Entreprises</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-h)' }}>{stats.totalInvoices}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Factures</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-h)' }}>{formatEur(stats.totalVolumeEur)}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Volume</div>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text)', margin: 0 }}>
+                    Le graphique de tendance apparaitra lorsque suffisamment de donnees seront collectees.
+                  </p>
                 </div>
               </div>
             </>
