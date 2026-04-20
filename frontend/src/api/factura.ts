@@ -104,7 +104,7 @@ export interface Invoice {
   legalMention: string | null;
   paymentTerms: string | null;
   pdpReference: string | null;
-  sourceQuote: { id: string; number: string | null } | null;
+  sourceQuote: string | null;
   createdAt: string;
 }
 
@@ -299,7 +299,7 @@ export interface Quote {
   lines: QuoteLine[];
   legalMention: string | null;
   paymentTerms: string | null;
-  invoiceId: string | null;
+  convertedInvoice: string | null;
   depositPercent: number | null;
   depositAmount: string | null;
   createdAt: string;

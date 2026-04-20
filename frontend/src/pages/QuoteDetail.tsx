@@ -89,12 +89,12 @@ export default function QuoteDetail() {
       </div>
 
       {/* Badge "Issu du devis" si le devis a ete converti */}
-      {quote.invoiceId && (
+      {quote.convertedInvoice && (
         <div className="app-alert app-alert--info">
           <span className="app-alert-title">
             Facture generee
           </span>
-          <Link to={`/invoices/${quote.invoiceId}`}>
+          <Link to={`/invoices/${quote.convertedInvoice.split('/').pop()}`}>
             Voir la facture
           </Link>
         </div>
@@ -193,7 +193,7 @@ export default function QuoteDetail() {
             Envoyer au client
           </button>
         )}
-        {['SENT', 'ACCEPTED'].includes(quote.status) && !quote.invoiceId && (
+        {['SENT', 'ACCEPTED'].includes(quote.status) && !quote.convertedInvoice && (
           <button onClick={handleConvert} disabled={actionLoading} className="app-btn-primary">
             Convertir en facture
           </button>

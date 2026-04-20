@@ -188,9 +188,9 @@ export default function InvoiceDetail() {
       {invoice.sourceQuote && (
         <div className="app-alert app-alert--info">
           <span className="app-alert-title">
-            Issu du devis {invoice.sourceQuote.number || ''}
+            Issu du devis
           </span>
-          <Link to={`/quotes/${invoice.sourceQuote.id}`}>
+          <Link to={`/quotes/${invoice.sourceQuote.split('/').pop()}`}>
             Voir le devis
           </Link>
         </div>
