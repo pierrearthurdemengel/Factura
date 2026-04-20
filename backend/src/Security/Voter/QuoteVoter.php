@@ -53,7 +53,7 @@ class QuoteVoter extends Voter
             self::VIEW => true,
             self::EDIT, self::DELETE => 'DRAFT' === $quote->getStatus(),
             self::SEND => 'DRAFT' === $quote->getStatus() && $quote->isValid(),
-            self::CONVERT => 'ACCEPTED' === $quote->getStatus(),
+            self::CONVERT => in_array($quote->getStatus(), ['SENT', 'ACCEPTED'], true),
             default => false,
         };
     }
