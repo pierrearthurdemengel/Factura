@@ -211,15 +211,15 @@ export const deleteInvoice = async (id: string) => {
 };
 
 export const sendInvoice = async (id: string) => {
-  return api.post<Invoice>(`/invoices/${id}/send`);
+  return api.post<Invoice>(`/invoices/${id}/send`, {});
 };
 
 export const cancelInvoice = async (id: string) => {
-  return api.post<Invoice>(`/invoices/${id}/cancel`);
+  return api.post<Invoice>(`/invoices/${id}/cancel`, {});
 };
 
 export const payInvoice = async (id: string) => {
-  return api.post<Invoice>(`/invoices/${id}/pay`);
+  return api.post<Invoice>(`/invoices/${id}/pay`, {});
 };
 
 export const getClients = async () => {
@@ -331,11 +331,11 @@ export const createQuote = async (data: Record<string, unknown>) => {
 };
 
 export const sendQuote = async (id: string) => {
-  return api.post<Quote>(`/quotes/${id}/send`);
+  return api.post<Quote>(`/quotes/${id}/send`, {});
 };
 
 export const convertQuoteToInvoice = async (id: string) => {
-  return api.post<Invoice>(`/quotes/${id}/convert`);
+  return api.post<Invoice>(`/quotes/${id}/convert`, {});
 };
 
 // Retourne l'URL du portail de facturation Stripe
