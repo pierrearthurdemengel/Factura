@@ -46,6 +46,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: "is_granted('CONVERT', object)",
             processor: QuoteConvertProcessor::class,
             denormalizationContext: ['groups' => []],
+            normalizationContext: ['groups' => ['invoice:read']],
+            output: Invoice::class,
             name: 'quote_convert',
         ),
     ],

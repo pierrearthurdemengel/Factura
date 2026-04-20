@@ -54,7 +54,8 @@ export default function QuoteDetail() {
     try {
       const res = await convertQuoteToInvoice(id);
       success('Facture creee a partir du devis.');
-      navigate(`/invoices/${res.data.id}`);
+      const invoiceId = res.data.id || res.data['@id']?.split('/').pop();
+      navigate(`/invoices/${invoiceId}`);
     } catch {
       error('Erreur lors de la conversion en facture.');
     } finally {
