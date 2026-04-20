@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useIntl } from 'react-intl';
 import api from '../api/factura';
 import { useToast } from '../context/ToastContext';
 import './AppLayout.css';
@@ -15,17 +16,18 @@ interface Quote {
   buyer: { name: string };
 }
 
-// Libelles et couleurs des statuts
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  DRAFT: { label: 'Brouillon', color: '#6b7280', bg: 'rgba(107,114,128,0.1)' },
-  SENT: { label: 'Envoye', color: '#2563eb', bg: 'rgba(37,99,235,0.1)' },
-  ACCEPTED: { label: 'Accepte', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-  REFUSED: { label: 'Refuse', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-  EXPIRED: { label: 'Expire', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-  INVOICED: { label: 'Facture', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+// Couleurs des statuts et cles i18n
+const STATUS_CONFIG: Record<string, { intlId: string; defaultMessage: string; color: string; bg: string }> = {
+  DRAFT: { intlId: 'invoice.draft', defaultMessage: 'Brouillon', color: '#6b7280', bg: 'rgba(107,114,128,0.1)' },
+  SENT: { intlId: 'invoice.sent', defaultMessage: 'Envoyee', color: '#2563eb', bg: 'rgba(37,99,235,0.1)' },
+  ACCEPTED: { intlId: 'invoice.acknowledged', defaultMessage: 'Acceptee', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
+  REFUSED: { intlId: 'invoice.rejected', defaultMessage: 'Refusee', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+  EXPIRED: { intlId: 'invoice.expired', defaultMessage: 'Expire', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  INVOICED: { intlId: 'invoice.invoiced', defaultMessage: 'Facture', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
 };
 
 export default function QuoteList() {
+  const intl = useIntl();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
@@ -34,7 +36,7 @@ export default function QuoteList() {
   useEffect(() => {
     api.get('/quotes')
       .then((res) => setQuotes(res.data['hydra:member'] || []))
-      .catch(() => toastError('Impossible de charger la liste des devis.'))
+      .catch(() => toastError(intl.formatMessage({ id: 'quote.loadError', defaultMessage: 'Impossible de charger la liste des devis.' })))
       .finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -55,9 +57,9 @@ export default function QuoteList() {
   return (
     <div className="app-container">
       <div className="app-page-header">
-        <h1 className="app-page-title">Devis</h1>
+        <h1 className="app-page-title">{intl.formatMessage({ id: 'nav.quotes', defaultMessage: 'Devis' })}</h1>
         <Link to="/quotes/new" className="app-btn-primary">
-          + Nouveau devis
+          + {intl.formatMessage({ id: 'quote.new', defaultMessage: 'Nouveau devis' })}
         </Link>
       </div>
 
@@ -67,7 +69,7 @@ export default function QuoteList() {
           onClick={() => setFilter('')}
           className={`app-pill${!filter ? ' app-pill--active' : ''}`}
         >
-          Tous ({quotes.length})
+          {intl.formatMessage({ id: 'common.all', defaultMessage: 'Tous' })} ({quotes.length})
         </button>
         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
           const count = quotes.filter((q) => q.status === key).length;
@@ -79,7 +81,7 @@ export default function QuoteList() {
               className={`app-pill${filter === key ? ' app-pill--active' : ''}`}
               style={filter === key ? { background: cfg.bg, color: cfg.color } : undefined}
             >
-              {cfg.label} ({count})
+              {intl.formatMessage({ id: cfg.intlId, defaultMessage: cfg.defaultMessage })} ({count})
             </button>
           );
         })}
@@ -88,8 +90,8 @@ export default function QuoteList() {
       {filtered.length === 0 ? (
         <div className="app-empty">
           <div className="app-empty-icon">📋</div>
-          <p className="app-empty-title">Aucun devis</p>
-          <p className="app-empty-desc">Creez votre premier devis pour commencer.</p>
+          <p className="app-empty-title">{intl.formatMessage({ id: 'quote.empty.title', defaultMessage: 'Aucun devis' })}</p>
+          <p className="app-empty-desc">{intl.formatMessage({ id: 'quote.empty.description', defaultMessage: 'Creez votre premier devis pour commencer.' })}</p>
         </div>
       ) : (
         <div className="app-list">
@@ -103,7 +105,7 @@ export default function QuoteList() {
               >
                 <div className="app-list-item-info">
                   <div className="app-list-item-title">
-                    {quote.number || 'Brouillon'}
+                    {quote.number || intl.formatMessage({ id: 'invoice.draft', defaultMessage: 'Brouillon' })}
                   </div>
                   <div className="app-list-item-sub">
                     {quote.buyer?.name}
@@ -116,7 +118,7 @@ export default function QuoteList() {
                   className="app-status-pill"
                   style={{ background: cfg.bg, color: cfg.color }}
                 >
-                  {cfg.label}
+                  {intl.formatMessage({ id: cfg.intlId, defaultMessage: cfg.defaultMessage })}
                 </span>
                 <div className="app-list-item-value">
                   {parseFloat(quote.totalIncludingTax).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}

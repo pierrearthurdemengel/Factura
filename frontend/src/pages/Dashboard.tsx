@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { getInvoices, getInvoiceEvents, type Invoice, type InvoiceEvent } from '../api/factura';
 import { Link } from 'react-router-dom';
 import RevenueChart from '../components/RevenueChart';
@@ -102,6 +103,7 @@ function SortableWidget({ id, className, children }: { id: string, className: st
 const DEFAULT_WIDGETS = ['kpi-month', 'kpi-revenue', 'kpi-pending', 'kpi-treasury', 'chart-revenue', 'list-recent', 'list-feed', 'suggestions'];
 
 export default function Dashboard() {
+  const intl = useIntl();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -198,7 +200,7 @@ export default function Dashboard() {
       case 'kpi-month':
         return (
           <SortableWidget key={wId} id={wId} className="dash-widget-kpi dash-animate dash-animate-d1">
-            <h3 className="dash-card-title">Factures du mois</h3>
+            <h3 className="dash-card-title">{intl.formatMessage({ id: 'dashboard.invoicesThisMonth', defaultMessage: 'Factures du mois' })}</h3>
             <div className="dash-card-body">
               <p className="dash-card-value">{thisMonth.length}</p>
               <Sparkline data={[1, 3, 2, 5, 4, thisMonth.length]} color="#3b82f6" />
@@ -209,7 +211,7 @@ export default function Dashboard() {
       case 'kpi-revenue':
         return (
           <SortableWidget key={wId} id={wId} className="dash-widget-kpi dash-animate dash-animate-d2">
-            <h3 className="dash-card-title">CA HT du mois</h3>
+            <h3 className="dash-card-title">{intl.formatMessage({ id: 'dashboard.revenueHt', defaultMessage: 'CA HT du mois' })}</h3>
             <div className="dash-card-body">
               <div>
                 <p className="dash-card-value">{totalHt.toFixed(2)} &euro;</p>
@@ -225,7 +227,7 @@ export default function Dashboard() {
       case 'kpi-pending':
         return (
           <SortableWidget key={wId} id={wId} className="dash-widget-kpi dash-animate dash-animate-d3">
-            <h3 className="dash-card-title">En attente</h3>
+            <h3 className="dash-card-title">{intl.formatMessage({ id: 'dashboard.pending', defaultMessage: 'En attente' })}</h3>
             <div className="dash-card-body">
               <p className="dash-card-value">{pending.length}</p>
               <Sparkline data={[0, 2, 1, 4, pending.length]} color="#f59e0b" />
@@ -238,7 +240,7 @@ export default function Dashboard() {
         const estimatedTreasury = pendingAmount * 0.85;
         return (
           <SortableWidget key={wId} id={wId} className="dash-widget-kpi dash-animate dash-animate-d4">
-            <h3 className="dash-card-title">Tresorerie previsionnelle</h3>
+            <h3 className="dash-card-title">{intl.formatMessage({ id: 'dashboard.treasury', defaultMessage: 'Tresorerie previsionnelle' })}</h3>
             <div className="dash-card-body">
               <div>
                 <p className="dash-card-value">{estimatedTreasury.toFixed(0)} &euro;</p>
@@ -265,7 +267,7 @@ export default function Dashboard() {
       case 'list-recent':
         return (
           <SortableWidget key={wId} id={wId} className="dash-widget-wide dash-animate dash-animate-d5">
-            <h3 className="dash-invoices-title">Dernieres factures</h3>
+            <h3 className="dash-invoices-title">{intl.formatMessage({ id: 'dashboard.recentInvoices', defaultMessage: 'Dernieres factures' })}</h3>
             {invoices.length === 0 ? (
               <div className="dash-empty">
                 <div className="dash-empty-icon">
@@ -301,11 +303,11 @@ export default function Dashboard() {
                   <table className="dash-table">
                     <thead>
                       <tr>
-                        <th>Numero</th>
-                        <th>Client</th>
-                        <th>Date</th>
-                        <th className="dash-table-right">Montant TTC</th>
-                        <th className="dash-table-center">Statut</th>
+                        <th>{intl.formatMessage({ id: 'invoice.number', defaultMessage: 'Numero' })}</th>
+                        <th>{intl.formatMessage({ id: 'invoice.client', defaultMessage: 'Client' })}</th>
+                        <th>{intl.formatMessage({ id: 'invoice.date', defaultMessage: 'Date' })}</th>
+                        <th className="dash-table-right">{intl.formatMessage({ id: 'invoice.amount', defaultMessage: 'Montant TTC' })}</th>
+                        <th className="dash-table-center">{intl.formatMessage({ id: 'invoice.status', defaultMessage: 'Statut' })}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -329,7 +331,7 @@ export default function Dashboard() {
       case 'list-feed':
         return (
           <SortableWidget key={wId} id={wId} className="dash-widget-narrow dash-animate dash-animate-d6">
-            <h3 className="dash-invoices-title">Fil d'actualite</h3>
+            <h3 className="dash-invoices-title">{intl.formatMessage({ id: 'dashboard.activityFeed', defaultMessage: "Fil d'actualite" })}</h3>
             {activities.length === 0 ? (
               <p className="dash-feed-empty">Aucune activite recente.</p>
             ) : (
@@ -372,7 +374,7 @@ export default function Dashboard() {
         }
         return (
           <SortableWidget key={wId} id={wId} className="dash-widget-full dash-animate dash-animate-d6">
-            <h3 className="dash-invoices-title">Suggestions</h3>
+            <h3 className="dash-invoices-title">{intl.formatMessage({ id: 'dashboard.suggestions', defaultMessage: 'Suggestions' })}</h3>
             <div className="dash-suggestions">
               {suggestions.map((s, i) => (
                 <Link key={i} to={s.action} className="dash-suggestion-item">
@@ -396,12 +398,14 @@ export default function Dashboard() {
   return (
     <div className="dash">
       <div className="dash-header">
-        <h1 className="dash-title">Tableau de bord</h1>
+        <h1 className="dash-title">{intl.formatMessage({ id: 'dashboard.title', defaultMessage: 'Tableau de bord' })}</h1>
         <button
           className={`dash-toggle ${showConsolidated ? 'dash-toggle--active' : ''}`}
           onClick={() => setShowConsolidated(!showConsolidated)}
         >
-          {showConsolidated ? 'Vue consolidee' : 'Entreprise active'}
+          {showConsolidated
+            ? intl.formatMessage({ id: 'dashboard.consolidated', defaultMessage: 'Vue consolidee' })
+            : intl.formatMessage({ id: 'dashboard.activeCompany', defaultMessage: 'Entreprise active' })}
         </button>
       </div>
 

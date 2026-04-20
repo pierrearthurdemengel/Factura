@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useIntl } from 'react-intl';
 import { useAuth } from '../context/AuthContext';
 import api, { getCompany, updateCompany, getStripePortalUrl, getInvoices, type Company, type Invoice } from '../api/factura';
 import './AppLayout.css';
@@ -8,6 +9,7 @@ type SettingsTab = 'company' | 'customization' | 'reminders' | 'integrations' | 
 
 export default function Settings() {
   const { logout } = useAuth();
+  const intl = useIntl();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -121,12 +123,12 @@ export default function Settings() {
 
   // Onglets de navigation
   const tabs: { key: SettingsTab; label: string }[] = [
-    { key: 'company', label: 'Entreprise' },
-    { key: 'customization', label: 'Personnalisation' },
-    { key: 'reminders', label: 'Relances' },
-    { key: 'integrations', label: 'Integrations' },
-    { key: 'factoring', label: 'Affacturage' },
-    { key: 'billing', label: 'Facturation' },
+    { key: 'company', label: intl.formatMessage({ id: 'settings.company', defaultMessage: 'Entreprise' }) },
+    { key: 'customization', label: intl.formatMessage({ id: 'settings.customization', defaultMessage: 'Personnalisation' }) },
+    { key: 'reminders', label: intl.formatMessage({ id: 'settings.reminders', defaultMessage: 'Relances' }) },
+    { key: 'integrations', label: intl.formatMessage({ id: 'settings.integrations', defaultMessage: 'Integrations' }) },
+    { key: 'factoring', label: intl.formatMessage({ id: 'settings.factoring', defaultMessage: 'Affacturage' }) },
+    { key: 'billing', label: intl.formatMessage({ id: 'settings.billing', defaultMessage: 'Facturation' }) },
   ];
 
   // Calcul du montant facture cette annee
@@ -138,7 +140,7 @@ export default function Settings() {
 
   return (
     <div className="app-container">
-      <h1 className="app-page-title">Parametres</h1>
+      <h1 className="app-page-title">{intl.formatMessage({ id: 'settings.title', defaultMessage: 'Parametres' })}</h1>
 
       {/* Onglets */}
       <div className="app-tabs">
@@ -254,7 +256,7 @@ export default function Settings() {
 
         <div className="app-mt-2">
           <button type="submit" disabled={saving} className="app-btn-primary">
-            {saving ? 'Enregistrement...' : 'Enregistrer'}
+            {saving ? intl.formatMessage({ id: 'settings.saving', defaultMessage: 'Enregistrement...' }) : intl.formatMessage({ id: 'settings.save', defaultMessage: 'Enregistrer' })}
           </button>
         </div>
 
@@ -442,7 +444,7 @@ export default function Settings() {
               }
             }}
           >
-            {saving ? 'Enregistrement...' : 'Enregistrer la personnalisation'}
+            {saving ? intl.formatMessage({ id: 'settings.saving', defaultMessage: 'Enregistrement...' }) : intl.formatMessage({ id: 'settings.save', defaultMessage: 'Enregistrer' })}
           </button>
         </div>
       )}
@@ -555,7 +557,7 @@ export default function Settings() {
                   }
                 }}
               >
-                {saving ? 'Enregistrement...' : 'Enregistrer les relances'}
+                {saving ? intl.formatMessage({ id: 'settings.saving', defaultMessage: 'Enregistrement...' }) : intl.formatMessage({ id: 'settings.save', defaultMessage: 'Enregistrer' })}
               </button>
             </>
           )}

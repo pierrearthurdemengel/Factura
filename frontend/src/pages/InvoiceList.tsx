@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { getInvoices, sendInvoice, payInvoice, cancelInvoice, type Invoice } from '../api/factura';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
@@ -6,44 +7,37 @@ import EmptyState from '../components/EmptyState';
 import InvoiceKanbanBoard from '../components/InvoiceKanbanBoard';
 import './AppLayout.css';
 
-// Badges de statut
-const statusBadge = (status: string) => {
-  const classes: Record<string, string> = {
-    DRAFT: 'app-badge-draft',
-    SENT: 'app-badge-sent',
-    ACKNOWLEDGED: 'app-badge-acknowledged',
-    REJECTED: 'app-badge-rejected',
-    PAID: 'app-badge-paid',
-    CANCELLED: 'app-badge-cancelled',
-  };
-  const labels: Record<string, string> = {
-    DRAFT: 'Brouillon',
-    SENT: 'Envoyee',
-    ACKNOWLEDGED: 'Acceptee',
-    REJECTED: 'Rejetee',
-    PAID: 'Payee',
-    CANCELLED: 'Annulee',
-  };
-  return (
-    <span className={`app-badge ${classes[status] || 'app-badge-draft'}`}>
-      {labels[status] || status}
-    </span>
-  );
+const STATUS_CLASSES: Record<string, string> = {
+  DRAFT: 'app-badge-draft',
+  SENT: 'app-badge-sent',
+  ACKNOWLEDGED: 'app-badge-acknowledged',
+  REJECTED: 'app-badge-rejected',
+  PAID: 'app-badge-paid',
+  CANCELLED: 'app-badge-cancelled',
 };
 
-const STATUSES = [
-  { value: '', label: 'Tous' },
-  { value: 'DRAFT', label: 'Brouillon' },
-  { value: 'SENT', label: 'Envoyee' },
-  { value: 'ACKNOWLEDGED', label: 'Acceptee' },
-  { value: 'REJECTED', label: 'Rejetee' },
-  { value: 'PAID', label: 'Payee' },
-  { value: 'CANCELLED', label: 'Annulee' },
-];
+const STATUS_INTL_KEYS: Record<string, string> = {
+  DRAFT: 'invoice.draft',
+  SENT: 'invoice.sent',
+  ACKNOWLEDGED: 'invoice.acknowledged',
+  REJECTED: 'invoice.rejected',
+  PAID: 'invoice.paid',
+  CANCELLED: 'invoice.cancelled',
+};
+
+const STATUS_DEFAULTS: Record<string, string> = {
+  DRAFT: 'Brouillon',
+  SENT: 'Envoyee',
+  ACKNOWLEDGED: 'Acceptee',
+  REJECTED: 'Rejetee',
+  PAID: 'Payee',
+  CANCELLED: 'Annulee',
+};
 
 const PAGE_SIZE = 20;
 
 export default function InvoiceList() {
+  const intl = useIntl();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
@@ -52,6 +46,22 @@ export default function InvoiceList() {
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   const navigate = useNavigate();
   const { success, error } = useToast();
+
+  const statusBadge = (status: string) => (
+    <span className={`app-badge ${STATUS_CLASSES[status] || 'app-badge-draft'}`}>
+      {intl.formatMessage({ id: STATUS_INTL_KEYS[status] || 'invoice.draft', defaultMessage: STATUS_DEFAULTS[status] || status })}
+    </span>
+  );
+
+  const STATUSES = [
+    { value: '', label: intl.formatMessage({ id: 'common.all', defaultMessage: 'Tous' }) },
+    { value: 'DRAFT', label: intl.formatMessage({ id: 'invoice.draft', defaultMessage: 'Brouillon' }) },
+    { value: 'SENT', label: intl.formatMessage({ id: 'invoice.sent', defaultMessage: 'Envoyee' }) },
+    { value: 'ACKNOWLEDGED', label: intl.formatMessage({ id: 'invoice.acknowledged', defaultMessage: 'Acceptee' }) },
+    { value: 'REJECTED', label: intl.formatMessage({ id: 'invoice.rejected', defaultMessage: 'Rejetee' }) },
+    { value: 'PAID', label: intl.formatMessage({ id: 'invoice.paid', defaultMessage: 'Payee' }) },
+    { value: 'CANCELLED', label: intl.formatMessage({ id: 'invoice.cancelled', defaultMessage: 'Annulee' }) },
+  ];
 
   useEffect(() => {
     let cancelled = false;
@@ -129,7 +139,7 @@ export default function InvoiceList() {
   return (
     <div className="app-container">
       <div className="app-page-header">
-        <h1 className="app-page-title">Factures</h1>
+        <h1 className="app-page-title">{intl.formatMessage({ id: 'nav.invoices', defaultMessage: 'Factures' })}</h1>
         <div className="app-page-header-actions">
           <div className="app-view-toggle">
             <button
@@ -146,7 +156,7 @@ export default function InvoiceList() {
             </button>
           </div>
           <button onClick={() => navigate('/invoices/new')} className="app-btn-primary">
-            Nouvelle facture
+            {intl.formatMessage({ id: 'invoice.create', defaultMessage: 'Nouvelle facture' })}
           </button>
         </div>
       </div>

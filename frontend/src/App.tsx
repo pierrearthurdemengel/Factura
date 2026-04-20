@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import { useIntl } from 'react-intl';
 import api from './api/factura';
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -80,6 +81,7 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
   const { isAuthenticated } = useAuth();
   const { setTheme, isDark } = useTheme();
   const { locale, setLocale, supportedLocales } = useLocale();
+  const intl = useIntl();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [companySelectorOpen, setCompanySelectorOpen] = useState(false);
   const [localeSelectorOpen, setLocaleSelectorOpen] = useState(false);
@@ -194,7 +196,7 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
       {/* Barre de recherche desktop */}
       <button onClick={onOpenCommand} className="navbar-search">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <span>Rechercher...</span>
+        <span>{intl.formatMessage({ id: 'nav.search', defaultMessage: 'Rechercher...' })}</span>
         <kbd>&#8984;K</kbd>
       </button>
 
@@ -250,10 +252,10 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
 
       {/* Liens desktop */}
       <div className="navbar-links">
-        <Link to="/invoices" className={`navbar-link${location.pathname.startsWith('/invoices') ? ' active' : ''}`}>Factures</Link>
-        <Link to="/quotes" className={`navbar-link${location.pathname.startsWith('/quotes') ? ' active' : ''}`}>Devis</Link>
-        <Link to="/clients" className={`navbar-link${location.pathname.startsWith('/clients') ? ' active' : ''}`}>Clients</Link>
-        <Link to="/settings" className={`navbar-link${location.pathname === '/settings' ? ' active' : ''}`}>Parametres</Link>
+        <Link to="/invoices" className={`navbar-link${location.pathname.startsWith('/invoices') ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.invoices', defaultMessage: 'Factures' })}</Link>
+        <Link to="/quotes" className={`navbar-link${location.pathname.startsWith('/quotes') ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.quotes', defaultMessage: 'Devis' })}</Link>
+        <Link to="/clients" className={`navbar-link${location.pathname.startsWith('/clients') ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.clients', defaultMessage: 'Clients' })}</Link>
+        <Link to="/settings" className={`navbar-link${location.pathname === '/settings' ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.settings', defaultMessage: 'Parametres' })}</Link>
       </div>
 
       {/* Bouton hamburger mobile */}
@@ -268,14 +270,14 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
       {/* Menu mobile plein ecran */}
       {mobileMenuOpen && (
         <div className="navbar-mobile-menu">
-          <Link to="/" className="navbar-mobile-link">Tableau de bord</Link>
-          <Link to="/invoices" className="navbar-mobile-link">Factures</Link>
-          <Link to="/quotes" className="navbar-mobile-link">Devis</Link>
-          <Link to="/clients" className="navbar-mobile-link">Clients</Link>
+          <Link to="/" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.dashboard', defaultMessage: 'Tableau de bord' })}</Link>
+          <Link to="/invoices" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.invoices', defaultMessage: 'Factures' })}</Link>
+          <Link to="/quotes" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.quotes', defaultMessage: 'Devis' })}</Link>
+          <Link to="/clients" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.clients', defaultMessage: 'Clients' })}</Link>
           <Link to="/admin-hub" className="navbar-mobile-link">Hub admin</Link>
-          <Link to="/settings" className="navbar-mobile-link">Parametres</Link>
+          <Link to="/settings" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.settings', defaultMessage: 'Parametres' })}</Link>
           <button onClick={() => { onOpenCommand(); setMobileMenuOpen(false); }} className="navbar-mobile-link" style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' }}>
-            Rechercher
+            {intl.formatMessage({ id: 'nav.search', defaultMessage: 'Rechercher' })}
           </button>
         </div>
       )}

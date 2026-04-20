@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useIntl } from 'react-intl';
 import { getClients, getInvoices, createClient, updateClient, deleteClient, type Client, type Invoice } from '../api/factura';
 import EmptyState from '../components/EmptyState';
 import ClientDataGrid from '../components/ClientDataGrid';
@@ -75,6 +76,7 @@ export default function ClientList() {
   const [postalCode, setPostalCode] = useState('');
   const [city, setCity] = useState('');
   const { success, error } = useToast();
+  const intl = useIntl();
 
   const load = () => {
     getClients()
@@ -163,13 +165,13 @@ export default function ClientList() {
     <div className="app-container">
       {/* En-tete avec KPIs */}
       <div className="app-page-header">
-        <h1 className="app-page-title">Clients</h1>
+        <h1 className="app-page-title">{intl.formatMessage({ id: 'nav.clients', defaultMessage: 'Clients' })}</h1>
         <div className="app-page-header-actions">
           <button onClick={handleExportCsv} className="app-btn-outline-danger">
             Exporter CSV
           </button>
           <button onClick={() => setShowForm(!showForm)} className="app-btn-primary">
-            {showForm ? 'Annuler' : 'Nouveau client'}
+            {showForm ? intl.formatMessage({ id: 'common.cancel', defaultMessage: 'Annuler' }) : intl.formatMessage({ id: 'client.new', defaultMessage: 'Nouveau client' })}
           </button>
         </div>
       </div>
@@ -196,7 +198,7 @@ export default function ClientList() {
         <div className="app-filter-bar">
           <input
             type="text"
-            placeholder="Rechercher un client (nom, SIREN, ville)..."
+            placeholder={intl.formatMessage({ id: 'client.search', defaultMessage: 'Rechercher un client...' })}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="app-input"
@@ -223,26 +225,26 @@ export default function ClientList() {
         <form onSubmit={handleSubmit} className="app-drawer-form">
 
           <div className="app-form-group">
-            <label className="app-label">Raison sociale</label>
+            <label className="app-label">{intl.formatMessage({ id: 'client.name', defaultMessage: 'Raison sociale' })}</label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="app-input" placeholder="Ex: Acme Corp" />
           </div>
           <div className="app-form-group">
-            <label className="app-label">SIREN (optionnel)</label>
+            <label className="app-label">{intl.formatMessage({ id: 'client.siren', defaultMessage: 'SIREN' })} (optionnel)</label>
             <input type="text" value={siren} onChange={(e) => setSiren(e.target.value)} className="app-input" placeholder="Ex: 123 456 789" />
           </div>
 
           <div className="app-form-group">
-            <label className="app-label">Adresse</label>
+            <label className="app-label">{intl.formatMessage({ id: 'client.address', defaultMessage: 'Adresse' })}</label>
             <input type="text" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} required className="app-input" placeholder="123 Rue de la Paix" />
           </div>
 
           <div className="app-form-row">
             <div className="app-form-group">
-              <label className="app-label">Code postal</label>
+              <label className="app-label">{intl.formatMessage({ id: 'client.postalCode', defaultMessage: 'Code postal' })}</label>
               <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} required className="app-input" placeholder="75000" />
             </div>
             <div className="app-form-group flex-2">
-              <label className="app-label">Ville</label>
+              <label className="app-label">{intl.formatMessage({ id: 'client.city', defaultMessage: 'Ville' })}</label>
               <input type="text" value={city} onChange={(e) => setCity(e.target.value)} required className="app-input" placeholder="Paris" />
             </div>
           </div>
@@ -312,7 +314,7 @@ export default function ClientList() {
                     onClick={() => handleDelete(client.id)}
                     className="app-text-link-danger"
                   >
-                    Supprimer
+                    {intl.formatMessage({ id: 'client.delete', defaultMessage: 'Supprimer' })}
                   </button>
                 </div>
               </div>

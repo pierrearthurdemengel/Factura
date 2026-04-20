@@ -26,7 +26,7 @@ const SECTORS = [
 
 // Formate un nombre en euros avec separateur de milliers
 function formatEur(n: number): string {
-  return n.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' \u20AC';
+  return (n ?? 0).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' \u20AC';
 }
 
 // Determine la couleur selon que la valeur utilisateur est meilleure ou moins bonne
@@ -41,7 +41,7 @@ function diffColor(userValue: number, sectorValue: number, lowerIsBetter: boolea
 
 // Calcule et formate l'ecart entre la valeur utilisateur et la moyenne sectorielle
 function formatDiff(userValue: number, sectorValue: number, unit: string, lowerIsBetter: boolean): string {
-  const diff = userValue - sectorValue;
+  const diff = (userValue ?? 0) - (sectorValue ?? 0);
   const sign = diff > 0 ? '+' : '';
   const formatted = unit === '\u20AC'
     ? sign + diff.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' \u20AC'
@@ -67,13 +67,15 @@ function KpiCard({
   unit: string;
   lowerIsBetter: boolean;
 }) {
-  const color = diffColor(userValue, sectorValue, lowerIsBetter);
+  const safeUser = userValue ?? 0;
+  const safeSector = sectorValue ?? 0;
+  const color = diffColor(safeUser, safeSector, lowerIsBetter);
   const formattedUser = unit === '\u20AC'
-    ? formatEur(userValue)
-    : userValue.toFixed(1) + unit;
+    ? formatEur(safeUser)
+    : safeUser.toFixed(1) + unit;
   const formattedSector = unit === '\u20AC'
-    ? formatEur(sectorValue)
-    : sectorValue.toFixed(1) + unit;
+    ? formatEur(safeSector)
+    : safeSector.toFixed(1) + unit;
 
   return (
     <div className="app-card">
@@ -112,7 +114,7 @@ function KpiCard({
             boxSizing: 'border-box',
           }}
         >
-          {formatDiff(userValue, sectorValue, unit, lowerIsBetter)}
+          {formatDiff(safeUser, safeSector, unit, lowerIsBetter)}
         </div>
       </div>
     </div>
