@@ -122,28 +122,35 @@ export default function Dashboard() {
   useEffect(() => {
     let cancelled = false;
     getInvoices()
-      .then(async (res) => {
+      .then((res) => {
         if (cancelled) return;
         const invs = res.data['hydra:member'];
         setInvoices(invs);
+        setLoading(false);
 
+        // Charger les events en parallele sans bloquer le rendu
         const recentInvs = [...invs].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5);
-        const allActs: ActivityItem[] = [];
-
-        for (const inv of recentInvs) {
-          try {
-            const evts = await getInvoiceEvents(inv.id);
-            evts.data.forEach((e: InvoiceEvent) => {
-              allActs.push({ id: e.id, invoiceNumber: inv.number || 'Brouillon', eventType: e.eventType, date: e.occurredAt });
-            });
-          } catch { /* ignore */ }
-        }
-
-        allActs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        if (!cancelled) setActivities(allActs);
+        Promise.allSettled(
+          recentInvs.map((inv) =>
+            getInvoiceEvents(inv.id).then((evts) =>
+              evts.data.map((e: InvoiceEvent) => ({
+                id: e.id,
+                invoiceNumber: inv.number || 'Brouillon',
+                eventType: e.eventType,
+                date: e.occurredAt,
+              }))
+            )
+          )
+        ).then((results) => {
+          if (cancelled) return;
+          const allActs = results
+            .filter((r): r is PromiseFulfilledResult<ActivityItem[]> => r.status === 'fulfilled')
+            .flatMap((r) => r.value)
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          setActivities(allActs);
+        });
       })
-      .catch(() => { if (!cancelled) setInvoices([]); })
-      .finally(() => { if (!cancelled) setLoading(false); });
+      .catch(() => { if (!cancelled) { setInvoices([]); setLoading(false); } });
 
     return () => { cancelled = true; };
   }, []);

@@ -8,18 +8,22 @@ import { useToast } from '../context/ToastContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const { error } = useToast();
+  const { success, error } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       await login(email, password);
+      success('Connexion reussie !');
       navigate('/');
     } catch {
       error('Email ou mot de passe incorrect.');
+      setLoading(false);
     }
   };
 
@@ -48,8 +52,8 @@ export default function Login() {
             className="auth-input"
           />
         </div>
-        <button type="submit" className="auth-btn-submit">
-          Se connecter
+        <button type="submit" className="auth-btn-submit" disabled={loading}>
+          {loading ? 'Connexion en cours...' : 'Se connecter'}
         </button>
       </form>
 
