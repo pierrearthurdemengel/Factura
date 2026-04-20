@@ -64,5 +64,5 @@ framework:
                     from: SENT
                     to: EXPIRED
                 convert:
-                    from: ACCEPTED
+                    from: [SENT, ACCEPTED]
                     to: CONVERTED

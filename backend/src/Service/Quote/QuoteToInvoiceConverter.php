@@ -29,8 +29,8 @@ class QuoteToInvoiceConverter
      */
     public function convert(Quote $quote): Invoice
     {
-        if ('ACCEPTED' !== $quote->getStatus()) {
-            throw new \LogicException('Seul un devis accepte peut etre converti en facture.');
+        if (!in_array($quote->getStatus(), ['SENT', 'ACCEPTED'], true)) {
+            throw new \LogicException('Seul un devis envoye ou accepte peut etre converti en facture.');
         }
 
         $invoice = new Invoice();
