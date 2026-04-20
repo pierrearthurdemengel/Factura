@@ -21,9 +21,9 @@ const STATUS_CONFIG: Record<string, { intlId: string; defaultMessage: string; co
   DRAFT: { intlId: 'invoice.draft', defaultMessage: 'Brouillon', color: '#6b7280', bg: 'rgba(107,114,128,0.1)' },
   SENT: { intlId: 'invoice.sent', defaultMessage: 'Envoyee', color: '#2563eb', bg: 'rgba(37,99,235,0.1)' },
   ACCEPTED: { intlId: 'invoice.acknowledged', defaultMessage: 'Acceptee', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-  REFUSED: { intlId: 'invoice.rejected', defaultMessage: 'Refusee', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-  EXPIRED: { intlId: 'invoice.expired', defaultMessage: 'Expire', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-  INVOICED: { intlId: 'invoice.invoiced', defaultMessage: 'Facture', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+  REJECTED: { intlId: 'quote.rejected', defaultMessage: 'Refuse', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+  EXPIRED: { intlId: 'quote.expired', defaultMessage: 'Expire', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  CONVERTED: { intlId: 'quote.converted', defaultMessage: 'Converti', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
 };
 
 export default function QuoteList() {

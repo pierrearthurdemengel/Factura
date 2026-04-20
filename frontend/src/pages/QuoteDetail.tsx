@@ -9,9 +9,9 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
   DRAFT: { label: 'Brouillon', color: '#6b7280', bg: 'rgba(107,114,128,0.1)' },
   SENT: { label: 'Envoye', color: '#2563eb', bg: 'rgba(37,99,235,0.1)' },
   ACCEPTED: { label: 'Accepte', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-  REFUSED: { label: 'Refuse', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+  REJECTED: { label: 'Refuse', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
   EXPIRED: { label: 'Expire', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-  INVOICED: { label: 'Facture', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+  CONVERTED: { label: 'Converti', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
 };
 
 export default function QuoteDetail() {
