@@ -22,7 +22,7 @@ class CompanySwitchController extends AbstractController
      * Verifie que l'entreprise cible appartient bien a l'utilisateur
      * avant d'effectuer le changement.
      */
-    #[Route('/api/companies/{id}/switch', name: 'api_company_switch', methods: ['POST'])]
+    #[Route('/api/companies/{id}/switch', name: 'api_company_switch', methods: ['POST'], priority: 2)]
     public function switch(
         string $id,
         EntityManagerInterface $em,
@@ -53,7 +53,7 @@ class CompanySwitchController extends AbstractController
     /**
      * Retourne la liste de toutes les entreprises de l'utilisateur connecte.
      */
-    #[Route('/api/companies/list', name: 'api_company_list', methods: ['GET'])]
+    #[Route('/api/companies/list', name: 'api_company_list', methods: ['GET'], priority: 2)]
     public function list(SerializerInterface $serializer): JsonResponse
     {
         /** @var User $user */

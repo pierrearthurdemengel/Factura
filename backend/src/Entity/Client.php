@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\State\CompanyOwnerProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
@@ -19,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(security: "is_granted('VIEW', object)"),
         new GetCollection(),
-        new Post(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_USER')", processor: CompanyOwnerProcessor::class),
         new Put(security: "is_granted('EDIT', object)"),
         new Delete(security: "is_granted('DELETE', object)"),
     ],

@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\State\CompanyOwnerProcessor;
 use App\State\InvoiceCancelProcessor;
 use App\State\InvoicePayProcessor;
 use App\State\InvoiceSendProcessor;
@@ -31,7 +32,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(security: "is_granted('VIEW', object)"),
         new GetCollection(),
-        new Post(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_USER')", processor: CompanyOwnerProcessor::class),
         new Put(security: "is_granted('EDIT', object)"),
         new Delete(security: "is_granted('DELETE', object)"),
         new Post(
@@ -39,21 +40,21 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: "is_granted('EDIT', object)",
             processor: InvoiceSendProcessor::class,
             denormalizationContext: ['groups' => []],
-            name: 'send',
+            name: 'invoice_send',
         ),
         new Post(
             uriTemplate: '/invoices/{id}/cancel',
             security: "is_granted('EDIT', object)",
             processor: InvoiceCancelProcessor::class,
             denormalizationContext: ['groups' => []],
-            name: 'cancel',
+            name: 'invoice_cancel',
         ),
         new Post(
             uriTemplate: '/invoices/{id}/pay',
             security: "is_granted('VIEW', object)",
             processor: InvoicePayProcessor::class,
             denormalizationContext: ['groups' => []],
-            name: 'pay',
+            name: 'invoice_pay',
         ),
     ],
     normalizationContext: ['groups' => ['invoice:read']],
@@ -94,9 +95,8 @@ class Invoice
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull]
     #[Groups(['invoice:read'])]
-    private Company $seller;
+    private ?Company $seller = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -237,7 +237,7 @@ class Invoice
         return $this;
     }
 
-    public function getSeller(): Company
+    public function getSeller(): ?Company
     {
         return $this->seller;
     }

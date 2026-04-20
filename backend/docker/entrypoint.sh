@@ -19,4 +19,7 @@ if [ -n "$JWT_PUBLIC_KEY_BASE64" ]; then
     chmod 644 "$JWT_DIR/public.pem"
 fi
 
+# Appliquer les migrations Doctrine en attente
+php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>&1 || true
+
 exec "$@"

@@ -17,7 +17,7 @@ class CompanyController extends AbstractController
     /**
      * Retourne l'entreprise de l'utilisateur connecte.
      */
-    #[Route('/api/companies/me', name: 'api_company_me', methods: ['GET'])]
+    #[Route('/api/companies/me', name: 'api_company_me', methods: ['GET'], priority: 2)]
     public function me(SerializerInterface $serializer): JsonResponse
     {
         /** @var User $user */

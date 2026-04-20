@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\State\CompanyOwnerProcessor;
 use App\State\QuoteConvertProcessor;
 use App\State\QuoteSendProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,7 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(security: "is_granted('VIEW', object)"),
         new GetCollection(),
-        new Post(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_USER')", processor: CompanyOwnerProcessor::class),
         new Put(security: "is_granted('EDIT', object)"),
         new Delete(security: "is_granted('DELETE', object)"),
         new Post(
@@ -38,14 +39,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: "is_granted('EDIT', object)",
             processor: QuoteSendProcessor::class,
             denormalizationContext: ['groups' => []],
-            name: 'send',
+            name: 'quote_send',
         ),
         new Post(
             uriTemplate: '/quotes/{id}/convert',
             security: "is_granted('EDIT', object)",
             processor: QuoteConvertProcessor::class,
             denormalizationContext: ['groups' => []],
-            name: 'convert',
+            name: 'quote_convert',
         ),
     ],
     normalizationContext: ['groups' => ['quote:read']],
@@ -81,9 +82,8 @@ class Quote
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull]
     #[Groups(['quote:read'])]
-    private Company $seller;
+    private ?Company $seller = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -195,7 +195,7 @@ class Quote
         return $this;
     }
 
-    public function getSeller(): Company
+    public function getSeller(): ?Company
     {
         return $this->seller;
     }

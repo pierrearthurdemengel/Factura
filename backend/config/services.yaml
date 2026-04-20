@@ -80,3 +80,7 @@ services:
         arguments:
             $providers: !tagged_iterator app.bank_provider
             $providerPriority: ['yapily', 'bridge']
+
+    App\State\CompanyOwnerProcessor:
+        arguments:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
