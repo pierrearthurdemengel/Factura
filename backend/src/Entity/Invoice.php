@@ -37,14 +37,14 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Delete(security: "is_granted('DELETE', object)"),
         new Post(
             uriTemplate: '/invoices/{id}/send',
-            security: "is_granted('EDIT', object)",
+            security: "is_granted('SEND', object)",
             processor: InvoiceSendProcessor::class,
             denormalizationContext: ['groups' => []],
             name: 'invoice_send',
         ),
         new Post(
             uriTemplate: '/invoices/{id}/cancel',
-            security: "is_granted('EDIT', object)",
+            security: "is_granted('CANCEL', object)",
             processor: InvoiceCancelProcessor::class,
             denormalizationContext: ['groups' => []],
             name: 'invoice_cancel',

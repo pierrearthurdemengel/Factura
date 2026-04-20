@@ -36,14 +36,14 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Delete(security: "is_granted('DELETE', object)"),
         new Post(
             uriTemplate: '/quotes/{id}/send',
-            security: "is_granted('EDIT', object)",
+            security: "is_granted('SEND', object)",
             processor: QuoteSendProcessor::class,
             denormalizationContext: ['groups' => []],
             name: 'quote_send',
         ),
         new Post(
             uriTemplate: '/quotes/{id}/convert',
-            security: "is_granted('EDIT', object)",
+            security: "is_granted('CONVERT', object)",
             processor: QuoteConvertProcessor::class,
             denormalizationContext: ['groups' => []],
             name: 'quote_convert',
