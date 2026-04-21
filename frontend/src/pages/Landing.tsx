@@ -713,7 +713,7 @@ export default function Landing() {
                   « Inscription en 2 minutes, première facture Factur-X envoyée dans la foulée. Chorus Pro reçoit tout automatiquement. Je ne m'en occupe plus. »
                 </p>
                 <div className="lp-testimonial-author">
-                  <div className="lp-testimonial-avatar" style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)' }}>SM</div>
+                  <div className="lp-testimonial-avatar" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>SM</div>
                   <div>
                     <div className="lp-testimonial-name">Sophie M.</div>
                     <div className="lp-testimonial-role">Développeuse freelance · Lyon</div>
