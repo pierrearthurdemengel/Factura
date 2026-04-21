@@ -4,6 +4,7 @@ import api, { getInvoice, sendInvoice, cancelInvoice, payInvoice, downloadPdf, d
 import { useToast } from '../context/ToastContext';
 import StatusDropdown from '../components/StatusDropdown';
 import { downloadLocalPdf } from '../utils/pdfGenerator';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Telecharge un blob en fichier
@@ -35,21 +36,25 @@ const eventLabel = (type: string): string => {
   return labels[type] || type;
 };
 
-const eventColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    CREATED: '#6b7280',
-    STATUS_CHANGED: '#3b82f6',
-    TRANSMITTED_TO_PDP: '#8b5cf6',
-    RECEIVED_BY_PDP: '#06b6d4',
-    ACKNOWLEDGED: '#22c55e',
-    REJECTED: '#ef4444',
-    PAID: '#10b981',
-    ARCHIVED: '#6366f1',
-    VIEWED_BY_BUYER: '#f59e0b',
-    REMINDER_SENT: '#f97316',
-    FORMAL_NOTICE_SENT: '#dc2626',
+const eventColorClass = (type: string): string => {
+  const classes: Record<string, string> = {
+    CREATED: 'app-timeline-dot--created',
+    STATUS_CHANGED: 'app-timeline-dot--status',
+    TRANSMITTED_TO_PDP: 'app-timeline-dot--info',
+    RECEIVED_BY_PDP: 'app-timeline-dot--info',
+    ACKNOWLEDGED: 'app-timeline-dot--success',
+    REJECTED: 'app-timeline-dot--danger',
+    PAID: 'app-timeline-dot--success',
+    ARCHIVED: 'app-timeline-dot--status',
+    VIEWED_BY_BUYER: 'app-timeline-dot--warning',
+    REMINDER_SENT: 'app-timeline-dot--warning',
+    FORMAL_NOTICE_SENT: 'app-timeline-dot--danger',
   };
-  return colors[type] || '#6b7280';
+  return classes[type] || 'app-timeline-dot--created';
+};
+
+const eventLabelClass = (type: string): string => {
+  return eventColorClass(type).replace('dot', 'label');
 };
 
 export default function InvoiceDetail() {
@@ -64,7 +69,16 @@ export default function InvoiceDetail() {
 
   const load = () => {
     if (!id) return;
-    setLoading(true);
+
+    // SWR: show cached invoice instantly
+    const cachedInv = getCached<Invoice>(`/invoices/${id}`);
+    if (cachedInv) {
+      setInvoice(cachedInv);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
     Promise.all([
       getInvoice(id),
       getInvoiceEvents(id).catch(() => ({ data: [] as InvoiceEvent[] })),
@@ -73,6 +87,7 @@ export default function InvoiceDetail() {
       .then(([invoiceRes, eventsRes, factoringRes]) => {
         setInvoice(invoiceRes.data);
         setEvents(eventsRes.data);
+        setCache(`/invoices/${id}`, invoiceRes.data);
         if (factoringRes?.data?.commissionRate) {
           setFactoringRate(factoringRes.data.commissionRate);
         }
@@ -256,9 +271,9 @@ export default function InvoiceDetail() {
                 <td>{line.description}</td>
                 <td className="text-right">{line.quantity}</td>
                 <td className="text-center">{line.unit}</td>
-                <td className="text-right">{line.unitPriceExcludingTax} EUR</td>
+                <td className="text-right">{parseFloat(line.unitPriceExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
                 <td className="text-right">{line.vatRate}%</td>
-                <td className="text-right">{line.lineAmount} EUR</td>
+                <td className="text-right">{parseFloat(line.lineAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
               </tr>
             ))}
           </tbody>
@@ -266,9 +281,9 @@ export default function InvoiceDetail() {
       </div>
 
       <div className="app-totals">
-        <p>Total HT : <strong>{invoice.totalExcludingTax} EUR</strong></p>
-        <p>Total TVA : <strong>{invoice.totalTax} EUR</strong></p>
-        <p className="app-totals-grand">Total TTC : <strong>{invoice.totalIncludingTax} EUR</strong></p>
+        <p>Total HT : <strong>{parseFloat(invoice.totalExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p>Total TVA : <strong>{parseFloat(invoice.totalTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p className="app-totals-grand">Total TTC : <strong>{parseFloat(invoice.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
       </div>
 
       {invoice.legalMention && (
@@ -284,7 +299,7 @@ export default function InvoiceDetail() {
                 Recevoir le paiement maintenant
               </div>
               <div className="app-factoring-desc">
-                Financez cette facture et recevez {(parseFloat(invoice.totalIncludingTax) * (1 - factoringRate / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR sous 48h
+                Financez cette facture et recevez {(parseFloat(invoice.totalIncludingTax) * (1 - factoringRate / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} € sous 48h
                 <span className="app-factoring-commission"> (commission de {factoringRate}%)</span>
               </div>
             </div>
@@ -308,11 +323,11 @@ export default function InvoiceDetail() {
         <button onClick={() => handleDownload('pdf')} className="app-btn-primary">
           Telecharger PDF
         </button>
-        <button onClick={() => handleDownload('facturx')} className="app-btn-primary">
-          Telecharger XML CII
+        <button onClick={() => handleDownload('facturx')} className="app-btn-outline">
+          XML CII (Factur-X)
         </button>
-        <button onClick={() => handleDownload('ubl')} className="app-btn-primary">
-          Telecharger XML UBL
+        <button onClick={() => handleDownload('ubl')} className="app-btn-outline">
+          XML UBL
         </button>
       </div>
 
@@ -322,15 +337,9 @@ export default function InvoiceDetail() {
           <div className="app-timeline">
             {events.map((event) => (
               <div key={event.id} className="app-timeline-item">
-                <div
-                  className="app-timeline-dot"
-                  style={{ backgroundColor: eventColor(event.eventType) }}
-                />
+                <div className={`app-timeline-dot ${eventColorClass(event.eventType)}`} />
                 <div className="app-timeline-item-row">
-                  <span
-                    className="app-timeline-label"
-                    style={{ backgroundColor: eventColor(event.eventType) }}
-                  >
+                  <span className={`app-timeline-label ${eventLabelClass(event.eventType)}`}>
                     {eventLabel(event.eventType)}
                   </span>
                   <span className="app-timeline-date">

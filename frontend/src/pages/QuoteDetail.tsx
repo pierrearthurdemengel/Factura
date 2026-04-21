@@ -2,15 +2,16 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getQuote, sendQuote, convertQuoteToInvoice, type Quote } from '../api/factura';
 import { useToast } from '../context/ToastContext';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Configuration des statuts
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   DRAFT: { label: 'Brouillon', color: '#6b7280', bg: 'rgba(107,114,128,0.1)' },
-  SENT: { label: 'Envoye', color: '#2563eb', bg: 'rgba(37,99,235,0.1)' },
-  ACCEPTED: { label: 'Accepte', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-  REJECTED: { label: 'Refuse', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-  EXPIRED: { label: 'Expire', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  SENT: { label: 'Envoye', color: 'var(--accent)', bg: 'var(--accent-bg)' },
+  ACCEPTED: { label: 'Accepte', color: 'var(--success)', bg: 'var(--success-bg)' },
+  REJECTED: { label: 'Refuse', color: 'var(--danger)', bg: 'var(--danger-bg)' },
+  EXPIRED: { label: 'Expire', color: 'var(--warning)', bg: 'var(--warning-bg)' },
   CONVERTED: { label: 'Converti', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
 };
 
@@ -24,9 +25,16 @@ export default function QuoteDetail() {
 
   const load = () => {
     if (!id) return;
-    setLoading(true);
+    // SWR: show cached quote instantly
+    const cached = getCached<Quote>(`/quotes/${id}`);
+    if (cached) {
+      setQuote(cached);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     getQuote(id)
-      .then((res) => setQuote(res.data))
+      .then((res) => { setQuote(res.data); setCache(`/quotes/${id}`, res.data); })
       .catch(() => navigate('/quotes'))
       .finally(() => setLoading(false));
   };
@@ -143,9 +151,9 @@ export default function QuoteDetail() {
                 <td>{line.description}</td>
                 <td className="text-right">{line.quantity}</td>
                 <td className="text-center">{line.unit}</td>
-                <td className="text-right">{line.unitPriceExcludingTax} EUR</td>
+                <td className="text-right">{parseFloat(line.unitPriceExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
                 <td className="text-right">{line.vatRate}%</td>
-                <td className="text-right">{line.lineAmount} EUR</td>
+                <td className="text-right">{parseFloat(line.lineAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
               </tr>
             ))}
           </tbody>
@@ -153,13 +161,13 @@ export default function QuoteDetail() {
       </div>
 
       <div className="app-totals">
-        <p>Total HT : <strong>{quote.totalExcludingTax} EUR</strong></p>
-        <p>Total TVA : <strong>{quote.totalTax} EUR</strong></p>
-        <p className="app-totals-grand">Total TTC : <strong>{quote.totalIncludingTax} EUR</strong></p>
+        <p>Total HT : <strong>{parseFloat(quote.totalExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p>Total TVA : <strong>{parseFloat(quote.totalTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p className="app-totals-grand">Total TTC : <strong>{parseFloat(quote.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
       </div>
 
       {quote.depositPercent != null && quote.depositPercent > 0 && (
-        <div className="app-card" style={{ marginTop: '1rem' }}>
+        <div className="app-card app-mt-lg">
           <h3 className="app-card-title">Acompte demande</h3>
           <div className="app-kpi-grid">
             <div className="app-kpi-card">
@@ -169,13 +177,13 @@ export default function QuoteDetail() {
             <div className="app-kpi-card">
               <div className="app-card-sub">Montant acompte TTC</div>
               <div className="app-card-value" style={{ color: 'var(--accent)' }}>
-                {quote.depositAmount || (parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100).toFixed(2)} EUR
+                {parseFloat(quote.depositAmount || String(parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
               </div>
             </div>
             <div className="app-kpi-card">
               <div className="app-card-sub">Solde restant TTC</div>
               <div className="app-card-value">
-                {(parseFloat(quote.totalIncludingTax) - (parseFloat(quote.depositAmount || '0') || parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100)).toFixed(2)} EUR
+                {(parseFloat(quote.totalIncludingTax) - (parseFloat(quote.depositAmount || '0') || parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
               </div>
             </div>
           </div>

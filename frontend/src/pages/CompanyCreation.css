@@ -12,12 +12,12 @@
 }
 
 .cc-card {
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: clamp(1.5rem, 4vw, 2.5rem);
   max-width: 700px;
-  animation: cc-fade-in 0.3s ease-out;
+  animation: cc-fade-in 0.3s var(--ease-out, ease-out);
 }
 
 .cc-card-title {
@@ -47,9 +47,9 @@
   padding: 1rem 1.25rem;
   background: var(--social-bg);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: border-color 0.2s, transform 0.2s;
+  transition: border-color var(--duration-fast) ease, transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
   text-align: left;
   font: inherit;
   color: inherit;
@@ -58,6 +58,7 @@
 .cc-choice:hover {
   border-color: var(--accent);
   transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
 }
 
 .cc-choice-icon {
@@ -98,22 +99,22 @@
 /* Badges resultats */
 .cc-badge-green {
   display: inline-block;
-  background: rgba(5, 150, 105, 0.1);
-  color: #059669;
+  background: var(--success-bg);
+  color: var(--success);
   padding: 0.3rem 0.8rem;
-  border-radius: 2rem;
-  font-size: 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
   font-weight: 600;
   margin-bottom: 1.25rem;
 }
 
 .cc-badge-blue {
   display: inline-block;
-  background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
+  background: var(--accent-bg);
+  color: var(--accent);
   padding: 0.3rem 0.8rem;
-  border-radius: 2rem;
-  font-size: 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
   font-weight: 600;
   margin-bottom: 1.25rem;
 }
@@ -157,32 +158,37 @@
 .cc-btn-primary {
   padding: 0.75rem 1.5rem;
   background: var(--accent);
-  color: var(--bg);
+  color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
   cursor: pointer;
   text-decoration: none;
-  display: inline-block;
-  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  transition: background var(--duration-fast) ease, transform var(--duration-fast) ease, box-shadow var(--duration-normal) ease;
 }
 
 .cc-btn-primary:hover {
-  opacity: 0.9;
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-accent);
 }
 
 .cc-btn-outline {
   padding: 0.75rem 1.5rem;
   background: transparent;
   color: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 8px;
+  border: 1.5px solid currentColor;
+  border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
   cursor: pointer;
-  font: inherit;
-  transition: background 0.2s;
+  font-family: inherit;
+  transition: background var(--duration-fast) ease;
 }
 
 .cc-btn-outline:hover {

@@ -17,12 +17,12 @@
 }
 
 .guide a {
-  color: var(--lp-primary, #3b82f6);
+  color: var(--lp-primary, #7c3aed);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 .guide a:hover {
-  color: var(--lp-primary-dark, #2563eb);
+  color: var(--lp-primary-dark, #6d28d9);
 }
 
 .guide-icon {
@@ -36,7 +36,7 @@
    HERO
    ═══════════════════════════════════════════ */
 .guide-hero {
-  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6 0%, #6366f1 100%));
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%));
   color: var(--lp-white, #ffffff);
   padding: 4rem 1.5rem 3.5rem;
   text-align: center;
@@ -72,7 +72,7 @@
 }
 .guide-hero .lp-btn-primary {
   background: var(--lp-white, #ffffff);
-  color: var(--lp-primary, #3b82f6);
+  color: var(--lp-primary, #7c3aed);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 .guide-hero .lp-btn-primary:hover {
@@ -160,8 +160,8 @@
   background: var(--lp-gray-50, #f8fafc);
 }
 .guide-toc-link.active {
-  color: var(--lp-primary, #3b82f6);
-  background: var(--lp-primary-light, #eff6ff);
+  color: var(--lp-primary, #7c3aed);
+  background: var(--lp-primary-light, #f5f3ff);
   font-weight: 600;
 }
 .guide-toc-link--partie {
@@ -202,8 +202,8 @@
    TL;DR
    ═══════════════════════════════════════════ */
 .guide-tldr {
-  background: var(--lp-primary-light, #eff6ff);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: var(--lp-primary-light, #f5f3ff);
+  border: 1px solid rgba(124, 58, 237, 0.2);
   border-radius: var(--lp-radius-lg, 1rem);
   padding: 1.5rem;
   margin-bottom: 3rem;
@@ -216,7 +216,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--lp-primary, #3b82f6);
+  color: var(--lp-primary, #7c3aed);
   margin-bottom: 0.75rem;
 }
 .guide-tldr p {
@@ -238,7 +238,7 @@
   font-weight: 800;
   margin: 0 0 2rem;
   padding-bottom: 0.75rem;
-  border-bottom: 3px solid var(--lp-primary, #3b82f6);
+  border-bottom: 3px solid var(--lp-primary, #7c3aed);
   letter-spacing: -0.01em;
 }
 .guide-section-title {
@@ -305,8 +305,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--lp-primary-light, #eff6ff);
-  color: var(--lp-primary, #3b82f6);
+  background: var(--lp-primary-light, #f5f3ff);
+  color: var(--lp-primary, #7c3aed);
   font-weight: 700;
   font-size: 0.8rem;
   border-radius: 50%;
@@ -353,10 +353,10 @@
   background: var(--lp-gray-50, #f8fafc);
 }
 .guide-table-highlight {
-  background: var(--lp-primary-light, #eff6ff) !important;
+  background: var(--lp-primary-light, #f5f3ff) !important;
 }
 .guide-table-highlight:hover {
-  background: rgba(59, 130, 246, 0.12) !important;
+  background: rgba(124, 58, 237, 0.12) !important;
 }
 .guide-table td svg,
 .guide-table th svg {
@@ -391,12 +391,12 @@
   color: var(--lp-amber, #d97706);
 }
 .guide-callout--info {
-  background: var(--lp-primary-light, #eff6ff);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: var(--lp-primary-light, #f5f3ff);
+  border: 1px solid rgba(124, 58, 237, 0.2);
   color: var(--lp-gray-700, #334155);
 }
 .guide-callout--info svg {
-  color: var(--lp-primary, #3b82f6);
+  color: var(--lp-primary, #7c3aed);
 }
 
 /* ═══════════════════════════════════════════
@@ -422,7 +422,7 @@
    CTA BLOCK (after each partie)
    ═══════════════════════════════════════════ */
 .guide-cta-block {
-  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6 0%, #6366f1 100%));
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%));
   color: var(--lp-white, #ffffff);
   border-radius: var(--lp-radius-xl, 1.5rem);
   padding: 2.5rem 2rem;
@@ -445,7 +445,7 @@
 }
 .guide-cta-block .lp-btn-primary {
   background: var(--lp-white, #ffffff);
-  color: var(--lp-primary, #3b82f6);
+  color: var(--lp-primary, #7c3aed);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 .guide-cta-block .lp-btn-primary:hover {
@@ -472,7 +472,7 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6 0%, #6366f1 100%));
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%));
   color: var(--lp-white, #ffffff);
   font-weight: 700;
   font-size: 0.9rem;
@@ -525,13 +525,13 @@
   width: 14px;
   height: 14px;
   left: -1.85rem;
-  background: var(--lp-primary, #3b82f6);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+  background: var(--lp-primary, #7c3aed);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.2);
 }
 .guide-timeline-date {
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--lp-primary, #3b82f6);
+  color: var(--lp-primary, #7c3aed);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 0.25rem;
@@ -572,7 +572,7 @@
   width: 2rem;
   height: 2rem;
   min-width: 2rem;
-  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6 0%, #6366f1 100%));
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%));
   color: var(--lp-white, #ffffff);
   font-weight: 700;
   font-size: 0.9rem;
@@ -644,7 +644,7 @@
 .guide-footer-logo {
   font-size: 1.25rem;
   font-weight: 800;
-  background: var(--lp-gradient-primary, linear-gradient(135deg, #3b82f6 0%, #6366f1 100%));
+  background: var(--lp-gradient-primary, linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -779,7 +779,7 @@
 .guide-toc-link:focus-visible,
 .guide-toc-toggle:focus-visible,
 .guide a:focus-visible {
-  outline: 2px solid var(--lp-primary, #3b82f6);
+  outline: 2px solid var(--lp-primary, #7c3aed);
   outline-offset: 2px;
   border-radius: 4px;
 }

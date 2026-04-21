@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../api/factura';
 import { useToast } from '../context/ToastContext';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Types pour les resultats de recherche dans l'annuaire
@@ -49,7 +50,7 @@ function formatEur(n: number): string {
 function referralStatusLabel(status: Referral['status']): { label: string; color: string; bg: string } {
   switch (status) {
     case 'active':
-      return { label: 'Actif', color: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)' };
+      return { label: 'Actif', color: 'var(--success)', bg: 'var(--success-bg)' };
     case 'pending':
       return { label: 'En attente', color: '#ca8a04', bg: 'rgba(234, 179, 8, 0.15)' };
     case 'expired':
@@ -103,20 +104,36 @@ export default function Network() {
   // Chargement des statistiques reseau
   useEffect(() => {
     if (activeTab !== 'stats') return;
-    setStatsLoading(true);
+    const cached = getCached<NetworkStats>('/network/stats');
+    if (cached) {
+      setStats(cached);
+      setStatsLoading(false);
+    }
+    setStatsLoading((prev) => cached ? prev : true);
     api.get<NetworkStats>('/network/stats')
-      .then((res) => setStats(res.data))
-      .catch(() => setStats(null))
+      .then((res) => {
+        setStats(res.data);
+        setCache('/network/stats', res.data);
+      })
+      .catch(() => { if (!cached) setStats(null); })
       .finally(() => setStatsLoading(false));
   }, [activeTab]);
 
   // Chargement des donnees de parrainage
   useEffect(() => {
     if (activeTab !== 'referral') return;
-    setReferralLoading(true);
+    const cached = getCached<ReferralData>('/referrals/me');
+    if (cached) {
+      setReferralData(cached);
+      setReferralLoading(false);
+    }
+    setReferralLoading((prev) => cached ? prev : true);
     api.get<ReferralData>('/referrals/me')
-      .then((res) => setReferralData(res.data))
-      .catch(() => setReferralData(null))
+      .then((res) => {
+        setReferralData(res.data);
+        setCache('/referrals/me', res.data);
+      })
+      .catch(() => { if (!cached) setReferralData(null); })
       .finally(() => setReferralLoading(false));
   }, [activeTab]);
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api/factura';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Echeances fiscales avec statuts
@@ -83,14 +84,43 @@ export default function Declarations() {
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
+    // Check SWR cache for instant display
+    const deadlinesParams = { year: String(currentYear) };
+    const vatParams = { year: String(currentYear), month: String(new Date().getMonth() + 1) };
+    const urssafParams = { year: String(currentYear) };
+    const cachedDeadlines = getCached<Deadline[]>('/declarations/deadlines', deadlinesParams);
+    const cachedVat = getCached<VatBalance>('/tax/vat/balance', vatParams);
+    const cachedUrssaf = getCached<{ totalContributions: string }>('/tax/urssaf/contributions', urssafParams);
+    if (cachedDeadlines || cachedVat || cachedUrssaf) {
+      if (Array.isArray(cachedDeadlines) && cachedDeadlines.length > 0) {
+        setDeadlines(cachedDeadlines);
+      } else {
+        setDeadlines(getDefaultDeadlines(currentYear));
+      }
+      if (cachedVat) setVatBalance(cachedVat);
+      if (cachedUrssaf?.totalContributions) setUrssafAmount(cachedUrssaf.totalContributions);
+      setLoading(false);
+    }
     // Tenter de charger les echeances depuis l'API, sinon utiliser le calendrier par defaut
     Promise.all([
       api.get<{ 'hydra:member': Deadline[] }>('/declarations/deadlines', { params: { year: currentYear } })
-        .then(res => res.data['hydra:member'] || res.data)
+        .then(res => {
+          const data = res.data['hydra:member'] || res.data;
+          setCache('/declarations/deadlines', data, deadlinesParams);
+          return data;
+        })
         .catch(() => null),
       api.get<VatBalance>('/tax/vat/balance', { params: { year: currentYear, month: new Date().getMonth() + 1 } })
+        .then(res => {
+          setCache('/tax/vat/balance', res.data, vatParams);
+          return res;
+        })
         .catch(() => null),
       api.get<{ totalContributions: string }>('/tax/urssaf/contributions', { params: { year: currentYear } })
+        .then(res => {
+          setCache('/tax/urssaf/contributions', res.data, urssafParams);
+          return res;
+        })
         .catch(() => null),
     ]).then(([deadlinesRes, vatRes, urssafRes]) => {
       if (Array.isArray(deadlinesRes) && deadlinesRes.length > 0) {
@@ -110,9 +140,9 @@ export default function Declarations() {
   ];
 
   const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-    pending: { label: 'A faire', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-    done: { label: 'Fait', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-    late: { label: 'En retard', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+    pending: { label: 'A faire', color: 'var(--warning)', bg: 'var(--warning-bg)' },
+    done: { label: 'Fait', color: 'var(--success)', bg: 'var(--success-bg)' },
+    late: { label: 'En retard', color: 'var(--danger)', bg: 'var(--danger-bg)' },
   };
 
   if (loading) return (
@@ -175,7 +205,7 @@ export default function Declarations() {
                     </div>
                   </div>
                   {d.amount && (
-                    <div className="app-list-item-value">{d.amount} EUR</div>
+                    <div className="app-list-item-value">{d.amount} €</div>
                   )}
                   <span className="app-status-pill" style={{ background: cfg.bg, color: cfg.color }}>
                     {cfg.label}
@@ -195,22 +225,22 @@ export default function Declarations() {
           {vatBalance ? (
             <div className="app-kpi-grid">
               <div className="app-card app-kpi-card">
-                <div className="app-card-value" style={{ color: '#2563eb' }}>
-                  {parseFloat(vatBalance.collected).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+                <div className="app-card-value" style={{ color: 'var(--accent)' }}>
+                  {parseFloat(vatBalance.collected).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </div>
                 <div className="app-card-sub">TVA collectee</div>
               </div>
               <div className="app-card app-kpi-card">
-                <div className="app-card-value" style={{ color: '#22c55e' }}>
-                  {parseFloat(vatBalance.deductible).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+                <div className="app-card-value" style={{ color: 'var(--success)' }}>
+                  {parseFloat(vatBalance.deductible).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </div>
                 <div className="app-card-sub">TVA deductible</div>
               </div>
               <div className="app-card app-kpi-card">
                 <div className="app-card-value" style={{
-                  color: parseFloat(vatBalance.balance) >= 0 ? '#ef4444' : '#22c55e',
+                  color: parseFloat(vatBalance.balance) >= 0 ? 'var(--danger)' : 'var(--success)',
                 }}>
-                  {parseFloat(vatBalance.balance).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+                  {parseFloat(vatBalance.balance).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </div>
                 <div className="app-card-sub">
                   {parseFloat(vatBalance.balance) >= 0 ? 'TVA a payer' : 'Credit de TVA'}
@@ -239,7 +269,7 @@ export default function Declarations() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <span className="app-list-item-title">Estimation {currentYear}</span>
               <span className="app-card-value" style={{ color: 'var(--accent)' }}>
-                {urssafAmount ? `${parseFloat(urssafAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR` : '—'}
+                {urssafAmount ? `${parseFloat(urssafAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €` : '—'}
               </span>
             </div>
             <p className="app-card-sub" style={{ lineHeight: 1.5, margin: 0 }}>

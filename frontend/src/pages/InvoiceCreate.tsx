@@ -279,7 +279,7 @@ export default function InvoiceCreate() {
                         </select>
                       </div>
                       <div className="app-form-group ic-line-actions">
-                        <p className="ic-line-total">{computeLineTotal(line).ht.toFixed(2)} EUR HT</p>
+                        <p className="ic-line-total">{computeLineTotal(line).ht.toFixed(2)} € HT</p>
                         <button type="button" onClick={() => removeLine(line.id)} disabled={lines.length === 1} className="app-btn-outline-danger">
                           Supprimer
                         </button>
@@ -316,9 +316,9 @@ export default function InvoiceCreate() {
             </div>
 
             <div className="app-card app-totals ic-totals-card">
-              <p>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
-              <p>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
-              <p className="app-totals-grand">Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
+              <p>Total HT : <strong>{totals.ht.toFixed(2)} €</strong></p>
+              <p>Total TVA : <strong>{totals.vat.toFixed(2)} €</strong></p>
+              <p className="app-totals-grand">Total TTC : <strong>{totals.ttc.toFixed(2)} €</strong></p>
             </div>
 
             {/* Barre de Progression / Focus Bottom Bar */}
@@ -407,9 +407,9 @@ export default function InvoiceCreate() {
                         <td>{line.description || '—'}</td>
                         <td className="text-right">{line.quantity}</td>
                         <td className="text-center">{line.unit}</td>
-                        <td className="text-right">{parseFloat(line.unitPriceExcludingTax || '0').toFixed(2)} EUR</td>
+                        <td className="text-right">{parseFloat(line.unitPriceExcludingTax || '0').toFixed(2)} €</td>
                         <td className="text-right">{line.vatRate}%</td>
-                        <td className="text-right">{t.ht.toFixed(2)} EUR</td>
+                        <td className="text-right">{t.ht.toFixed(2)} €</td>
                       </tr>
                     );
                   })}
@@ -418,9 +418,9 @@ export default function InvoiceCreate() {
             </div>
 
             <div className="app-totals">
-              <p>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
-              <p>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
-              <p className="app-totals-grand">Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
+              <p>Total HT : <strong>{totals.ht.toFixed(2)} €</strong></p>
+              <p>Total TVA : <strong>{totals.vat.toFixed(2)} €</strong></p>
+              <p className="app-totals-grand">Total TTC : <strong>{totals.ttc.toFixed(2)} €</strong></p>
             </div>
 
             {paymentTerms && <p style={{ fontSize: '0.85rem', color: '#444', margin: '0 0 0.5rem' }}>Conditions : {paymentTerms}</p>}

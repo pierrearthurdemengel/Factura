@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useIntl } from 'react-intl';
 import api from '../api/factura';
 import { useToast } from '../context/ToastContext';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Type simplifie pour les devis
@@ -19,10 +20,10 @@ interface Quote {
 // Couleurs des statuts et cles i18n
 const STATUS_CONFIG: Record<string, { intlId: string; defaultMessage: string; color: string; bg: string }> = {
   DRAFT: { intlId: 'invoice.draft', defaultMessage: 'Brouillon', color: '#6b7280', bg: 'rgba(107,114,128,0.1)' },
-  SENT: { intlId: 'invoice.sent', defaultMessage: 'Envoyee', color: '#2563eb', bg: 'rgba(37,99,235,0.1)' },
-  ACCEPTED: { intlId: 'invoice.acknowledged', defaultMessage: 'Acceptee', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-  REJECTED: { intlId: 'quote.rejected', defaultMessage: 'Refuse', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-  EXPIRED: { intlId: 'quote.expired', defaultMessage: 'Expire', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  SENT: { intlId: 'invoice.sent', defaultMessage: 'Envoyee', color: 'var(--accent)', bg: 'var(--accent-bg)' },
+  ACCEPTED: { intlId: 'invoice.acknowledged', defaultMessage: 'Acceptee', color: 'var(--success)', bg: 'var(--success-bg)' },
+  REJECTED: { intlId: 'quote.rejected', defaultMessage: 'Refuse', color: 'var(--danger)', bg: 'var(--danger-bg)' },
+  EXPIRED: { intlId: 'quote.expired', defaultMessage: 'Expire', color: 'var(--warning)', bg: 'var(--warning-bg)' },
   CONVERTED: { intlId: 'quote.converted', defaultMessage: 'Converti', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
 };
 
@@ -34,8 +35,18 @@ export default function QuoteList() {
   const { error: toastError } = useToast();
 
   useEffect(() => {
+    // SWR: show cached data instantly
+    const cached = getCached<{ 'hydra:member': Quote[] }>('/quotes');
+    if (cached) {
+      setQuotes(cached['hydra:member'] || []);
+      setLoading(false);
+    }
+
     api.get('/quotes')
-      .then((res) => setQuotes(res.data['hydra:member'] || []))
+      .then((res) => {
+        setQuotes(res.data['hydra:member'] || []);
+        setCache('/quotes', res.data);
+      })
       .catch(() => toastError(intl.formatMessage({ id: 'quote.loadError', defaultMessage: 'Impossible de charger la liste des devis.' })))
       .finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,7 +100,14 @@ export default function QuoteList() {
 
       {filtered.length === 0 ? (
         <div className="app-empty">
-          <div className="app-empty-icon">📋</div>
+          <div className="app-empty-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+          </div>
           <p className="app-empty-title">{intl.formatMessage({ id: 'quote.empty.title', defaultMessage: 'Aucun devis' })}</p>
           <p className="app-empty-desc">{intl.formatMessage({ id: 'quote.empty.description', defaultMessage: 'Creez votre premier devis pour commencer.' })}</p>
         </div>

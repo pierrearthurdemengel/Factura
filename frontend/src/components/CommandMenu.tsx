@@ -80,7 +80,7 @@ export default function CommandMenu({ isOpen, onClose }: { isOpen: boolean, onCl
             <div className="command-group">
               <h4 className="command-group-title">Actions rapides</h4>
               <button className="command-item" onClick={() => handleAction('/invoices/new')}>
-                <span className="command-item-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>✨</span>
+                <span className="command-item-icon" style={{ background: 'var(--success-bg)', color: 'var(--success)' }}>✨</span>
                 <span className="command-item-title">Creer une facture</span>
               </button>
             </div>

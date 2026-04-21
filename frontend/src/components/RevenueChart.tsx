@@ -113,8 +113,8 @@ export default function RevenueChart({ invoices }: RevenueChartProps) {
       >
         <defs>
           <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--accent, #10b981)" stopOpacity={0.25} />
-            <stop offset="95%" stopColor="var(--accent, #10b981)" stopOpacity={0} />
+            <stop offset="5%" stopColor="var(--accent, #7c3aed)" stopOpacity={0.25} />
+            <stop offset="95%" stopColor="var(--accent, #7c3aed)" stopOpacity={0} />
           </linearGradient>
         </defs>
 
@@ -129,12 +129,12 @@ export default function RevenueChart({ invoices }: RevenueChartProps) {
 
           {/* Line */}
           {points.length > 1 && (
-            <path d={linePath} fill="none" stroke="var(--accent, #10b981)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+            <path d={linePath} fill="none" stroke="var(--accent, #7c3aed)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
           )}
 
           {/* Data dots */}
           {points.map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r={hoverIndex === i ? 5 : 3} fill="var(--accent, #10b981)" stroke="var(--bg, #fff)" strokeWidth={2} />
+            <circle key={i} cx={p.x} cy={p.y} r={hoverIndex === i ? 5 : 3} fill="var(--accent, #7c3aed)" stroke="var(--surface, #fff)" strokeWidth={2} />
           ))}
 
           {/* Y axis labels */}
@@ -170,7 +170,7 @@ export default function RevenueChart({ invoices }: RevenueChartProps) {
               >
                 <div
                   style={{
-                    background: 'var(--bg, #fff)',
+                    background: 'var(--surface, #fff)',
                     border: '1px solid var(--border)',
                     padding: '6px 10px',
                     borderRadius: '8px',
@@ -179,8 +179,8 @@ export default function RevenueChart({ invoices }: RevenueChartProps) {
                   }}
                 >
                   <div style={{ fontWeight: 600, color: 'var(--text-h)' }}>{data[hoverIndex].name}</div>
-                  <div style={{ color: 'var(--accent, #10b981)', fontWeight: 600 }}>
-                    {data[hoverIndex].total.toFixed(2)} EUR HT
+                  <div style={{ color: 'var(--accent, #7c3aed)', fontWeight: 600 }}>
+                    {data[hoverIndex].total.toFixed(2)} € HT
                   </div>
                 </div>
               </foreignObject>

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useAuth } from '../context/AuthContext';
 import api, { getCompany, updateCompany, getStripePortalUrl, getInvoices, type Company, type Invoice } from '../api/factura';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Onglets disponibles dans les parametres
@@ -39,10 +40,26 @@ export default function Settings() {
   });
 
   useEffect(() => {
+    // SWR: show cached company instantly
+    const cached = getCached<Company>('/companies/me');
+    if (cached) {
+      setCompany(cached);
+      setForm({
+        name: cached.name || '', siren: cached.siren || '', siret: cached.siret || '',
+        vatNumber: cached.vatNumber || '', legalForm: cached.legalForm || '',
+        nafCode: cached.nafCode || '', addressLine1: cached.addressLine1 || '',
+        addressLine2: cached.addressLine2 || '', postalCode: cached.postalCode || '',
+        city: cached.city || '', countryCode: cached.countryCode || 'FR',
+        iban: cached.iban || '', bic: cached.bic || '', defaultPdp: cached.defaultPdp || '',
+      });
+      setLoading(false);
+    }
+
     getCompany()
       .then((res) => {
         const c = res.data;
         setCompany(c);
+        setCache('/companies/me', c);
         setForm({
           name: c.name || '', siren: c.siren || '', siret: c.siret || '',
           vatNumber: c.vatNumber || '', legalForm: c.legalForm || '',
@@ -264,7 +281,7 @@ export default function Settings() {
         <h2 className="app-section-title app-mt-0">Abonnement</h2>
         <p className="app-plan-info">Plan actuel : <strong>Gratuit</strong> (30 factures/mois)</p>
         <p className="app-plan-detail">
-          Le plan Pro (14,90 EUR/mois HT) offre des factures illimitees et l'acces aux exports avances.
+          Le plan Pro (14,90 €/mois HT) offre des factures illimitees et l'acces aux exports avances.
         </p>
         <button
           type="button"
@@ -402,7 +419,7 @@ export default function Settings() {
               <div className="app-invoice-preview-separator" style={{ background: primaryColor }} />
               <div className="app-invoice-preview-line">
                 <span>Prestation de developpement</span>
-                <span className="app-invoice-preview-amount" style={{ color: secondaryColor }}>1 200,00 EUR</span>
+                <span className="app-invoice-preview-amount" style={{ color: secondaryColor }}>1 200,00 €</span>
               </div>
               {footerText && (
                 <div className="app-invoice-preview-footer">
@@ -604,10 +621,10 @@ export default function Settings() {
           <div className="app-card app-billing-summary">
             <div className="app-billing-summary-label">Cette annee ({currentYear})</div>
             <div className="app-billing-summary-values">
-              <span className="app-billing-summary-total">{yearTotal.toFixed(0)} EUR</span>
+              <span className="app-billing-summary-total">{yearTotal.toFixed(0)} €</span>
               <span className="app-billing-summary-unit">factures HT</span>
               <span className="app-billing-summary-arrow">&rarr;</span>
-              <span className="app-billing-summary-fees">{estimatedFees.toFixed(2)} EUR</span>
+              <span className="app-billing-summary-fees">{estimatedFees.toFixed(2)} €</span>
               <span className="app-billing-summary-unit">de frais {currentPlan === 'pro' ? 'annuels' : currentPlan === 'success' ? 'estimes' : ''}</span>
             </div>
             <div className="app-billing-summary-count">
@@ -619,9 +636,9 @@ export default function Settings() {
           <h3 className="app-subsection-title">Choisir un plan</h3>
           <div className="app-kpi-grid app-mb-2">
             {[
-              { key: 'free' as const, name: 'Gratuit', price: '0 EUR', desc: '30 factures/mois', features: ['Factures illimitees (30/mois)', 'Export PDF Factur-X', 'Support email'] },
-              { key: 'pro' as const, name: 'Pro', price: '14,90 EUR/mois', desc: 'ou 149 EUR/an', features: ['Factures illimitees', 'Relances automatiques', 'Rapprochement bancaire', 'Support prioritaire'] },
-              { key: 'success' as const, name: 'Succes', price: '0,1% du CA', desc: 'min 29 EUR/an', features: ['Tout le plan Pro', 'Affacturage', 'Expert-comptable', 'API et webhooks'] },
+              { key: 'free' as const, name: 'Gratuit', price: '0 €', desc: '30 factures/mois', features: ['Factures illimitees (30/mois)', 'Export PDF Factur-X', 'Support email'] },
+              { key: 'pro' as const, name: 'Pro', price: '14,90 €/mois', desc: 'ou 149 €/an', features: ['Factures illimitees', 'Relances automatiques', 'Rapprochement bancaire', 'Support prioritaire'] },
+              { key: 'success' as const, name: 'Succes', price: '0,1% du CA', desc: 'min 29 €/an', features: ['Tout le plan Pro', 'Affacturage', 'Expert-comptable', 'API et webhooks'] },
             ].map((plan) => (
               <div
                 key={plan.key}

@@ -40,12 +40,12 @@ const VAT_REGIMES: VatRegimeOption[] = [
   {
     value: 'reel_simplifie',
     label: 'Reel simplifie',
-    description: 'Declaration annuelle avec 2 acomptes semestriels. Pour un CA entre 36 800 et 254 000 EUR (services).',
+    description: 'Declaration annuelle avec 2 acomptes semestriels. Pour un CA entre 36 800 et 254 000 € (services).',
   },
   {
     value: 'reel_normal',
     label: 'Reel normal',
-    description: 'Declaration mensuelle ou trimestrielle de TVA. Obligatoire au-dela de 254 000 EUR de CA.',
+    description: 'Declaration mensuelle ou trimestrielle de TVA. Obligatoire au-dela de 254 000 € de CA.',
   },
 ];
 

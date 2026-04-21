@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/factura';
 import { useToast } from '../context/ToastContext';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Types pour le journal comptable
@@ -30,8 +31,17 @@ export default function Accounting() {
   const { error: toastError } = useToast();
 
   useEffect(() => {
-    api.get('/accounting/entries', { params: { period: periodFilter } })
-      .then((res) => setEntries(res.data['hydra:member'] || []))
+    const params = { period: periodFilter };
+    const cached = getCached<{ 'hydra:member': AccountingEntry[] }>('/accounting/entries', params);
+    if (cached) {
+      setEntries(cached['hydra:member'] || []);
+      setLoading(false);
+    }
+    api.get('/accounting/entries', { params })
+      .then((res) => {
+        setEntries(res.data['hydra:member'] || []);
+        setCache('/accounting/entries', res.data, params);
+      })
       .catch(() => toastError('Impossible de charger les ecritures comptables.'))
       .finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -175,13 +185,13 @@ export default function Accounting() {
                   <span className="app-list-item-title">{num} — {data.label}</span>
                   <span style={{
                     fontWeight: 600, fontSize: '0.9rem',
-                    color: data.totalDebit - data.totalCredit >= 0 ? 'var(--text-h)' : '#ef4444',
+                    color: data.totalDebit - data.totalCredit >= 0 ? 'var(--text-h)' : 'var(--danger)',
                   }}>
-                    Solde : {(data.totalDebit - data.totalCredit).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+                    Solde : {(data.totalDebit - data.totalCredit).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                   </span>
                 </div>
                 <div className="app-card-sub">
-                  {data.entries.length} ecriture(s) — Debit : {data.totalDebit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR — Credit : {data.totalCredit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+                  {data.entries.length} ecriture(s) — Debit : {data.totalDebit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} € — Credit : {data.totalCredit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </div>
               </div>
             ))
@@ -214,7 +224,7 @@ export default function Accounting() {
                     <td>{b.accountLabel}</td>
                     <td className="text-right" style={{ color: 'var(--text-h)' }}>{b.totalDebit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</td>
                     <td className="text-right" style={{ color: 'var(--text-h)' }}>{b.totalCredit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</td>
-                    <td className="text-right" style={{ fontWeight: 600, color: b.solde >= 0 ? 'var(--text-h)' : '#ef4444' }}>
+                    <td className="text-right" style={{ fontWeight: 600, color: b.solde >= 0 ? 'var(--text-h)' : 'var(--danger)' }}>
                       {b.solde.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
                     </td>
                   </tr>

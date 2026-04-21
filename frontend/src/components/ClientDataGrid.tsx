@@ -124,7 +124,7 @@ export default function ClientDataGrid({ clients, onUpdateClient, onDeleteClient
               <div style={{ padding: '8px 16px', display: 'flex', alignItems: 'center' }}>
                 <button 
                   onClick={() => onDeleteClient(client.id)}
-                  style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
                 >
                   Supprimer
                 </button>

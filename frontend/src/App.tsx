@@ -14,6 +14,7 @@ import FloatingActionButton from './components/FloatingActionButton';
 import VoiceAssistant from './components/VoiceAssistant';
 import AmbientBackground from './components/AmbientBackground';
 import ErrorBoundary from './components/ErrorBoundary';
+import { startProgress, doneProgress } from './utils/progress';
 
 import './components/NavBar.css';
 
@@ -24,40 +25,108 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 
 // Pages secondaires chargees a la demande (code splitting)
-const InvoiceList = lazy(() => import('./pages/InvoiceList'));
-const InvoiceCreate = lazy(() => import('./pages/InvoiceCreate'));
-const InvoiceDetail = lazy(() => import('./pages/InvoiceDetail'));
-const ClientList = lazy(() => import('./pages/ClientList'));
-const Settings = lazy(() => import('./pages/Settings'));
-const CompanyCreation = lazy(() => import('./pages/CompanyCreation'));
-const Experts = lazy(() => import('./pages/Experts'));
-const QuoteList = lazy(() => import('./pages/QuoteList'));
-const QuoteCreate = lazy(() => import('./pages/QuoteCreate'));
-const QuoteDetail = lazy(() => import('./pages/QuoteDetail'));
-const Pricing = lazy(() => import('./pages/Pricing'));
-const AdminHub = lazy(() => import('./pages/AdminHub'));
-const Accounting = lazy(() => import('./pages/Accounting'));
-const Declarations = lazy(() => import('./pages/Declarations'));
-const Banking = lazy(() => import('./pages/Banking'));
-const Simulators = lazy(() => import('./pages/Simulators'));
-const Unpaid = lazy(() => import('./pages/Unpaid'));
-const AccountantPortal = lazy(() => import('./pages/AccountantPortal'));
-const ApiSettings = lazy(() => import('./pages/ApiSettings'));
-const AssistantPage = lazy(() => import('./pages/AssistantPage'));
-const ClientPortal = lazy(() => import('./pages/ClientPortal'));
-const Benchmarks = lazy(() => import('./pages/Benchmarks'));
-const AutopilotConfig = lazy(() => import('./pages/AutopilotConfig'));
-const Network = lazy(() => import('./pages/Network'));
-const OnboardingWizard = lazy(() => import('./pages/OnboardingWizard'));
-const CameraScanner = lazy(() => import('./pages/CameraScanner'));
-const ApiDocs = lazy(() => import('./pages/ApiDocs'));
-const Guide = lazy(() => import('./pages/Guide'));
+// Les imports sont stockes pour permettre le prefetch on-hover
+const lazyImports = {
+  InvoiceList: () => import('./pages/InvoiceList'),
+  InvoiceCreate: () => import('./pages/InvoiceCreate'),
+  InvoiceDetail: () => import('./pages/InvoiceDetail'),
+  ClientList: () => import('./pages/ClientList'),
+  Settings: () => import('./pages/Settings'),
+  CompanyCreation: () => import('./pages/CompanyCreation'),
+  Experts: () => import('./pages/Experts'),
+  QuoteList: () => import('./pages/QuoteList'),
+  QuoteCreate: () => import('./pages/QuoteCreate'),
+  QuoteDetail: () => import('./pages/QuoteDetail'),
+  Pricing: () => import('./pages/Pricing'),
+  AdminHub: () => import('./pages/AdminHub'),
+  Accounting: () => import('./pages/Accounting'),
+  Declarations: () => import('./pages/Declarations'),
+  Banking: () => import('./pages/Banking'),
+  Simulators: () => import('./pages/Simulators'),
+  Unpaid: () => import('./pages/Unpaid'),
+  AccountantPortal: () => import('./pages/AccountantPortal'),
+  ApiSettings: () => import('./pages/ApiSettings'),
+  AssistantPage: () => import('./pages/AssistantPage'),
+  ClientPortal: () => import('./pages/ClientPortal'),
+  Benchmarks: () => import('./pages/Benchmarks'),
+  AutopilotConfig: () => import('./pages/AutopilotConfig'),
+  Network: () => import('./pages/Network'),
+  OnboardingWizard: () => import('./pages/OnboardingWizard'),
+  CameraScanner: () => import('./pages/CameraScanner'),
+  ApiDocs: () => import('./pages/ApiDocs'),
+  Guide: () => import('./pages/Guide'),
+};
 
-// Fallback de chargement pour les pages lazy
+const InvoiceList = lazy(lazyImports.InvoiceList);
+const InvoiceCreate = lazy(lazyImports.InvoiceCreate);
+const InvoiceDetail = lazy(lazyImports.InvoiceDetail);
+const ClientList = lazy(lazyImports.ClientList);
+const Settings = lazy(lazyImports.Settings);
+const CompanyCreation = lazy(lazyImports.CompanyCreation);
+const Experts = lazy(lazyImports.Experts);
+const QuoteList = lazy(lazyImports.QuoteList);
+const QuoteCreate = lazy(lazyImports.QuoteCreate);
+const QuoteDetail = lazy(lazyImports.QuoteDetail);
+const Pricing = lazy(lazyImports.Pricing);
+const AdminHub = lazy(lazyImports.AdminHub);
+const Accounting = lazy(lazyImports.Accounting);
+const Declarations = lazy(lazyImports.Declarations);
+const Banking = lazy(lazyImports.Banking);
+const Simulators = lazy(lazyImports.Simulators);
+const Unpaid = lazy(lazyImports.Unpaid);
+const AccountantPortal = lazy(lazyImports.AccountantPortal);
+const ApiSettings = lazy(lazyImports.ApiSettings);
+const AssistantPage = lazy(lazyImports.AssistantPage);
+const ClientPortal = lazy(lazyImports.ClientPortal);
+const Benchmarks = lazy(lazyImports.Benchmarks);
+const AutopilotConfig = lazy(lazyImports.AutopilotConfig);
+const Network = lazy(lazyImports.Network);
+const OnboardingWizard = lazy(lazyImports.OnboardingWizard);
+const CameraScanner = lazy(lazyImports.CameraScanner);
+const ApiDocs = lazy(lazyImports.ApiDocs);
+const Guide = lazy(lazyImports.Guide);
+
+// Prefetch map: route prefix -> lazy import key
+const prefetchMap: Record<string, (keyof typeof lazyImports)[]> = {
+  '/invoices': ['InvoiceList', 'InvoiceCreate', 'InvoiceDetail'],
+  '/quotes': ['QuoteList', 'QuoteCreate', 'QuoteDetail'],
+  '/clients': ['ClientList'],
+  '/settings': ['Settings'],
+  '/accounting': ['Accounting'],
+  '/banking': ['Banking'],
+  '/declarations': ['Declarations'],
+  '/unpaid': ['Unpaid'],
+  '/admin-hub': ['AdminHub'],
+  '/guide': ['Guide'],
+};
+
+const prefetched = new Set<string>();
+
+export function prefetchRoute(path: string) {
+  for (const [prefix, keys] of Object.entries(prefetchMap)) {
+    if (path.startsWith(prefix)) {
+      keys.forEach(key => {
+        if (!prefetched.has(key)) {
+          prefetched.add(key);
+          lazyImports[key]();
+        }
+      });
+    }
+  }
+}
+
+// Fallback de chargement elegant pour les pages lazy
 function LazyFallback() {
+  useEffect(() => {
+    startProgress();
+    return () => doneProgress();
+  }, []);
+
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
-      <div className="app-skeleton" style={{ width: 200, height: 24, borderRadius: 8 }} />
+    <div className="lazy-fallback">
+      <div className="lazy-fallback-content">
+        <div className="lazy-spinner" />
+      </div>
     </div>
   );
 }
@@ -250,12 +319,12 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
         )}
       </div>
 
-      {/* Liens desktop */}
+      {/* Liens desktop — prefetch on hover */}
       <div className="navbar-links">
-        <Link to="/invoices" className={`navbar-link${location.pathname.startsWith('/invoices') ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.invoices', defaultMessage: 'Factures' })}</Link>
-        <Link to="/quotes" className={`navbar-link${location.pathname.startsWith('/quotes') ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.quotes', defaultMessage: 'Devis' })}</Link>
-        <Link to="/clients" className={`navbar-link${location.pathname.startsWith('/clients') ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.clients', defaultMessage: 'Clients' })}</Link>
-        <Link to="/settings" className={`navbar-link${location.pathname === '/settings' ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.settings', defaultMessage: 'Parametres' })}</Link>
+        <Link to="/invoices" onMouseEnter={() => prefetchRoute('/invoices')} onFocus={() => prefetchRoute('/invoices')} className={`navbar-link${location.pathname.startsWith('/invoices') ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.invoices', defaultMessage: 'Factures' })}</Link>
+        <Link to="/quotes" onMouseEnter={() => prefetchRoute('/quotes')} onFocus={() => prefetchRoute('/quotes')} className={`navbar-link${location.pathname.startsWith('/quotes') ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.quotes', defaultMessage: 'Devis' })}</Link>
+        <Link to="/clients" onMouseEnter={() => prefetchRoute('/clients')} onFocus={() => prefetchRoute('/clients')} className={`navbar-link${location.pathname.startsWith('/clients') ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.clients', defaultMessage: 'Clients' })}</Link>
+        <Link to="/settings" onMouseEnter={() => prefetchRoute('/settings')} onFocus={() => prefetchRoute('/settings')} className={`navbar-link${location.pathname === '/settings' ? ' active' : ''}`}>{intl.formatMessage({ id: 'nav.settings', defaultMessage: 'Parametres' })}</Link>
       </div>
 
       {/* Bouton hamburger mobile */}
@@ -271,11 +340,11 @@ function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
       {mobileMenuOpen && (
         <div className="navbar-mobile-menu">
           <Link to="/" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.dashboard', defaultMessage: 'Tableau de bord' })}</Link>
-          <Link to="/invoices" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.invoices', defaultMessage: 'Factures' })}</Link>
-          <Link to="/quotes" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.quotes', defaultMessage: 'Devis' })}</Link>
-          <Link to="/clients" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.clients', defaultMessage: 'Clients' })}</Link>
-          <Link to="/admin-hub" className="navbar-mobile-link">Hub admin</Link>
-          <Link to="/settings" className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.settings', defaultMessage: 'Parametres' })}</Link>
+          <Link to="/invoices" onTouchStart={() => prefetchRoute('/invoices')} className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.invoices', defaultMessage: 'Factures' })}</Link>
+          <Link to="/quotes" onTouchStart={() => prefetchRoute('/quotes')} className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.quotes', defaultMessage: 'Devis' })}</Link>
+          <Link to="/clients" onTouchStart={() => prefetchRoute('/clients')} className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.clients', defaultMessage: 'Clients' })}</Link>
+          <Link to="/admin-hub" onTouchStart={() => prefetchRoute('/admin-hub')} className="navbar-mobile-link">Hub admin</Link>
+          <Link to="/settings" onTouchStart={() => prefetchRoute('/settings')} className="navbar-mobile-link">{intl.formatMessage({ id: 'nav.settings', defaultMessage: 'Parametres' })}</Link>
           <button onClick={() => { onOpenCommand(); setMobileMenuOpen(false); }} className="navbar-mobile-link" style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' }}>
             {intl.formatMessage({ id: 'nav.search', defaultMessage: 'Rechercher' })}
           </button>
@@ -322,7 +391,7 @@ function AnimatedAppCore() {
     <>
       <AmbientBackground />
       <VoiceAssistant />
-      {location.pathname !== '/invoices/new' && (
+      {location.pathname !== '/invoices/new' && location.pathname !== '/login' && location.pathname !== '/register' && (
         <>
           <NavBar onOpenCommand={() => setCmdOpen(true)} />
           <FloatingActionButton onOpenSearch={() => setCmdOpen(true)} />
@@ -335,33 +404,33 @@ function AnimatedAppCore() {
           <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
           <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
           <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
-          <Route path="/invoices" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceList /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/invoices/new" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceCreate /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/invoices/:id" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><InvoiceDetail /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/clients" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ClientList /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Settings /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/quotes" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><QuoteList /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/quotes/new" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><QuoteCreate /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/quotes/:id" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><QuoteDetail /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/pricing" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Pricing /></div></PageTransition>} />
-          <Route path="/admin-hub" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AdminHub /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/accounting" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Accounting /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/declarations" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Declarations /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/banking" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Banking /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/unpaid" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Unpaid /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/simulators" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Simulators /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/accountant" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AccountantPortal /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/api-settings" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ApiSettings /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/assistant" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AssistantPage /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/benchmarks" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Benchmarks /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/autopilot" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><AutopilotConfig /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/network" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Network /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/portal/:token" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ClientPortal /></div></PageTransition>} />
-          <Route path="/creer-entreprise" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><CompanyCreation /></div></PageTransition>} />
-          <Route path="/onboarding" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><OnboardingWizard /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/scanner" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><CameraScanner /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/api-docs" element={<ProtectedRoute><PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><ApiDocs /></div></PageTransition></ProtectedRoute>} />
-          <Route path="/experts" element={<PageTransition><div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}><Experts /></div></PageTransition>} />
+          <Route path="/invoices" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><InvoiceList /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/invoices/new" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><InvoiceCreate /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/invoices/:id" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><InvoiceDetail /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/clients" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><ClientList /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><Settings /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/quotes" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><QuoteList /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/quotes/new" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><QuoteCreate /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/quotes/:id" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><QuoteDetail /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/pricing" element={<PageTransition><div className="page-wrapper"><Pricing /></div></PageTransition>} />
+          <Route path="/admin-hub" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><AdminHub /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/accounting" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><Accounting /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/declarations" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><Declarations /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/banking" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><Banking /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/unpaid" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><Unpaid /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/simulators" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><Simulators /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/accountant" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><AccountantPortal /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/api-settings" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><ApiSettings /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/assistant" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><AssistantPage /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/benchmarks" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><Benchmarks /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/autopilot" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><AutopilotConfig /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/network" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><Network /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/portal/:token" element={<PageTransition><div className="page-wrapper"><ClientPortal /></div></PageTransition>} />
+          <Route path="/creer-entreprise" element={<PageTransition><div className="page-wrapper"><CompanyCreation /></div></PageTransition>} />
+          <Route path="/onboarding" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><OnboardingWizard /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/scanner" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><CameraScanner /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/api-docs" element={<ProtectedRoute><PageTransition><div className="page-wrapper"><ApiDocs /></div></PageTransition></ProtectedRoute>} />
+          <Route path="/experts" element={<PageTransition><div className="page-wrapper"><Experts /></div></PageTransition>} />
           <Route path="/guide" element={<PageTransition><Guide /></PageTransition>} />
         </Routes>
       </AnimatePresence>

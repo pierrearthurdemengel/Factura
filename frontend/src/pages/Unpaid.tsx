@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/factura';
 import { useToast } from '../context/ToastContext';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Facture en retard avec historique de relances
@@ -28,8 +29,30 @@ export default function Unpaid() {
   const { error: toastError } = useToast();
 
   useEffect(() => {
-    api.get('/invoices', { params: { status: 'SENT', 'dueDate[before]': new Date().toISOString().split('T')[0] } })
+    const params = { status: 'SENT', 'dueDate[before]': new Date().toISOString().split('T')[0] };
+    const cached = getCached<{ 'hydra:member': Record<string, unknown>[] }>('/invoices', params as Record<string, string>);
+    if (cached) {
+      const raw = cached['hydra:member'] || [];
+      const now = new Date();
+      const mapped: OverdueInvoice[] = raw.map((inv) => {
+        const dueDate = new Date(inv.dueDate as string);
+        const daysOverdue = Math.floor((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+        return {
+          id: inv.id as string,
+          number: (inv.number as string) || 'Brouillon',
+          buyer: (inv.buyer as { name: string }) || { name: '\u2014' },
+          totalIncludingTax: (inv.totalIncludingTax as string) || '0',
+          dueDate: inv.dueDate as string,
+          daysOverdue,
+          reminders: (inv as { reminders?: ReminderEntry[] }).reminders || [],
+        };
+      });
+      setInvoices(mapped.sort((a, b) => b.daysOverdue - a.daysOverdue));
+      setLoading(false);
+    }
+    api.get('/invoices', { params })
       .then(async (res) => {
+        setCache('/invoices', res.data, params as Record<string, string>);
         const raw = res.data['hydra:member'] || [];
         const now = new Date();
         const mapped: OverdueInvoice[] = raw.map((inv: Record<string, unknown>) => {
@@ -68,9 +91,9 @@ export default function Unpaid() {
 
   // Regroupement par tranche de retard
   const brackets = [
-    { label: '1-15 jours', min: 1, max: 15, color: '#f59e0b' },
+    { label: '1-15 jours', min: 1, max: 15, color: 'var(--warning)' },
     { label: '16-30 jours', min: 16, max: 30, color: '#f97316' },
-    { label: '31-60 jours', min: 31, max: 60, color: '#ef4444' },
+    { label: '31-60 jours', min: 31, max: 60, color: 'var(--danger)' },
     { label: '60+ jours', min: 61, max: Infinity, color: '#991b1b' },
   ];
 
@@ -90,13 +113,13 @@ export default function Unpaid() {
       {/* KPIs */}
       <div className="app-kpi-grid">
         <div className="app-card app-kpi-card">
-          <div className="app-card-value" style={{ color: '#ef4444' }}>
-            {totalUnpaid.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+          <div className="app-card-value" style={{ color: 'var(--danger)' }}>
+            {totalUnpaid.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
           </div>
           <div className="app-card-sub">Total impayes</div>
         </div>
         <div className="app-card app-kpi-card">
-          <div className="app-card-value" style={{ color: '#f59e0b' }}>
+          <div className="app-card-value" style={{ color: 'var(--warning)' }}>
             {invoices.length}
           </div>
           <div className="app-card-sub">Factures en retard</div>
@@ -154,8 +177,8 @@ export default function Unpaid() {
                 <span className="app-status-pill" style={{ background: `${bracket.color}15`, color: bracket.color }}>
                   J+{inv.daysOverdue}
                 </span>
-                <div className="app-list-item-value" style={{ color: '#ef4444' }}>
-                  {parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+                <div className="app-list-item-value" style={{ color: 'var(--danger)' }}>
+                  {parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </div>
               </Link>
             );

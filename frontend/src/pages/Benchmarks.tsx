@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '../api/factura';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Reponse de l'endpoint /benchmarks
@@ -36,7 +37,7 @@ function diffColor(userValue: number, sectorValue: number, lowerIsBetter: boolea
   const isBetter = lowerIsBetter
     ? userValue < sectorValue
     : userValue > sectorValue;
-  return isBetter ? '#10b981' : '#ef4444';
+  return isBetter ? 'var(--success)' : 'var(--danger)';
 }
 
 // Calcule et formate l'ecart entre la valeur utilisateur et la moyenne sectorielle
@@ -103,10 +104,10 @@ function KpiCard({
             borderRadius: '6px',
             fontWeight: 600,
             color,
-            backgroundColor: color === '#10b981'
-              ? 'rgba(16, 185, 129, 0.1)'
-              : color === '#ef4444'
-                ? 'rgba(239, 68, 68, 0.1)'
+            backgroundColor: color === 'var(--success)'
+              ? 'var(--success-bg)'
+              : color === 'var(--danger)'
+                ? 'var(--danger-bg)'
                 : 'var(--social-bg)',
             textAlign: 'center',
             display: 'block',
@@ -131,16 +132,26 @@ export default function Benchmarks() {
 
   // Charge les donnees de benchmark pour le secteur selectionne
   const fetchBenchmarks = useCallback(async (sectorCode: string) => {
-    setLoading(true);
+    const params = { sector: sectorCode };
+    const cached = getCached<BenchmarkData>('/benchmarks', params);
+    if (cached) {
+      setData(cached);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     setError(null);
     try {
       const response = await api.get<BenchmarkData>('/benchmarks', {
-        params: { sector: sectorCode },
+        params,
       });
       setData(response.data);
+      setCache('/benchmarks', response.data, params);
     } catch {
-      setError('Impossible de charger les benchmarks. Veuillez reessayer.');
-      setData(null);
+      if (!cached) {
+        setError('Impossible de charger les benchmarks. Veuillez reessayer.');
+        setData(null);
+      }
     } finally {
       setLoading(false);
     }

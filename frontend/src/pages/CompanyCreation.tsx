@@ -72,21 +72,21 @@ export default function CompanyCreation() {
           <h2 className="cc-card-title">Quel chiffre d'affaires prevoyez-vous ?</h2>
           <p className="cc-hint">
             {decision.activity === 'commercial'
-              ? 'Seuil micro-entreprise : 188 700 EUR/an pour les activites commerciales'
-              : 'Seuil micro-entreprise : 77 700 EUR/an pour les prestations de services'}
+              ? 'Seuil micro-entreprise : 188 700 €/an pour les activites commerciales'
+              : 'Seuil micro-entreprise : 77 700 €/an pour les prestations de services'}
           </p>
           <div className="cc-choices">
             <button className="cc-choice" onClick={() => handleCa('low')}>
               <span className="cc-choice-icon">&#x1f331;</span>
               <span className="cc-choice-label">
-                Moins de {decision.activity === 'commercial' ? '188 700' : '77 700'} EUR/an
+                Moins de {decision.activity === 'commercial' ? '188 700' : '77 700'} €/an
               </span>
               <span className="cc-choice-desc">Regime micro-entreprise possible</span>
             </button>
             <button className="cc-choice" onClick={() => handleCa('high')}>
               <span className="cc-choice-icon">&#x1f680;</span>
               <span className="cc-choice-label">
-                Plus de {decision.activity === 'commercial' ? '188 700' : '77 700'} EUR/an
+                Plus de {decision.activity === 'commercial' ? '188 700' : '77 700'} €/an
               </span>
               <span className="cc-choice-desc">Regime reel obligatoire</span>
             </button>
@@ -158,7 +158,7 @@ export default function CompanyCreation() {
           <ul className="cc-list">
             <li>SASU : president assimile salarie, protection sociale du regime general</li>
             <li>EURL : gerant TNS, cotisations moins elevees</li>
-            <li>Impot sur les societes (IS) : 15% jusqu'a 42 500 EUR, 25% au-dela</li>
+            <li>Impot sur les societes (IS) : 15% jusqu'a 42 500 €, 25% au-dela</li>
             <li>Possibilite de se verser des dividendes (flat tax 30%)</li>
             <li>Responsabilite limitee aux apports</li>
           </ul>

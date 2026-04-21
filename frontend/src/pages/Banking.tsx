@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../api/factura';
 import { useToast } from '../context/ToastContext';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Types pour les transactions bancaires
@@ -38,8 +39,16 @@ export default function Banking() {
   const { success, error } = useToast();
 
   useEffect(() => {
+    const cached = getCached<{ 'hydra:member': BankTransaction[] }>('/bank/transactions');
+    if (cached) {
+      setTransactions(cached['hydra:member'] || []);
+      setLoading(false);
+    }
     api.get('/bank/transactions')
-      .then((res) => setTransactions(res.data['hydra:member'] || []))
+      .then((res) => {
+        setTransactions(res.data['hydra:member'] || []);
+        setCache('/bank/transactions', res.data);
+      })
       .catch(() => error('Impossible de charger les transactions bancaires.'))
       .finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,19 +123,19 @@ export default function Banking() {
       {/* KPIs */}
       <div className="app-kpi-grid">
         <div className="app-card app-kpi-card">
-          <p className="app-card-value" style={{ color: '#22c55e' }}>
-            +{totalCredit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+          <p className="app-card-value" style={{ color: 'var(--success)' }}>
+            +{totalCredit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
           </p>
           <p className="app-card-sub">Encaissements</p>
         </div>
         <div className="app-card app-kpi-card">
-          <p className="app-card-value" style={{ color: '#ef4444' }}>
-            -{totalDebit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+          <p className="app-card-value" style={{ color: 'var(--danger)' }}>
+            -{totalDebit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
           </p>
           <p className="app-card-sub">Decaissements</p>
         </div>
         <div className="app-card app-kpi-card">
-          <p className="app-card-value" style={{ color: unreconciledCount > 0 ? '#f59e0b' : '#22c55e' }}>
+          <p className="app-card-value" style={{ color: unreconciledCount > 0 ? 'var(--warning)' : 'var(--success)' }}>
             {unreconciledCount}
           </p>
           <p className="app-card-sub">Non reconciliees</p>
@@ -194,12 +203,12 @@ export default function Banking() {
                       {tx.receiptId && <span className="app-status-pill app-status-pill--connected" style={{ marginLeft: '0.5rem' }}>Justificatif</span>}
                     </div>
                   </div>
-                  <div className="app-list-item-value" style={{ color: tx.type === 'credit' ? '#22c55e' : '#ef4444' }}>
-                    {tx.type === 'credit' ? '+' : '-'}{Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+                  <div className="app-list-item-value" style={{ color: tx.type === 'credit' ? 'var(--success)' : 'var(--danger)' }}>
+                    {tx.type === 'credit' ? '+' : '-'}{Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                   </div>
                   <span className="app-status-pill" style={{
-                    background: tx.reconciled ? 'rgba(34,197,94,0.1)' : tx.suggestedInvoice ? 'rgba(37,99,235,0.1)' : 'rgba(156,163,175,0.1)',
-                    color: tx.reconciled ? '#22c55e' : tx.suggestedInvoice ? '#2563eb' : '#9ca3af',
+                    background: tx.reconciled ? 'var(--success-bg)' : tx.suggestedInvoice ? 'var(--accent-bg)' : 'rgba(156,163,175,0.1)',
+                    color: tx.reconciled ? 'var(--success)' : tx.suggestedInvoice ? 'var(--accent)' : 'var(--text-tertiary)',
                   }}>
                     {tx.reconciled ? 'Reconciliee' : tx.suggestedInvoice ? 'Suggestion' : 'Non reconciliee'}
                   </span>
@@ -230,8 +239,8 @@ export default function Banking() {
                     <div className="app-list-item-sub">
                       {new Date(tx.date).toLocaleDateString('fr-FR')}
                     </div>
-                    <p className="app-card-value" style={{ fontSize: '1rem', marginTop: '0.5rem', color: tx.type === 'credit' ? '#22c55e' : '#ef4444' }}>
-                      {tx.type === 'credit' ? '+' : '-'}{Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR
+                    <p className="app-card-value" style={{ fontSize: '1rem', marginTop: '0.5rem', color: tx.type === 'credit' ? 'var(--success)' : 'var(--danger)' }}>
+                      {tx.type === 'credit' ? '+' : '-'}{Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                     </p>
                     {/* Selecteur de categorie */}
                     <div className="app-form-group" style={{ marginTop: '0.5rem', marginBottom: 0 }}>
@@ -324,7 +333,7 @@ export default function Banking() {
               <div key={tx.id} className="app-list-item">
                 <div className="app-list-item-info">
                   <div className="app-list-item-title">{tx.label}</div>
-                  <div className="app-list-item-sub">{new Date(tx.date).toLocaleDateString('fr-FR')} — {Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} EUR</div>
+                  <div className="app-list-item-sub">{new Date(tx.date).toLocaleDateString('fr-FR')} — {Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</div>
                 </div>
                 {tx.receiptId ? (
                   <span className="app-status-pill app-status-pill--connected">Justificatif lie</span>
@@ -354,7 +363,7 @@ export default function Banking() {
             {/* Etape 1 */}
             <div className="app-card" style={{ opacity: connectStep >= 0 ? 1 : 0.5 }}>
               <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
-                <span className="app-health-indicator" style={{ background: connectStep >= 1 ? '#22c55e' : 'var(--accent)', color: '#fff' }}>
+                <span className="app-health-indicator" style={{ background: connectStep >= 1 ? 'var(--success)' : 'var(--accent)', color: '#fff' }}>
                   {connectStep >= 1 ? '✓' : '1'}
                 </span>
                 <span className="app-list-item-title">Choisir votre banque</span>
@@ -384,7 +393,7 @@ export default function Banking() {
             {/* Etape 2 */}
             <div className="app-card" style={{ opacity: connectStep >= 1 ? 1 : 0.5 }}>
               <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
-                <span className="app-health-indicator" style={{ background: connectStep >= 2 ? '#22c55e' : connectStep >= 1 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
+                <span className="app-health-indicator" style={{ background: connectStep >= 2 ? 'var(--success)' : connectStep >= 1 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
                   {connectStep >= 2 ? '✓' : '2'}
                 </span>
                 <span className="app-list-item-title">Authentification DSP2</span>
@@ -404,7 +413,7 @@ export default function Banking() {
             {/* Etape 3 */}
             <div className="app-card" style={{ opacity: connectStep >= 2 ? 1 : 0.5 }}>
               <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
-                <span className="app-health-indicator" style={{ background: connectStep >= 3 ? '#22c55e' : connectStep >= 2 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
+                <span className="app-health-indicator" style={{ background: connectStep >= 3 ? 'var(--success)' : connectStep >= 2 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
                   {connectStep >= 3 ? '✓' : '3'}
                 </span>
                 <span className="app-list-item-title">Synchronisation</span>

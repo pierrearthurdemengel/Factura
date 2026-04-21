@@ -1,7 +1,7 @@
 .invoice-create-layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: var(--space-2xl, 2rem);
   align-items: start;
 }
 
@@ -9,13 +9,12 @@
   .invoice-create-layout {
     grid-template-columns: minmax(450px, 1fr) 1fr;
   }
-  
+
   .invoice-create-preview-sticky {
     position: sticky;
-    top: 2rem;
+    top: var(--space-2xl, 2rem);
     height: calc(100vh - 4rem);
     overflow-y: auto;
-    /* Soft scrollbar for the preview column */
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
     padding-right: 12px;
@@ -26,15 +25,15 @@
   background: white;
   color: #111;
   padding: clamp(1.5rem, 4vw, 3rem);
-  border-radius: 4px;
-  box-shadow: 0 20px 50px -10px rgba(0,0,0,0.1), 0 0 10px rgba(0,0,0,0.05);
-  font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  border-radius: var(--radius-md, 10px);
+  box-shadow: var(--shadow-xl, 0 16px 40px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.04));
+  font-family: var(--sans, 'Inter', system-ui, sans-serif);
   width: 100%;
-  aspect-ratio: 1 / 1.414; /* Standard A4 proportion */
+  aspect-ratio: 1 / 1.414;
   max-width: 210mm;
   margin: 0 auto;
   box-sizing: border-box;
-  animation: page-fade-in 0.4s ease-out;
+  animation: page-fade-in 0.4s var(--ease-out, ease-out);
 }
 
 .a4-paper p {

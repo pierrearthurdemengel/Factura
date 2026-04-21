@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { startProgress, doneProgress } from '../utils/progress';
+import { invalidateCache } from '../utils/apiCache';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
@@ -13,14 +15,31 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Intercepteur pour ajouter le JWT d'acces
+// Intercepteur pour ajouter le JWT d'acces + progress tracking
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem('jwt_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  startProgress();
+
+  // Invalidate related cache on mutations
+  if (config.method && ['post', 'put', 'patch', 'delete'].includes(config.method)) {
+    const url = config.url || '';
+    if (url.includes('/invoices')) invalidateCache('/invoices');
+    if (url.includes('/clients')) invalidateCache('/clients');
+    if (url.includes('/quotes')) invalidateCache('/quotes');
+    if (url.includes('/companies')) invalidateCache('/companies');
+  }
+
   return config;
 });
+
+// Track response/error for progress bar
+api.interceptors.response.use(
+  (response) => { doneProgress(); return response; },
+  (error) => { doneProgress(); return Promise.reject(error); },
+);
 
 // Verrou pour eviter les appels concurrents de refresh
 let isRefreshing = false;

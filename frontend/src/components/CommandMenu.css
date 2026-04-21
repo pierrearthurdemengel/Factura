@@ -1,17 +1,22 @@
+/* ══════════════════════════════════════════════
+   Command Menu (Cmd+K) — Spotlight Design
+   ══════════════════════════════════════════════ */
+
 .command-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(17, 24, 39, 0.3);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 10000;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding-top: clamp(10vh, 15vh, 20vh);
-  animation: command-fade-in 0.2s ease-out forwards;
+  animation: command-fade-in 0.15s ease-out forwards;
 }
 
 @keyframes command-fade-in {
@@ -20,26 +25,26 @@
 }
 
 .command-dialog {
-  background: var(--bg, #ffffff);
+  background: var(--surface, #ffffff);
   width: 90%;
-  max-width: 600px;
-  border-radius: 12px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 580px;
+  border-radius: var(--radius-xl, 20px);
+  box-shadow: var(--shadow-xl, 0 16px 40px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.04));
   border: 1px solid var(--border);
   overflow: hidden;
-  animation: command-slide-down 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: command-slide-down 0.15s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
   will-change: transform, opacity;
 }
 
 @keyframes command-slide-down {
-  0% { transform: translateY(-20px) scale(0.98); opacity: 0; }
+  0% { transform: translateY(-16px) scale(0.98); opacity: 0; }
   100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .command-header {
   display: flex;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: var(--space-lg, 1rem) var(--space-xl, 1.5rem);
   border-bottom: 1px solid var(--border);
   gap: 12px;
 }
@@ -47,75 +52,79 @@
 .command-search-icon {
   width: 20px;
   height: 20px;
-  color: var(--l-gray, #9ca3af);
+  color: var(--text-muted, #9490a3);
+  flex-shrink: 0;
 }
 
 .command-input {
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 1.1rem;
+  font-size: var(--text-lg, 1.0625rem);
   color: var(--text-h);
   outline: none;
   font-family: inherit;
 }
 
 .command-input::placeholder {
-  color: var(--l-gray, #9ca3af);
+  color: var(--text-muted, #9490a3);
 }
 
 .command-esc {
-  background: var(--social-bg, #f3f4f6);
+  background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 0.75rem;
+  border-radius: var(--radius-sm, 6px);
+  padding: 3px 8px;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: var(--text, #6b7280);
+  color: var(--text-muted, var(--text));
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--duration-fast, 150ms) ease;
+  font-family: inherit;
 }
 
 .command-esc:hover {
-  background: var(--border);
+  background: var(--social-bg);
   color: var(--text-h);
 }
 
 .command-body {
   max-height: 50vh;
   overflow-y: auto;
-  padding: 1rem 0;
+  padding: var(--space-sm, 0.5rem) 0;
 }
 
 .command-group {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-sm, 0.5rem);
 }
 
 .command-group-title {
-  padding: 0 1.5rem;
-  font-size: 0.75rem;
+  padding: var(--space-sm, 0.5rem) var(--space-xl, 1.5rem);
+  font-size: var(--text-xs, 0.75rem);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   font-weight: 600;
-  color: var(--l-gray, #9ca3af);
-  margin: 0 0 0.5rem;
+  color: var(--text-muted, #9490a3);
+  margin: 0;
 }
 
 .command-item {
   width: 100%;
-  padding: 0.75rem 1.5rem;
+  padding: var(--space-md, 0.75rem) var(--space-xl, 1.5rem);
   display: flex;
   align-items: center;
   gap: 12px;
   border: none;
   background: transparent;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background var(--duration-fast, 150ms) ease;
   text-align: left;
+  font-family: inherit;
+  color: inherit;
 }
 
 .command-item:hover {
-  background: var(--social-bg, #f9fafb);
+  background: var(--accent-bg, rgba(124, 58, 237, 0.08));
 }
 
 .command-item-icon {
@@ -124,22 +133,29 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-md, 10px);
   font-size: 1rem;
+  background: var(--social-bg);
 }
 
 .command-item-content {
   display: flex;
   flex-direction: column;
+  gap: 1px;
 }
 
 .command-item-title {
-  font-size: 0.95rem;
+  font-size: var(--text-base, 0.9375rem);
   font-weight: 500;
   color: var(--text-h);
 }
 
 .command-item-subtitle {
-  font-size: 0.8rem;
-  color: var(--text);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, var(--text));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .command-overlay { animation: none; opacity: 1; }
+  .command-dialog { animation: none; opacity: 1; transform: none; }
 }

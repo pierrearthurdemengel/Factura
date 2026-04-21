@@ -170,7 +170,7 @@ export default function QuoteCreate() {
                 </select>
               </div>
               <div className="app-form-group" style={{ alignItems: 'flex-end' }}>
-                <p className="app-label app-mt-0">{computeLineTotal(line).ht.toFixed(2)} EUR HT</p>
+                <p className="app-label app-mt-0">{computeLineTotal(line).ht.toFixed(2)} € HT</p>
                 <button type="button" onClick={() => removeLine(line.id)} disabled={lines.length === 1} className="app-btn-outline-danger">
                   Supprimer
                 </button>
@@ -216,13 +216,13 @@ export default function QuoteCreate() {
               <div className="app-form-group">
                 <label className="app-label">Montant de l'acompte TTC</label>
                 <p className="app-card-value" style={{ margin: 0 }}>
-                  {(totals.ttc * (parseFloat(depositPercent) || 0) / 100).toFixed(2)} EUR
+                  {(totals.ttc * (parseFloat(depositPercent) || 0) / 100).toFixed(2)} €
                 </p>
               </div>
               <div className="app-form-group">
                 <label className="app-label">Solde restant TTC</label>
                 <p className="app-card-value" style={{ margin: 0 }}>
-                  {(totals.ttc - totals.ttc * (parseFloat(depositPercent) || 0) / 100).toFixed(2)} EUR
+                  {(totals.ttc - totals.ttc * (parseFloat(depositPercent) || 0) / 100).toFixed(2)} €
                 </p>
               </div>
             </div>
@@ -240,9 +240,9 @@ export default function QuoteCreate() {
         </div>
 
         <div className="app-card app-totals" style={{ background: 'var(--social-bg)' }}>
-          <p>Total HT : <strong>{totals.ht.toFixed(2)} EUR</strong></p>
-          <p>Total TVA : <strong>{totals.vat.toFixed(2)} EUR</strong></p>
-          <p className="app-totals-grand">Total TTC : <strong>{totals.ttc.toFixed(2)} EUR</strong></p>
+          <p>Total HT : <strong>{totals.ht.toFixed(2)} €</strong></p>
+          <p>Total TVA : <strong>{totals.vat.toFixed(2)} €</strong></p>
+          <p className="app-totals-grand">Total TTC : <strong>{totals.ttc.toFixed(2)} €</strong></p>
         </div>
 
         {/* Barre de progression */}

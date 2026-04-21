@@ -149,27 +149,27 @@ export default function Simulators() {
             <div className="app-form-group">
               <label className="app-label">Chiffre d'affaires annuel</label>
               <input type="range" min={0} max={200000} step={5000} value={ca} onChange={(e) => setCa(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
-              <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(ca)} EUR</span>
+              <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(ca)} €</span>
             </div>
             <div className="app-form-group">
               <label className="app-label">Charges reelles annuelles</label>
               <input type="range" min={0} max={100000} step={1000} value={charges} onChange={(e) => setCharges(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
-              <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(charges)} EUR</span>
+              <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(charges)} €</span>
             </div>
           </div>
 
           <div className="app-kpi-grid" style={{ gridTemplateColumns: '1fr 1fr', marginTop: '0.5rem' }}>
             <div className="app-card" style={{ borderColor: microResult.recommendation === 'micro' ? 'var(--accent)' : undefined, borderWidth: microResult.recommendation === 'micro' ? 2 : undefined }}>
               <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>Micro-entreprise</h3>
-              <div className="app-card-text">URSSAF : <strong>{fmt(microResult.micro.urssaf)} EUR</strong></div>
-              <div className="app-card-text">Revenu imposable : <strong>{fmt(microResult.micro.taxableIncome)} EUR</strong></div>
-              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(microResult.micro.net)} EUR</p>
+              <div className="app-card-text">URSSAF : <strong>{fmt(microResult.micro.urssaf)} €</strong></div>
+              <div className="app-card-text">Revenu imposable : <strong>{fmt(microResult.micro.taxableIncome)} €</strong></div>
+              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(microResult.micro.net)} €</p>
             </div>
             <div className="app-card" style={{ borderColor: microResult.recommendation === 'reel' ? 'var(--accent)' : undefined, borderWidth: microResult.recommendation === 'reel' ? 2 : undefined }}>
               <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>Regime reel</h3>
-              <div className="app-card-text">Charges deductibles : <strong>{fmt(charges)} EUR</strong></div>
-              <div className="app-card-text">Cotisations estimees : <strong>{fmt(microResult.reel.urssaf)} EUR</strong></div>
-              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(microResult.reel.net)} EUR</p>
+              <div className="app-card-text">Charges deductibles : <strong>{fmt(charges)} €</strong></div>
+              <div className="app-card-text">Cotisations estimees : <strong>{fmt(microResult.reel.urssaf)} €</strong></div>
+              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(microResult.reel.net)} €</p>
             </div>
           </div>
 
@@ -187,7 +187,7 @@ export default function Simulators() {
           <div className="app-form-group">
             <label className="app-label">Revenu net imposable</label>
             <input type="range" min={0} max={200000} step={1000} value={irRevenu} onChange={(e) => setIrRevenu(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
-            <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(irRevenu)} EUR</span>
+            <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(irRevenu)} €</span>
           </div>
 
           <div className="app-form-group">
@@ -204,13 +204,13 @@ export default function Simulators() {
 
           <div className="app-card app-kpi-card">
             <p className="app-card-value" style={{ fontSize: '2rem', color: 'var(--accent)' }}>
-              {fmt(irResult.impot)} EUR
+              {fmt(irResult.impot)} €
             </p>
             <p className="app-card-sub">
               Impot estime (taux effectif : {irResult.tauxEffectif.toFixed(1)}%)
             </p>
             <p className="app-card-sub">
-              Soit {fmt(irResult.impot / 12)} EUR/mois
+              Soit {fmt(irResult.impot / 12)} €/mois
             </p>
           </div>
         </div>
@@ -224,22 +224,22 @@ export default function Simulators() {
           <div className="app-form-group">
             <label className="app-label">Chiffre d'affaires annuel</label>
             <input type="range" min={0} max={300000} step={5000} value={sasuCa} onChange={(e) => setSasuCa(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
-            <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(sasuCa)} EUR</span>
+            <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(sasuCa)} €</span>
           </div>
 
           <div className="app-kpi-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <div className="app-card">
               <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>EI (micro)</h3>
-              <div className="app-card-text">URSSAF ({(taxConfig.eiUrssafRate * 100).toFixed(1)}%) : <strong>{fmt(sasuCa * taxConfig.eiUrssafRate)} EUR</strong></div>
-              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(eiNet)} EUR</p>
+              <div className="app-card-text">URSSAF ({(taxConfig.eiUrssafRate * 100).toFixed(1)}%) : <strong>{fmt(sasuCa * taxConfig.eiUrssafRate)} €</strong></div>
+              <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>Net : {fmt(eiNet)} €</p>
             </div>
             <div className="app-card">
               <h3 className="app-card-title" style={{ textTransform: 'none', fontSize: '1rem' }}>SASU</h3>
-              <div className="app-card-text">Charges (~{(taxConfig.sasuChargesRate * 100).toFixed(0)}%) : <strong>{fmt(sasuCharges)} EUR</strong></div>
-              <div className="app-card-text">Remuneration : <strong>{fmt(sasuRemuneration)} EUR</strong></div>
-              <div className="app-card-text">Dividendes (apres IS) : <strong>{fmt(Math.max(0, sasuDividendes))} EUR</strong></div>
+              <div className="app-card-text">Charges (~{(taxConfig.sasuChargesRate * 100).toFixed(0)}%) : <strong>{fmt(sasuCharges)} €</strong></div>
+              <div className="app-card-text">Remuneration : <strong>{fmt(sasuRemuneration)} €</strong></div>
+              <div className="app-card-text">Dividendes (apres IS) : <strong>{fmt(Math.max(0, sasuDividendes))} €</strong></div>
               <p className="app-card-value" style={{ fontSize: '1.1rem', color: 'var(--accent)', marginTop: '0.5rem' }}>
-                Total : {fmt(sasuRemuneration + Math.max(0, sasuDividendes))} EUR
+                Total : {fmt(sasuRemuneration + Math.max(0, sasuDividendes))} €
               </p>
             </div>
           </div>

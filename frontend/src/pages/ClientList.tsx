@@ -5,6 +5,7 @@ import EmptyState from '../components/EmptyState';
 import ClientDataGrid from '../components/ClientDataGrid';
 import Drawer from '../components/Drawer';
 import { useToast } from '../context/ToastContext';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 // Donnees enrichies par client
@@ -55,17 +56,18 @@ function computeClientStats(clientId: string, invoices: Invoice[]): ClientStats 
   };
 }
 
-// Couleur selon le score de sante
+// Couleur selon le score de sante (utilise les variables CSS du design system)
 function healthColor(score: number): string {
-  if (score >= 80) return '#22c55e';
-  if (score >= 50) return '#f59e0b';
-  return '#ef4444';
+  if (score >= 80) return 'var(--success)';
+  if (score >= 50) return 'var(--warning)';
+  return 'var(--danger)';
 }
 
 // Page de gestion des clients enrichie avec KPIs et scoring.
 export default function ClientList() {
   const [clients, setClients] = useState<Client[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'amount' | 'health'>('name');
@@ -79,15 +81,24 @@ export default function ClientList() {
   const intl = useIntl();
 
   const load = () => {
-    getClients()
-      .then((res) => setClients(res.data['hydra:member']))
-      .catch(() => setClients([]));
-    getInvoices()
-      .then((res) => setInvoices(res.data['hydra:member']))
-      .catch(() => setInvoices([]));
+    // SWR: show cached data instantly
+    const cachedClients = getCached<{ 'hydra:member': Client[] }>('/clients');
+    const cachedInvoices = getCached<{ 'hydra:member': Invoice[] }>('/invoices');
+    if (cachedClients && cachedInvoices) {
+      setClients(cachedClients['hydra:member']);
+      setInvoices(cachedInvoices['hydra:member']);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
+    Promise.all([
+      getClients().then((res) => { setClients(res.data['hydra:member']); setCache('/clients', res.data); }).catch(() => setClients([])),
+      getInvoices().then((res) => { setInvoices(res.data['hydra:member']); setCache('/invoices', res.data); }).catch(() => setInvoices([])),
+    ]).finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/set-state-in-effect
 
   // Stats par client
   const clientStats = useMemo(() => {
@@ -161,6 +172,22 @@ export default function ClientList() {
     URL.revokeObjectURL(url);
   };
 
+  /* Squelette de chargement affiché pendant la récupération des données */
+  if (loading) return (
+    <div className="app-container">
+      <div className="app-skeleton-header">
+        <div className="app-skeleton app-skeleton-title" />
+        <div className="app-skeleton" style={{ width: '140px', height: '36px' }} />
+      </div>
+      <div className="app-kpi-grid">
+        {[1, 2, 3].map(i => <div key={i} className="app-skeleton app-skeleton-card" />)}
+      </div>
+      <div className="app-cards-grid">
+        {[1, 2, 3, 4].map(i => <div key={i} className="app-skeleton app-skeleton-card" style={{ height: '200px' }} />)}
+      </div>
+    </div>
+  );
+
   return (
     <div className="app-container">
       {/* En-tete avec KPIs */}
@@ -225,27 +252,27 @@ export default function ClientList() {
         <form onSubmit={handleSubmit} className="app-drawer-form">
 
           <div className="app-form-group">
-            <label className="app-label">{intl.formatMessage({ id: 'client.name', defaultMessage: 'Raison sociale' })}</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="app-input" placeholder="Ex: Acme Corp" />
+            <label htmlFor="client-name" className="app-label">{intl.formatMessage({ id: 'client.name', defaultMessage: 'Raison sociale' })}</label>
+            <input id="client-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required className="app-input" placeholder="Ex: Acme Corp" />
           </div>
           <div className="app-form-group">
-            <label className="app-label">{intl.formatMessage({ id: 'client.siren', defaultMessage: 'SIREN' })} (optionnel)</label>
-            <input type="text" value={siren} onChange={(e) => setSiren(e.target.value)} className="app-input" placeholder="Ex: 123 456 789" />
+            <label htmlFor="client-siren" className="app-label">{intl.formatMessage({ id: 'client.siren', defaultMessage: 'SIREN' })} (optionnel)</label>
+            <input id="client-siren" type="text" value={siren} onChange={(e) => setSiren(e.target.value)} className="app-input" placeholder="Ex: 123 456 789" />
           </div>
 
           <div className="app-form-group">
-            <label className="app-label">{intl.formatMessage({ id: 'client.address', defaultMessage: 'Adresse' })}</label>
-            <input type="text" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} required className="app-input" placeholder="123 Rue de la Paix" />
+            <label htmlFor="client-address" className="app-label">{intl.formatMessage({ id: 'client.address', defaultMessage: 'Adresse' })}</label>
+            <input id="client-address" type="text" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} required className="app-input" placeholder="123 Rue de la Paix" />
           </div>
 
           <div className="app-form-row">
             <div className="app-form-group">
-              <label className="app-label">{intl.formatMessage({ id: 'client.postalCode', defaultMessage: 'Code postal' })}</label>
-              <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} required className="app-input" placeholder="75000" />
+              <label htmlFor="client-postal-code" className="app-label">{intl.formatMessage({ id: 'client.postalCode', defaultMessage: 'Code postal' })}</label>
+              <input id="client-postal-code" type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} required className="app-input" placeholder="75000" />
             </div>
             <div className="app-form-group flex-2">
-              <label className="app-label">{intl.formatMessage({ id: 'client.city', defaultMessage: 'Ville' })}</label>
-              <input type="text" value={city} onChange={(e) => setCity(e.target.value)} required className="app-input" placeholder="Paris" />
+              <label htmlFor="client-city" className="app-label">{intl.formatMessage({ id: 'client.city', defaultMessage: 'Ville' })}</label>
+              <input id="client-city" type="text" value={city} onChange={(e) => setCity(e.target.value)} required className="app-input" placeholder="Paris" />
             </div>
           </div>
 
@@ -287,12 +314,12 @@ export default function ClientList() {
                   </div>
                   <div className="app-stat-box">
                     <div className="app-stat-box-label">CA TTC</div>
-                    <div className="app-stat-box-value">{(stats?.totalAmount || 0).toFixed(0)} EUR</div>
+                    <div className="app-stat-box-value">{(stats?.totalAmount || 0).toFixed(0)} €</div>
                   </div>
                   <div className="app-stat-box">
                     <div className="app-stat-box-label">En attente</div>
-                    <div className="app-stat-box-value" style={{ color: stats?.pendingAmount ? '#f59e0b' : undefined }}>
-                      {(stats?.pendingAmount || 0).toFixed(0)} EUR
+                    <div className="app-stat-box-value" style={{ color: stats?.pendingAmount ? 'var(--warning)' : undefined }}>
+                      {(stats?.pendingAmount || 0).toFixed(0)} €
                     </div>
                   </div>
                   <div className="app-stat-box">

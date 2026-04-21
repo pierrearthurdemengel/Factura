@@ -31,10 +31,10 @@ export default function Pricing() {
     {
       name: 'Succes Partage',
       price: 'Gratuit + 0.1%',
-      description: 'Ideal pour les freelances et TPE. Gratuit sous 50k EUR/an.',
+      description: 'Ideal pour les freelances et TPE. Gratuit sous 50k €/an.',
       features: [
-        'Gratuit sous 50 000 EUR/an de CA facture',
-        '0.1% au-dela, plafonne a 588 EUR/an (49 EUR/mois)',
+        'Gratuit sous 50 000 €/an de CA facture',
+        '0.1% au-dela, plafonne a 588 €/an (49 €/mois)',
         'Factures illimitees',
         'Factur-X + UBL + Chorus Pro',
         'Relances automatiques',
@@ -45,10 +45,10 @@ export default function Pricing() {
     },
     {
       name: 'Pro',
-      price: '14 EUR/mois',
+      price: '14 €/mois',
       description: 'Montant fixe previsible. Pour ceux qui preferent la simplicite.',
       features: [
-        'Montant fixe : 14 EUR/mois HT',
+        'Montant fixe : 14 €/mois HT',
         'Factures illimitees',
         'Factur-X + UBL + Chorus Pro',
         'Relances automatiques',
@@ -60,11 +60,11 @@ export default function Pricing() {
     },
     {
       name: 'Cabinet',
-      price: 'A partir de 79 EUR/mois',
+      price: 'A partir de 79 €/mois',
       description: 'Pour les experts-comptables gerant plusieurs clients.',
       features: [
-        '79 EUR/mois base (20 clients inclus)',
-        '+2 EUR/client actif supplementaire',
+        '79 €/mois base (20 clients inclus)',
+        '+2 €/client actif supplementaire',
         'Portail comptable white-label',
         'Vue consolidee multi-clients',
         'Export FEC groupe',
@@ -139,7 +139,7 @@ export default function Pricing() {
 
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-h)', marginBottom: '0.5rem' }}>
-            Chiffre d'affaires annuel facture : {revenue.toLocaleString('fr-FR')} EUR
+            Chiffre d'affaires annuel facture : {revenue.toLocaleString('fr-FR')} €
           </label>
           <input
             type="range"
@@ -151,21 +151,21 @@ export default function Pricing() {
             style={{ width: '100%', accentColor: 'var(--accent)' }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text)' }}>
-            <span>0 EUR</span>
-            <span>500 000 EUR</span>
+            <span>0 €</span>
+            <span>500 000 €</span>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', textAlign: 'center' }}>
           <div>
             <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent)' }}>
-              {result.fee.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR
+              {result.fee.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Frais annuels</div>
           </div>
           <div>
             <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-h)' }}>
-              {result.monthlyEquivalent.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR
+              {result.monthlyEquivalent.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text)' }}>Equivalent mensuel</div>
           </div>
@@ -178,13 +178,13 @@ export default function Pricing() {
         </div>
 
         {revenue <= 50000 && (
-          <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(34,197,94,0.1)', borderRadius: '6px', textAlign: 'center', fontSize: '0.9rem', color: '#22c55e', fontWeight: 600 }}>
-            Totalement gratuit sous 50 000 EUR de CA annuel
+          <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'var(--success-bg)', borderRadius: '6px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--success)', fontWeight: 600 }}>
+            Totalement gratuit sous 50 000 € de CA annuel
           </div>
         )}
         {revenue > 50000 && result.fee < 168 && (
-          <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'rgba(37,99,235,0.1)', borderRadius: '6px', textAlign: 'center', fontSize: '0.9rem', color: '#2563eb' }}>
-            Economie de <strong>{(168 - result.fee).toFixed(2)} EUR/an</strong> par rapport au plan Pro fixe
+          <div style={{ marginTop: '1rem', padding: '0.75rem', background: 'var(--accent-bg)', borderRadius: '6px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--accent)' }}>
+            Economie de <strong>{(168 - result.fee).toFixed(2)} €/an</strong> par rapport au plan Pro fixe
           </div>
         )}
       </div>

@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import EmptyState from '../components/EmptyState';
 import InvoiceKanbanBoard from '../components/InvoiceKanbanBoard';
+import { getCached, setCache } from '../utils/apiCache';
 import './AppLayout.css';
 
 const STATUS_CLASSES: Record<string, string> = {
@@ -40,6 +41,7 @@ export default function InvoiceList() {
   const intl = useIntl();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -71,22 +73,35 @@ export default function InvoiceList() {
     };
     if (statusFilter) params['status'] = statusFilter;
 
+    // SWR: show cached data instantly, then refresh in background
+    const cached = getCached<{ 'hydra:member': Invoice[]; 'hydra:totalItems'?: number }>('/invoices', params);
+    if (cached) {
+      setInvoices(cached['hydra:member']);
+      const total = cached['hydra:totalItems'];
+      setTotalItems(typeof total === 'number' ? total : 0);
+      setLoading(false);
+      setRefreshing(true);
+    }
+
     getInvoices(params)
       .then((res) => {
         if (cancelled) return;
         setInvoices(res.data['hydra:member']);
         const total = (res.data as Record<string, unknown>)['hydra:totalItems'];
         setTotalItems(typeof total === 'number' ? total : 0);
+        setCache('/invoices', res.data, params);
       })
       .catch(() => { if (!cancelled) setInvoices([]); })
-      .finally(() => { if (!cancelled) setLoading(false); });
+      .finally(() => { if (!cancelled) { setLoading(false); setRefreshing(false); } });
 
     return () => { cancelled = true; };
   }, [statusFilter, page]);
 
   const handleFilterChange = (value: string) => {
+    // Don't flash loading state — keep stale data visible while refreshing
     setStatusFilter(value);
     setPage(1);
+    // loading stays false so the current list remains visible during fetch
   };
 
   const handleStateChange = async (id: string, newStatus: string) => {
@@ -137,7 +152,7 @@ export default function InvoiceList() {
   );
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={refreshing ? { opacity: 0.7, transition: 'opacity 0.15s ease', pointerEvents: 'none' } : { transition: 'opacity 0.15s ease' }}>
       <div className="app-page-header">
         <h1 className="app-page-title">{intl.formatMessage({ id: 'nav.invoices', defaultMessage: 'Factures' })}</h1>
         <div className="app-page-header-actions">
@@ -189,7 +204,7 @@ export default function InvoiceList() {
                     {inv.buyer?.name} &middot; {new Date(inv.issueDate).toLocaleDateString('fr-FR')}
                   </div>
                 </div>
-                <div className="app-list-item-value">{inv.totalIncludingTax} EUR</div>
+                <div className="app-list-item-value">{parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</div>
                 {statusBadge(inv.status)}
               </Link>
             ))}
@@ -216,8 +231,8 @@ export default function InvoiceList() {
                     </td>
                     <td>{inv.buyer?.name}</td>
                     <td>{new Date(inv.issueDate).toLocaleDateString('fr-FR')}</td>
-                    <td className="text-right">{inv.totalExcludingTax} EUR</td>
-                    <td className="text-right">{inv.totalIncludingTax} EUR</td>
+                    <td className="text-right">{parseFloat(inv.totalExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
+                    <td className="text-right">{parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
                     <td className="text-center">{statusBadge(inv.status)}</td>
                   </tr>
                 ))}
@@ -249,7 +264,7 @@ export default function InvoiceList() {
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="app-btn-primary"
+            className="app-btn-outline"
           >
             Precedent
           </button>

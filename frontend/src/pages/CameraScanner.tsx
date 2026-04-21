@@ -490,7 +490,7 @@ export default function CameraScanner() {
                 width="20"
                 height="20"
                 fill="none"
-                stroke="#22c55e"
+                stroke="var(--success)"
                 strokeWidth="2"
               >
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -507,7 +507,7 @@ export default function CameraScanner() {
                 </span>
                 <span className="app-list-item-value" style={{ color: ocrResult.amount ? 'var(--text-h)' : 'var(--text)' }}>
                   {ocrResult.amount
-                    ? `${ocrResult.amount} EUR`
+                    ? `${ocrResult.amount} €`
                     : 'Non detecte'}
                 </span>
               </div>

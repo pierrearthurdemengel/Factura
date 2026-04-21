@@ -36,8 +36,8 @@ interface HistoryEntry {
 // Couleurs associees a chaque type de declencheur
 const triggerColors: Record<TriggerType, string> = {
   INVOICE_OVERDUE: '#f97316',
-  PAYMENT_RECEIVED: '#22c55e',
-  REVENUE_THRESHOLD: '#3b82f6',
+  PAYMENT_RECEIVED: 'var(--success)',
+  REVENUE_THRESHOLD: 'var(--accent)',
   VAT_DECLARATION_DUE: '#a855f7',
   NEW_CLIENT: '#14b8a6',
 };
@@ -60,9 +60,9 @@ const actionLabels: Record<ActionType, string> = {
 
 // Libelles pour le resultat d'une action dans l'historique
 const resultLabels: Record<string, { label: string; color: string }> = {
-  success: { label: 'Succes', color: '#22c55e' },
-  failure: { label: 'Echec', color: '#ef4444' },
-  pending: { label: 'En cours', color: '#f59e0b' },
+  success: { label: 'Succes', color: 'var(--success)' },
+  failure: { label: 'Echec', color: 'var(--danger)' },
+  pending: { label: 'En cours', color: 'var(--warning)' },
 };
 
 // Regles par defaut si le serveur ne repond pas
@@ -212,7 +212,7 @@ export default function AutopilotConfig() {
           </div>
         </div>
         <div className="app-card app-kpi-card">
-          <div className="app-card-value" style={{ color: '#22c55e' }}>
+          <div className="app-card-value" style={{ color: 'var(--success)' }}>
             {history.filter((h) => h.result === 'success').length}
           </div>
           <div className="app-card-sub">

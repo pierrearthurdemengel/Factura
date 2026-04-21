@@ -25,8 +25,8 @@ function downloadBlob(blob: Blob, filename: string) {
 // Formate un montant en euros avec separateur de milliers
 function formatEur(amount: string): string {
   const num = parseFloat(amount);
-  if (isNaN(num)) return `${amount} EUR`;
-  return num.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' EUR';
+  if (isNaN(num)) return `${amount} €`;
+  return num.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 }
 
 export default function ClientPortal() {
@@ -144,10 +144,10 @@ export default function ClientPortal() {
   // Configuration des badges de statut
   const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
     DRAFT: { label: 'Brouillon', color: '#6b7280', bg: 'rgba(107,114,128,0.1)' },
-    SENT: { label: 'En attente', color: '#2563eb', bg: 'rgba(37,99,235,0.1)' },
-    ACKNOWLEDGED: { label: 'Acceptee', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-    REJECTED: { label: 'Rejetee', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-    PAID: { label: 'Payee', color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+    SENT: { label: 'En attente', color: 'var(--accent)', bg: 'var(--accent-bg)' },
+    ACKNOWLEDGED: { label: 'Acceptee', color: 'var(--success)', bg: 'var(--success-bg)' },
+    REJECTED: { label: 'Rejetee', color: 'var(--danger)', bg: 'var(--danger-bg)' },
+    PAID: { label: 'Payee', color: 'var(--success)', bg: 'var(--success-bg)' },
     CANCELLED: { label: 'Annulee', color: '#9ca3af', bg: 'rgba(156,163,175,0.1)' },
   };
 

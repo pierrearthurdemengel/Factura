@@ -1,13 +1,17 @@
+/* ══════════════════════════════════════════════
+   Floating Action Button — Polished Mobile UX
+   ══════════════════════════════════════════════ */
+
 .fab-container {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: 1.5rem;
+  right: 1.5rem;
   z-index: 9999;
 }
 
 @media (min-width: 768px) {
   .fab-container {
-    display: none; /* Hide on Desktop */
+    display: none;
   }
 }
 
@@ -17,11 +21,12 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(17, 24, 39, 0.4);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s ease;
 }
 
 .fab-overlay.open {
@@ -31,23 +36,25 @@
 
 .fab-main {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: var(--accent, #10b981);
+  background: var(--accent, #7c3aed);
   color: white;
   border: none;
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
+  box-shadow: var(--shadow-accent, 0 4px 16px rgba(124, 58, 237, 0.2));
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), background 0.3s, box-shadow 0.3s;
+  transition: transform 0.2s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+              background 0.2s ease,
+              box-shadow 0.3s ease;
   z-index: 10;
 }
 
 .fab-main svg {
-  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: transform 0.2s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
 }
 
 .fab-main:hover {
@@ -55,9 +62,9 @@
 }
 
 .fab-main.active {
-  background: var(--bg, #fff);
-  color: #ef4444;
-  box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.3);
+  background: var(--surface, #fff);
+  color: var(--danger, #dc2626);
+  box-shadow: var(--shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.08));
 }
 
 .fab-main.active svg {
@@ -66,12 +73,12 @@
 
 .fab-menu {
   position: absolute;
-  bottom: 80px;
+  bottom: 72px;
   right: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 16px;
+  gap: 14px;
   pointer-events: none;
   z-index: 10;
 }
@@ -83,13 +90,13 @@
 .fab-item {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   background: transparent;
   border: none;
   cursor: pointer;
-  transform: translateY(20px) scale(0.8);
+  transform: translateY(16px) scale(0.85);
   opacity: 0;
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: all 0.2s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
 }
 
 .fab-menu.open .fab-item {
@@ -97,9 +104,8 @@
   opacity: 1;
 }
 
-/* Staggered Spring Animation Delays */
-.fab-menu.open .fab-item:nth-child(1) { transition-delay: 0.1s; }
-.fab-menu.open .fab-item:nth-child(2) { transition-delay: 0.05s; }
+.fab-menu.open .fab-item:nth-child(1) { transition-delay: 0.08s; }
+.fab-menu.open .fab-item:nth-child(2) { transition-delay: 0.04s; }
 .fab-menu.open .fab-item:nth-child(3) { transition-delay: 0s; }
 
 .fab-item:active {
@@ -107,25 +113,32 @@
 }
 
 .fab-label {
-  background: var(--bg, #fff);
-  color: var(--text-h, #111827);
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  background: var(--surface, #fff);
+  color: var(--text-h, #0a0714);
+  padding: 8px 14px;
+  border-radius: var(--radius-md, 10px);
+  font-size: var(--text-sm, 0.8125rem);
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  border: 1px solid var(--border, #e5e7eb);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.06));
+  border: 1px solid var(--border, #e8e6ec);
 }
 
 .fab-icon-sm {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: var(--bg, #fff);
-  border: 1px solid var(--border, #e5e7eb);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e8e6ec);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.06));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab-item,
+  .fab-main svg {
+    transition: none;
+  }
 }
