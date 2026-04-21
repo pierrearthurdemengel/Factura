@@ -301,7 +301,7 @@ function highlightJson(json: string): React.ReactNode[] {
     }
 
     return (
-      <span key={lineIndex}>
+      <span key={`${line.trimStart().slice(0, 20)}-${lineIndex}`}>
         {parts}
         {lineIndex < lines.length - 1 ? '\n' : ''}
       </span>
