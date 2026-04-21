@@ -29,6 +29,9 @@ class PaymentToAccountingMapper
     {
         $entries = [];
         $company = $invoice->getSeller();
+        if (null === $company) {
+            throw new \RuntimeException('La facture doit avoir un vendeur pour generer les ecritures comptables.');
+        }
         $amount = $invoice->getTotalIncludingTax();
 
         // Debit 512 (Banque) - montant recu

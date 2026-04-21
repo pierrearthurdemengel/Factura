@@ -53,7 +53,7 @@ class PayPortalController extends AbstractController
                 'status' => $invoice->getStatus(),
                 'issueDate' => $invoice->getIssueDate()->format('Y-m-d'),
                 'dueDate' => $invoice->getDueDate()?->format('Y-m-d'),
-                'seller' => $invoice->getSeller()->getName(),
+                'seller' => $invoice->getSeller()?->getName() ?? '',
                 'buyer' => $invoice->getBuyer()->getName(),
                 'totalExcludingTax' => $invoice->getTotalExcludingTax(),
                 'totalTax' => $invoice->getTotalTax(),

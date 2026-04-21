@@ -66,6 +66,14 @@ class SendReminderHandler
         }
 
         $seller = $invoice->getSeller();
+        if (null === $seller) {
+            $this->logger->error('Relance impossible : facture sans vendeur.', [
+                'invoiceId' => $message->getInvoiceId(),
+            ]);
+
+            return;
+        }
+
         $reminderType = $message->getReminderType();
 
         // Recuperer le template (personnalise ou par defaut)

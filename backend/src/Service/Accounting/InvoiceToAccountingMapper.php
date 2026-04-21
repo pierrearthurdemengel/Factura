@@ -34,6 +34,9 @@ class InvoiceToAccountingMapper
     {
         $entries = [];
         $company = $invoice->getSeller();
+        if (null === $company) {
+            throw new \RuntimeException('La facture doit avoir un vendeur pour generer les ecritures comptables.');
+        }
         $totalTtc = $invoice->getTotalIncludingTax();
         $issueDate = $invoice->getIssueDate();
 

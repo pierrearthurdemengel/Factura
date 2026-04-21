@@ -37,6 +37,13 @@ class TransmitInvoiceToPdpHandler
         }
 
         $company = $invoice->getSeller();
+        if (null === $company) {
+            $this->logger->error('Transmission PDP impossible : facture sans vendeur.', [
+                'invoiceId' => $message->getInvoiceId(),
+            ]);
+
+            return;
+        }
         $pdpClient = $this->pdpDispatcher->getClientForCompany($company);
 
         try {

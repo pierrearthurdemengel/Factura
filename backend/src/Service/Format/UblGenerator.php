@@ -50,13 +50,18 @@ class UblGenerator
         $this->addCbcElement($dom, $root, 'DocumentCurrencyCode', $invoice->getCurrency());
 
         // Vendeur
-        $this->addParty($dom, $root, 'AccountingSupplierParty', $invoice->getSeller());
+        $seller = $invoice->getSeller();
+        if (null === $seller) {
+            throw new \RuntimeException('La facture doit avoir un vendeur pour generer le UBL.');
+        }
+        $this->addParty($dom, $root, 'AccountingSupplierParty', $seller);
 
         // Acheteur
-        $this->addBuyerParty($dom, $root, $invoice->getBuyer());
+        $buyer = $invoice->getBuyer();
+        $this->addBuyerParty($dom, $root, $buyer);
 
         // Conditions de paiement
-        if (null !== $invoice->getPaymentTerms() || null !== $invoice->getSeller()->getIban()) {
+        if (null !== $invoice->getPaymentTerms() || null !== $seller->getIban()) {
             $this->addPaymentMeans($dom, $root, $invoice);
         }
 
@@ -233,6 +238,9 @@ class UblGenerator
         $this->addCbcElement($dom, $paymentMeans, 'PaymentMeansCode', '30');
 
         $seller = $invoice->getSeller();
+        if (null === $seller) {
+            return;
+        }
         if (null !== $seller->getIban()) {
             $account = $dom->createElementNS(self::NAMESPACE_CAC, 'cac:PayeeFinancialAccount');
             $this->addCbcElement($dom, $account, 'ID', $seller->getIban());

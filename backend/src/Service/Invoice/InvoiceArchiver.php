@@ -42,7 +42,11 @@ class InvoiceArchiver
         $hash = hash('sha256', $ciiXml);
 
         // Chemin S3 : {siren}/{year}/{invoice_number}/
-        $siren = $invoice->getSeller()->getSiren();
+        $seller = $invoice->getSeller();
+        if (null === $seller) {
+            throw new \RuntimeException('La facture doit avoir un vendeur pour etre archivee.');
+        }
+        $siren = $seller->getSiren();
         $year = $invoice->getIssueDate()->format('Y');
         $number = $invoice->getNumber() ?? 'draft';
         $basePath = sprintf('%s/%s/%s', $siren, $year, $number);

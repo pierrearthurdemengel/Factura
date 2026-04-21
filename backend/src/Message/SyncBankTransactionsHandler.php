@@ -50,8 +50,6 @@ class SyncBankTransactionsHandler
             return;
         }
 
-        $company = $connection->getCompany();
-
         // Synchroniser les transactions pour chaque compte
         foreach ($connection->getAccounts() as $account) {
             $this->syncAccountTransactions($account, $connection);
@@ -61,7 +59,7 @@ class SyncBankTransactionsHandler
         foreach ($connection->getAccounts() as $account) {
             foreach ($account->getTransactions() as $transaction) {
                 if ('NONE' === $transaction->getReconciliationStatus()) {
-                    $this->reconciliationEngine->autoReconcile($transaction, $company);
+                    $this->reconciliationEngine->autoReconcile($transaction, $connection->getCompany());
                 }
             }
         }

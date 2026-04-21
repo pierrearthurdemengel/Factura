@@ -40,7 +40,8 @@ class InvoiceEventController extends AbstractController
         }
 
         // Verifier que la facture appartient a l'entreprise de l'utilisateur
-        if ($invoice->getSeller()->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
+        $seller = $invoice->getSeller();
+        if (null === $seller || $seller->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
             return new JsonResponse(['error' => 'Acces interdit.'], Response::HTTP_FORBIDDEN);
         }
 

@@ -51,6 +51,9 @@ class FacturXGenerator
 
         // Vendeur
         $seller = $invoice->getSeller();
+        if (null === $seller) {
+            throw new \RuntimeException('La facture doit avoir un vendeur pour generer le Factur-X.');
+        }
         $doc->setDocumentSeller($seller->getName());
         $doc->setDocumentSellerAddress(
             $seller->getAddressLine1(),

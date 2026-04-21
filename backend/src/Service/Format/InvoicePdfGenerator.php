@@ -25,6 +25,10 @@ class InvoicePdfGenerator
         $seller = $invoice->getSeller();
         $buyer = $invoice->getBuyer();
 
+        if (null === $seller) {
+            throw new \RuntimeException('La facture doit avoir un vendeur pour generer un PDF.');
+        }
+
         // Couleur primaire personnalisee ou bleu par defaut
         $primaryColor = $this->hexToRgb($seller->getPrimaryColor() ?? '#2563EB');
 

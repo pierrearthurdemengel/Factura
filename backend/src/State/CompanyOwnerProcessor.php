@@ -20,6 +20,9 @@ use Symfony\Bundle\SecurityBundle\Security;
  */
 class CompanyOwnerProcessor implements ProcessorInterface
 {
+    /**
+     * @param ProcessorInterface<object, object> $persistProcessor
+     */
     public function __construct(
         private readonly ProcessorInterface $persistProcessor,
         private readonly Security $security,

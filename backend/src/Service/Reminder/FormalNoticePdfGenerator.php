@@ -22,6 +22,11 @@ class FormalNoticePdfGenerator
     {
         $seller = $invoice->getSeller();
         $buyer = $invoice->getBuyer();
+
+        if (null === $seller) {
+            throw new \RuntimeException('La facture doit avoir un vendeur pour generer une mise en demeure.');
+        }
+
         $today = new \DateTimeImmutable();
 
         $pdf = new \FPDF();

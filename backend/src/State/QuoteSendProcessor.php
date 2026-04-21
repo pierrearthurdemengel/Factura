@@ -34,7 +34,11 @@ class QuoteSendProcessor implements ProcessorInterface
 
         // Generer le numero de devis s'il n'en a pas encore
         if (null === $quote->getNumber()) {
-            $number = $this->numberGenerator->generate($quote->getSeller());
+            $seller = $quote->getSeller();
+            if (null === $seller) {
+                throw new \RuntimeException('Le devis doit avoir un vendeur pour etre envoye.');
+            }
+            $number = $this->numberGenerator->generate($seller);
             $quote->setNumber($number);
         }
 

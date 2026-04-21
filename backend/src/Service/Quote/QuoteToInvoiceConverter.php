@@ -33,8 +33,13 @@ class QuoteToInvoiceConverter
             throw new \LogicException('Seul un devis envoye ou accepte peut etre converti en facture.');
         }
 
+        $seller = $quote->getSeller();
+        if (null === $seller) {
+            throw new \LogicException('Le devis doit avoir un vendeur pour etre converti en facture.');
+        }
+
         $invoice = new Invoice();
-        $invoice->setSeller($quote->getSeller());
+        $invoice->setSeller($seller);
         $invoice->setBuyer($quote->getBuyer());
         $invoice->setIssueDate(new \DateTimeImmutable());
         $invoice->setCurrency($quote->getCurrency());

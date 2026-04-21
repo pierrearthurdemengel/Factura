@@ -34,7 +34,11 @@ class InvoiceSendProcessor implements ProcessorInterface
     {
         // Genere le numero de facture s'il n'existe pas encore
         if (null === $data->getNumber()) {
-            $number = $this->numberGenerator->generate($data->getSeller());
+            $seller = $data->getSeller();
+            if (null === $seller) {
+                throw new \RuntimeException('La facture doit avoir un vendeur pour etre envoyee.');
+            }
+            $number = $this->numberGenerator->generate($seller);
             $data->setNumber($number);
         }
 

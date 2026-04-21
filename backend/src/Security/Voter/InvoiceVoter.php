@@ -45,7 +45,8 @@ class InvoiceVoter extends Voter
 
         // Verifie que l'utilisateur est le proprietaire de l'entreprise vendeuse
         $company = $user->getCompany();
-        if (null === $company || $invoice->getSeller()->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
+        $seller = $invoice->getSeller();
+        if (null === $company || null === $seller || $seller->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
             return false;
         }
 

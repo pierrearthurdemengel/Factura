@@ -125,6 +125,10 @@ class ChorusProClient implements PdpClientInterface
         $seller = $invoice->getSeller();
         $buyer = $invoice->getBuyer();
 
+        if (null === $seller) {
+            throw new \RuntimeException('La facture doit avoir un vendeur pour la transmission Chorus Pro.');
+        }
+
         // Recherche de l'idStructureCPP du fournisseur via son SIRET
         $sellerSiret = $seller->getSiret() ?? $seller->getSiren();
         $sellerStructure = $this->rechercherStructure($sellerSiret);

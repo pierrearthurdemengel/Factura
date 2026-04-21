@@ -43,10 +43,15 @@ class FactoringRequestService
             throw new \InvalidArgumentException($eligibility['reason'] ?? 'La facture n\'est pas eligible a l\'affacturage.');
         }
 
+        $seller = $invoice->getSeller();
+        if (null === $seller) {
+            throw new \InvalidArgumentException('La facture doit avoir un vendeur pour demander l\'affacturage.');
+        }
+
         // Creer la demande
         $request = new FactoringRequest();
         $request->setInvoice($invoice);
-        $request->setCompany($invoice->getSeller());
+        $request->setCompany($seller);
         $request->setPartnerId($partnerId);
         $request->setAmount($eligibility['proposedAmount'] ?? 0);
         $request->setFee($eligibility['estimatedFee'] ?? 0);

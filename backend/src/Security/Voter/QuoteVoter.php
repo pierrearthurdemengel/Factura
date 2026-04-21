@@ -45,7 +45,8 @@ class QuoteVoter extends Voter
 
         // Verifie que l'utilisateur est le proprietaire de l'entreprise vendeuse
         $company = $user->getCompany();
-        if (null === $company || $quote->getSeller()->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
+        $seller = $quote->getSeller();
+        if (null === $company || null === $seller || $seller->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
             return false;
         }
 

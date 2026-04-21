@@ -119,7 +119,7 @@ class InvoiceShareService
         }
 
         // Verifier que ce n'est pas le vendeur lui-meme
-        $sellerId = $invoice->getSeller()->getId()?->toRfc4122();
+        $sellerId = $invoice->getSeller()?->getId()?->toRfc4122();
         $matchId = $matchingCompany->getId()?->toRfc4122();
 
         if ($sellerId === $matchId) {

@@ -67,6 +67,12 @@ class InvoiceValidator
     {
         $seller = $invoice->getSeller();
 
+        if (null === $seller) {
+            $errors[] = 'Le vendeur est obligatoire.';
+
+            return;
+        }
+
         if (empty($seller->getName())) {
             $errors[] = 'La raison sociale du vendeur est obligatoire.';
         }
