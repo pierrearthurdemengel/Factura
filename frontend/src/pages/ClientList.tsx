@@ -122,7 +122,7 @@ export default function ClientList() {
   const filteredClients = useMemo(() => {
     const result = clients.filter(c =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
-      (c.siren && c.siren.includes(search)) ||
+      c.siren?.includes(search) ||
       c.city.toLowerCase().includes(search.toLowerCase())
     );
     if (sortBy === 'name') result.sort((a, b) => a.name.localeCompare(b.name));

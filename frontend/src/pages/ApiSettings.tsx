@@ -333,8 +333,9 @@ export default function ApiSettings() {
                   </h3>
 
                   <div className="app-form-group">
-                    <label className="app-label">Nom de la cle</label>
+                    <label htmlFor="api-key-name" className="app-label">Nom de la cle</label>
                     <input
+                      id="api-key-name"
                       value={newKeyName}
                       onChange={(e) => setNewKeyName(e.target.value)}
                       className="app-input"
@@ -480,8 +481,9 @@ export default function ApiSettings() {
               </h3>
 
               <div className="app-form-group">
-                <label className="app-label">URL de l'endpoint</label>
+                <label htmlFor="webhook-url" className="app-label">URL de l'endpoint</label>
                 <input
+                  id="webhook-url"
                   value={webhookUrl}
                   onChange={(e) => setWebhookUrl(e.target.value)}
                   className="app-input"
@@ -515,8 +517,9 @@ export default function ApiSettings() {
               </div>
 
               <div className="app-form-group">
-                <label className="app-label">Secret de signature (optionnel)</label>
+                <label htmlFor="webhook-secret" className="app-label">Secret de signature (optionnel)</label>
                 <input
+                  id="webhook-secret"
                   value={webhookSecret}
                   onChange={(e) => setWebhookSecret(e.target.value)}
                   className="app-input"

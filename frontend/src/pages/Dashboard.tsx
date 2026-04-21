@@ -438,8 +438,8 @@ export default function Dashboard() {
           <>
             <h3 className="dash-invoices-title">{intl.formatMessage({ id: 'dashboard.suggestions', defaultMessage: 'Suggestions' })}</h3>
             <div className="dash-suggestions">
-              {suggestions.map((s, i) => (
-                <Link key={i} to={s.action} className="dash-suggestion-item">
+              {suggestions.map((s) => (
+                <Link key={s.text} to={s.action} className="dash-suggestion-item">
                   <span className="dash-suggestion-icon">{s.icon}</span>
                   <span className="dash-suggestion-text">{s.text}</span>
                   <svg className="dash-suggestion-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text)" strokeWidth="2">

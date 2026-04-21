@@ -277,13 +277,14 @@ export default function AutopilotConfig() {
       {/* Historique des actions */}
       <h2 className="app-section-title">Historique des actions</h2>
 
-      {historyLoading ? (
+      {historyLoading && (
         <div>
           {[1, 2, 3].map((i) => (
             <div key={i} className="app-skeleton app-skeleton-table-row" style={{ marginTop: '0.5rem' }} />
           ))}
         </div>
-      ) : history.length === 0 ? (
+      )}
+      {!historyLoading && history.length === 0 && (
         <div className="app-empty">
           <p className="app-empty-title">
             Aucune action executee
@@ -292,7 +293,8 @@ export default function AutopilotConfig() {
             L'historique apparaitra ici lorsque vos regles se declencheront.
           </p>
         </div>
-      ) : (
+      )}
+      {!historyLoading && history.length > 0 && (
         <div className="app-table-wrapper">
           <table className="app-table">
             <thead>

@@ -120,8 +120,8 @@ export default function RevenueChart({ invoices }: Readonly<RevenueChartProps>) 
 
         <g transform={`translate(${margin.left},${margin.top})`}>
           {/* Grid lines */}
-          {yTicks.map((t, i) => (
-            <line key={i} x1={0} y1={t.y} x2={w} y2={t.y} stroke="var(--border)" strokeDasharray="3 3" opacity={0.5} />
+          {yTicks.map((t) => (
+            <line key={`grid-${t.val}`} x1={0} y1={t.y} x2={w} y2={t.y} stroke="var(--border)" strokeDasharray="3 3" opacity={0.5} />
           ))}
 
           {/* Area */}
@@ -134,12 +134,12 @@ export default function RevenueChart({ invoices }: Readonly<RevenueChartProps>) 
 
           {/* Data dots */}
           {points.map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r={hoverIndex === i ? 5 : 3} fill="var(--accent, #7c3aed)" stroke="var(--surface, #fff)" strokeWidth={2} />
+            <circle key={data[i].name} cx={p.x} cy={p.y} r={hoverIndex === i ? 5 : 3} fill="var(--accent, #7c3aed)" stroke="var(--surface, #fff)" strokeWidth={2} />
           ))}
 
           {/* Y axis labels */}
-          {yTicks.map((t, i) => (
-            <text key={i} x={-8} y={t.y} textAnchor="end" dominantBaseline="middle" fill="var(--text)" fontSize={12}>
+          {yTicks.map((t) => (
+            <text key={`label-${t.val}`} x={-8} y={t.y} textAnchor="end" dominantBaseline="middle" fill="var(--text)" fontSize={12}>
               {t.val === 0 ? '0' : `${Math.round(t.val)}\u20AC`}
             </text>
           ))}
@@ -147,7 +147,7 @@ export default function RevenueChart({ invoices }: Readonly<RevenueChartProps>) 
           {/* X axis labels */}
           {data.map((d, i) => (
             <text
-              key={i}
+              key={d.name}
               x={points[i]?.x ?? 0}
               y={h + 20}
               textAnchor="middle"

@@ -94,14 +94,14 @@ api.interceptors.response.use(
       } catch {
         // Le refresh a echoue — deconnecter l'utilisateur
         sessionStorage.removeItem('jwt_token');
-        window.location.href = '/login';
-        return Promise.reject(error);
+        globalThis.location.href = '/login';
+        throw error;
       } finally {
         isRefreshing = false;
       }
     }
 
-    return Promise.reject(error);
+    throw error;
   },
 );
 

@@ -48,7 +48,7 @@ export default function Unpaid() {
         };
       });
       queueMicrotask(() => {
-        setInvoices(mapped.sort((a, b) => b.daysOverdue - a.daysOverdue));
+        setInvoices(mapped.toSorted((a, b) => b.daysOverdue - a.daysOverdue));
         setLoading(false);
       });
     }
@@ -82,7 +82,7 @@ export default function Unpaid() {
             }
           })
         );
-        setInvoices(withReminders.sort((a, b) => b.daysOverdue - a.daysOverdue));
+        setInvoices(withReminders.toSorted((a, b) => b.daysOverdue - a.daysOverdue));
       })
       .catch(() => toastError('Impossible de charger les factures en retard.'))
       .finally(() => setLoading(false));

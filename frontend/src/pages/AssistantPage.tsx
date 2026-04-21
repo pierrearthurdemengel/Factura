@@ -40,14 +40,15 @@ function formatContent(content: string): React.ReactNode[] {
   // Decoupe le texte pour mettre en evidence les montants (ex: 1 234,56 EUR, 20%, etc.)
   const parts = content.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => {
+    const key = `${part.slice(0, 20)}-${i}`;
     if (part.startsWith('**') && part.endsWith('**')) {
       return (
-        <strong key={i} className="assistant-bold">
+        <strong key={key} className="assistant-bold">
           {part.slice(2, -2)}
         </strong>
       );
     }
-    return <span key={i}>{part}</span>;
+    return <span key={key}>{part}</span>;
   });
 }
 

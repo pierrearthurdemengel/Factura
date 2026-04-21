@@ -355,9 +355,10 @@ export default function Network() {
             <>
               {/* Lien de parrainage */}
               <div className="app-card" style={{ marginBottom: '1.5rem' }}>
-                <label className="app-label">Votre lien de parrainage</label>
+                <label htmlFor="network-referral-link" className="app-label">Votre lien de parrainage</label>
                 <div className="app-filter-bar">
                   <input
+                    id="network-referral-link"
                     type="text"
                     value={referralData.referralLink}
                     readOnly

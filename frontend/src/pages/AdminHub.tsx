@@ -70,7 +70,7 @@ export default function AdminHub() {
 
     try {
       // Si c'est un SIREN (9 chiffres), recherche directe
-      const cleaned = searchQuery.replace(/\s/g, '');
+      const cleaned = searchQuery.replaceAll(/\s/g, '');
       if (/^\d{9}$/.test(cleaned)) {
         const res = await api.get(`/admin-hub/insee/siren/${cleaned}`);
         setSearchResults([res.data]);

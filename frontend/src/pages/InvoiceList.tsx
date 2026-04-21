@@ -135,7 +135,11 @@ export default function InvoiceList() {
   // SWR: derive display data from cache while fresh data loads
   const displayInvoices = !loading ? invoices : (cachedResult?.['hydra:member'] ?? invoices);
   const cachedTotal = cachedResult?.['hydra:totalItems'];
-  const displayTotal = !loading ? totalItems : (typeof cachedTotal === 'number' ? cachedTotal : totalItems);
+  const displayTotal = (() => {
+    if (!loading) return totalItems;
+    if (typeof cachedTotal === 'number') return cachedTotal;
+    return totalItems;
+  })();
   const refreshing = loading && !!cachedResult;
   const totalPages = Math.max(1, Math.ceil(displayTotal / PAGE_SIZE));
 
