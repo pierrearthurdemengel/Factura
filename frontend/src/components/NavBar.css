@@ -9,7 +9,6 @@
   display: flex;
   gap: var(--space-xl);
   align-items: center;
-  background: var(--surface);
   position: sticky;
   top: 0;
   z-index: 100;
