@@ -41,8 +41,10 @@ export default function Banking() {
   useEffect(() => {
     const cached = getCached<{ 'hydra:member': BankTransaction[] }>('/bank/transactions');
     if (cached) {
-      setTransactions(cached['hydra:member'] || []);
-      setLoading(false);
+      queueMicrotask(() => {
+        setTransactions(cached['hydra:member'] || []);
+        setLoading(false);
+      });
     }
     api.get('/bank/transactions')
       .then((res) => {

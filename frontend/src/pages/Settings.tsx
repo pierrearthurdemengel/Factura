@@ -43,16 +43,18 @@ export default function Settings() {
     // SWR: show cached company instantly
     const cached = getCached<Company>('/companies/me');
     if (cached) {
-      setCompany(cached);
-      setForm({
-        name: cached.name || '', siren: cached.siren || '', siret: cached.siret || '',
-        vatNumber: cached.vatNumber || '', legalForm: cached.legalForm || '',
-        nafCode: cached.nafCode || '', addressLine1: cached.addressLine1 || '',
-        addressLine2: cached.addressLine2 || '', postalCode: cached.postalCode || '',
-        city: cached.city || '', countryCode: cached.countryCode || 'FR',
-        iban: cached.iban || '', bic: cached.bic || '', defaultPdp: cached.defaultPdp || '',
+      queueMicrotask(() => {
+        setCompany(cached);
+        setForm({
+          name: cached.name || '', siren: cached.siren || '', siret: cached.siret || '',
+          vatNumber: cached.vatNumber || '', legalForm: cached.legalForm || '',
+          nafCode: cached.nafCode || '', addressLine1: cached.addressLine1 || '',
+          addressLine2: cached.addressLine2 || '', postalCode: cached.postalCode || '',
+          city: cached.city || '', countryCode: cached.countryCode || 'FR',
+          iban: cached.iban || '', bic: cached.bic || '', defaultPdp: cached.defaultPdp || '',
+        });
+        setLoading(false);
       });
-      setLoading(false);
     }
 
     getCompany()

@@ -92,14 +92,16 @@ export default function Declarations() {
     const cachedVat = getCached<VatBalance>('/tax/vat/balance', vatParams);
     const cachedUrssaf = getCached<{ totalContributions: string }>('/tax/urssaf/contributions', urssafParams);
     if (cachedDeadlines || cachedVat || cachedUrssaf) {
-      if (Array.isArray(cachedDeadlines) && cachedDeadlines.length > 0) {
-        setDeadlines(cachedDeadlines);
-      } else {
-        setDeadlines(getDefaultDeadlines(currentYear));
-      }
-      if (cachedVat) setVatBalance(cachedVat);
-      if (cachedUrssaf?.totalContributions) setUrssafAmount(cachedUrssaf.totalContributions);
-      setLoading(false);
+      queueMicrotask(() => {
+        if (Array.isArray(cachedDeadlines) && cachedDeadlines.length > 0) {
+          setDeadlines(cachedDeadlines);
+        } else {
+          setDeadlines(getDefaultDeadlines(currentYear));
+        }
+        if (cachedVat) setVatBalance(cachedVat);
+        if (cachedUrssaf?.totalContributions) setUrssafAmount(cachedUrssaf.totalContributions);
+        setLoading(false);
+      });
     }
     // Tenter de charger les echeances depuis l'API, sinon utiliser le calendrier par defaut
     Promise.all([

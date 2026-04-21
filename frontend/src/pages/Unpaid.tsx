@@ -47,8 +47,10 @@ export default function Unpaid() {
           reminders: (inv as { reminders?: ReminderEntry[] }).reminders || [],
         };
       });
-      setInvoices(mapped.sort((a, b) => b.daysOverdue - a.daysOverdue));
-      setLoading(false);
+      queueMicrotask(() => {
+        setInvoices(mapped.sort((a, b) => b.daysOverdue - a.daysOverdue));
+        setLoading(false);
+      });
     }
     api.get('/invoices', { params })
       .then(async (res) => {

@@ -34,8 +34,10 @@ export default function Accounting() {
     const params = { period: periodFilter };
     const cached = getCached<{ 'hydra:member': AccountingEntry[] }>('/accounting/entries', params);
     if (cached) {
-      setEntries(cached['hydra:member'] || []);
-      setLoading(false);
+      queueMicrotask(() => {
+        setEntries(cached['hydra:member'] || []);
+        setLoading(false);
+      });
     }
     api.get('/accounting/entries', { params })
       .then((res) => {

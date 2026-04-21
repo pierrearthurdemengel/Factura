@@ -38,8 +38,10 @@ export default function QuoteList() {
     // SWR: show cached data instantly
     const cached = getCached<{ 'hydra:member': Quote[] }>('/quotes');
     if (cached) {
-      setQuotes(cached['hydra:member'] || []);
-      setLoading(false);
+      queueMicrotask(() => {
+        setQuotes(cached['hydra:member'] || []);
+        setLoading(false);
+      });
     }
 
     api.get('/quotes')

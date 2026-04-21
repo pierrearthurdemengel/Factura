@@ -28,8 +28,10 @@ export default function QuoteDetail() {
     // SWR: show cached quote instantly
     const cached = getCached<Quote>(`/quotes/${id}`);
     if (cached) {
-      setQuote(cached);
-      setLoading(false);
+      queueMicrotask(() => {
+        setQuote(cached);
+        setLoading(false);
+      });
     } else {
       setLoading(true);
     }

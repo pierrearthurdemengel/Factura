@@ -137,12 +137,17 @@ export default function Dashboard() {
     // SWR: show cached data instantly
     const cachedInv = getCached<{ 'hydra:member': Invoice[] }>('/invoices');
     const cachedActs = getCached<ActivityItem[]>('/dashboard/activities');
-    if (cachedInv) {
-      setInvoices(cachedInv['hydra:member']);
-      setLoading(false);
-    }
-    if (cachedActs) {
-      setActivities(cachedActs);
+    if (cachedInv || cachedActs) {
+      queueMicrotask(() => {
+        if (cancelled) return;
+        if (cachedInv) {
+          setInvoices(cachedInv['hydra:member']);
+          setLoading(false);
+        }
+        if (cachedActs) {
+          setActivities(cachedActs);
+        }
+      });
     }
 
     getInvoices()

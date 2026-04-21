@@ -106,10 +106,13 @@ export default function Network() {
     if (activeTab !== 'stats') return;
     const cached = getCached<NetworkStats>('/network/stats');
     if (cached) {
-      setStats(cached);
-      setStatsLoading(false);
+      queueMicrotask(() => {
+        setStats(cached);
+        setStatsLoading(false);
+      });
+    } else {
+      setStatsLoading(true);
     }
-    setStatsLoading((prev) => cached ? prev : true);
     api.get<NetworkStats>('/network/stats')
       .then((res) => {
         setStats(res.data);
@@ -124,10 +127,13 @@ export default function Network() {
     if (activeTab !== 'referral') return;
     const cached = getCached<ReferralData>('/referrals/me');
     if (cached) {
-      setReferralData(cached);
-      setReferralLoading(false);
+      queueMicrotask(() => {
+        setReferralData(cached);
+        setReferralLoading(false);
+      });
+    } else {
+      setReferralLoading(true);
     }
-    setReferralLoading((prev) => cached ? prev : true);
     api.get<ReferralData>('/referrals/me')
       .then((res) => {
         setReferralData(res.data);

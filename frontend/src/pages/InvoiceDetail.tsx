@@ -73,8 +73,10 @@ export default function InvoiceDetail() {
     // SWR: show cached invoice instantly
     const cachedInv = getCached<Invoice>(`/invoices/${id}`);
     if (cachedInv) {
-      setInvoice(cachedInv);
-      setLoading(false);
+      queueMicrotask(() => {
+        setInvoice(cachedInv);
+        setLoading(false);
+      });
     } else {
       setLoading(true);
     }

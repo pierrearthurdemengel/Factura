@@ -85,9 +85,11 @@ export default function ClientList() {
     const cachedClients = getCached<{ 'hydra:member': Client[] }>('/clients');
     const cachedInvoices = getCached<{ 'hydra:member': Invoice[] }>('/invoices');
     if (cachedClients && cachedInvoices) {
-      setClients(cachedClients['hydra:member']);
-      setInvoices(cachedInvoices['hydra:member']);
-      setLoading(false);
+      queueMicrotask(() => {
+        setClients(cachedClients['hydra:member']);
+        setInvoices(cachedInvoices['hydra:member']);
+        setLoading(false);
+      });
     } else {
       setLoading(true);
     }
