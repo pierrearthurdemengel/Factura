@@ -9,10 +9,10 @@ services:
             - postgres
             - redis
         environment:
-            DATABASE_URL: postgresql://factura:factura@postgres:5432/factura?serverVersion=16&charset=utf8
+            DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
             MESSENGER_TRANSPORT_DSN: redis://redis:6379/messages
-            APP_ENV: dev
-            APP_SECRET: a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4
+            APP_ENV: ${APP_ENV}
+            APP_SECRET: ${APP_SECRET}
         networks:
             - factura
 
@@ -31,9 +31,9 @@ services:
     postgres:
         image: postgres:16-alpine
         environment:
-            POSTGRES_USER: factura
-            POSTGRES_PASSWORD: factura
-            POSTGRES_DB: factura
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
         ports:
             - "5432:5432"
         volumes:

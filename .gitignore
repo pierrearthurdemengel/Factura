@@ -8,6 +8,7 @@ PROMPT-FACTURA.md
 setup-claude.sh
 
 # Variables d'environnement
+/.env
 .env.local
 .env.*.local
 .env.prod
