@@ -3,9 +3,10 @@ import { useIntl } from 'react-intl';
 import { getInvoices, getInvoiceEvents, type Invoice, type InvoiceEvent } from '../api/factura';
 import { Link } from 'react-router-dom';
 import RevenueChart from '../components/RevenueChart';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
-import { SortableContext, arrayMove, sortableKeyboardCoordinates, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay, type DragStartEvent, type DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, arrayMove, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { getCached, setCache } from '../utils/apiCache';
 import './Dashboard.css';
 
 // --- Sparkline (SVG pur) ---
@@ -72,9 +73,8 @@ function SortableWidget({ id, className, children }: { id: string, className: st
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.4 : 1,
-    zIndex: isDragging ? 10 : 1,
-    cursor: isDragging ? 'grabbing' : 'auto',
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 0 : 1,
     display: 'flex',
     flexDirection: 'column',
   };
@@ -99,6 +99,17 @@ function SortableWidget({ id, className, children }: { id: string, className: st
   );
 }
 
+// --- Drag Overlay Widget (static, no sortable hooks) ---
+function DragOverlayWidget({ className, children }: { className: string, children: React.ReactNode }) {
+  return (
+    <div className={className} style={{ display: 'flex', flexDirection: 'column', cursor: 'grabbing' }}>
+      <div className="dash-card dash-card--dragging" style={{ flex: 1, position: 'relative' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 // --- Dashboard ---
 const DEFAULT_WIDGETS = ['kpi-month', 'kpi-revenue', 'kpi-pending', 'kpi-treasury', 'chart-revenue', 'list-recent', 'list-feed', 'suggestions'];
 
@@ -108,6 +119,7 @@ export default function Dashboard() {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showConsolidated, setShowConsolidated] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   const [widgets, setWidgets] = useState<string[]>(() => {
     const saved = localStorage.getItem('factura-dashboard-layout');
@@ -121,12 +133,25 @@ export default function Dashboard() {
 
   useEffect(() => {
     let cancelled = false;
+
+    // SWR: show cached data instantly
+    const cachedInv = getCached<{ 'hydra:member': Invoice[] }>('/invoices');
+    const cachedActs = getCached<ActivityItem[]>('/dashboard/activities');
+    if (cachedInv) {
+      setInvoices(cachedInv['hydra:member']);
+      setLoading(false);
+    }
+    if (cachedActs) {
+      setActivities(cachedActs);
+    }
+
     getInvoices()
       .then((res) => {
         if (cancelled) return;
         const invs = res.data['hydra:member'];
         setInvoices(invs);
         setLoading(false);
+        setCache('/invoices', res.data);
 
         // Charger les events en parallele sans bloquer le rendu
         const recentInvs = [...invs].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5);
@@ -148,6 +173,7 @@ export default function Dashboard() {
             .flatMap((r) => r.value)
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
           setActivities(allActs);
+          setCache('/dashboard/activities', allActs);
         });
       })
       .catch(() => { if (!cancelled) { setInvoices([]); setLoading(false); } });
@@ -155,7 +181,12 @@ export default function Dashboard() {
     return () => { cancelled = true; };
   }, []);
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id.toString());
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
       setWidgets((items) => {
@@ -166,6 +197,10 @@ export default function Dashboard() {
         return newLayout;
       });
     }
+  };
+
+  const handleDragCancel = () => {
+    setActiveId(null);
   };
 
   // --- Computed data ---
@@ -201,23 +236,58 @@ export default function Dashboard() {
     </div>
   );
 
-  // --- Widget renderers ---
-  const renderWidget = (wId: string) => {
+  // --- Widget config ---
+  const pendingAmount = pending.reduce((s, inv) => s + parseFloat(inv.totalIncludingTax), 0);
+  const estimatedTreasury = pendingAmount * 0.85;
+
+  const suggestions: { icon: string; text: string; action: string }[] = [];
+  if (invoices.length === 0) {
+    suggestions.push({ icon: '\u{1F4DD}', text: 'Creez votre premiere facture pour commencer', action: '/invoices/new' });
+  }
+  const overdue = invoices.filter(inv => inv.status === 'SENT' && inv.dueDate && new Date(inv.dueDate) < new Date());
+  if (overdue.length > 0) {
+    suggestions.push({ icon: '\u26A0\uFE0F', text: `${overdue.length} facture(s) en retard de paiement`, action: '/unpaid' });
+  }
+  if (pending.length > 3) {
+    suggestions.push({ icon: '\u{1F4B0}', text: "Pensez a activer l'affacturage pour recevoir vos paiements plus vite", action: '/settings' });
+  }
+  if (thisMonth.length >= 10) {
+    suggestions.push({ icon: '\u{1F3E6}', text: 'Connectez votre banque pour automatiser le rapprochement', action: '/banking' });
+  }
+  if (suggestions.length === 0) {
+    suggestions.push({ icon: '\u2705', text: 'Tout est en ordre. Continuez comme ca !', action: '/' });
+  }
+
+  const getWidgetClassName = (wId: string): string => {
+    switch (wId) {
+      case 'kpi-month': return 'dash-widget-kpi dash-animate dash-animate-d1';
+      case 'kpi-revenue': return 'dash-widget-kpi dash-animate dash-animate-d2';
+      case 'kpi-pending': return 'dash-widget-kpi dash-animate dash-animate-d3';
+      case 'kpi-treasury': return 'dash-widget-kpi dash-animate dash-animate-d4';
+      case 'chart-revenue': return 'dash-widget-full dash-animate dash-animate-d5';
+      case 'list-recent': return 'dash-widget-wide dash-animate dash-animate-d5';
+      case 'list-feed': return 'dash-widget-narrow dash-animate dash-animate-d6';
+      case 'suggestions': return 'dash-widget-full dash-animate dash-animate-d6';
+      default: return '';
+    }
+  };
+
+  const renderWidgetContent = (wId: string) => {
     switch (wId) {
       case 'kpi-month':
         return (
-          <SortableWidget key={wId} id={wId} className="dash-widget-kpi dash-animate dash-animate-d1">
+          <>
             <h3 className="dash-card-title">{intl.formatMessage({ id: 'dashboard.invoicesThisMonth', defaultMessage: 'Factures du mois' })}</h3>
             <div className="dash-card-body">
               <p className="dash-card-value">{thisMonth.length}</p>
-              <Sparkline data={[1, 3, 2, 5, 4, thisMonth.length]} color="#3b82f6" />
+              <Sparkline data={[1, 3, 2, 5, 4, thisMonth.length]} color="var(--accent)" />
             </div>
-          </SortableWidget>
+          </>
         );
 
       case 'kpi-revenue':
         return (
-          <SortableWidget key={wId} id={wId} className="dash-widget-kpi dash-animate dash-animate-d2">
+          <>
             <h3 className="dash-card-title">{intl.formatMessage({ id: 'dashboard.revenueHt', defaultMessage: 'CA HT du mois' })}</h3>
             <div className="dash-card-body">
               <div>
@@ -226,27 +296,25 @@ export default function Dashboard() {
                   {trendHt >= 0 ? '+' : ''}{trendHt.toFixed(1)}% vs. prec
                 </div>
               </div>
-              <Sparkline data={[totalHtLastMonth * 0.8, totalHtLastMonth, totalHtLastMonth * 1.1, totalHt]} color={trendHt >= 0 ? '#10b981' : '#ef4444'} />
+              <Sparkline data={[totalHtLastMonth * 0.8, totalHtLastMonth, totalHtLastMonth * 1.1, totalHt]} color={trendHt >= 0 ? 'var(--success)' : 'var(--danger)'} />
             </div>
-          </SortableWidget>
+          </>
         );
 
       case 'kpi-pending':
         return (
-          <SortableWidget key={wId} id={wId} className="dash-widget-kpi dash-animate dash-animate-d3">
+          <>
             <h3 className="dash-card-title">{intl.formatMessage({ id: 'dashboard.pending', defaultMessage: 'En attente' })}</h3>
             <div className="dash-card-body">
               <p className="dash-card-value">{pending.length}</p>
-              <Sparkline data={[0, 2, 1, 4, pending.length]} color="#f59e0b" />
+              <Sparkline data={[0, 2, 1, 4, pending.length]} color="var(--warning)" />
             </div>
-          </SortableWidget>
+          </>
         );
 
-      case 'kpi-treasury': {
-        const pendingAmount = pending.reduce((s, inv) => s + parseFloat(inv.totalIncludingTax), 0);
-        const estimatedTreasury = pendingAmount * 0.85;
+      case 'kpi-treasury':
         return (
-          <SortableWidget key={wId} id={wId} className="dash-widget-kpi dash-animate dash-animate-d4">
+          <>
             <h3 className="dash-card-title">{intl.formatMessage({ id: 'dashboard.treasury', defaultMessage: 'Tresorerie previsionnelle' })}</h3>
             <div className="dash-card-body">
               <div>
@@ -255,25 +323,24 @@ export default function Dashboard() {
               </div>
               <Sparkline data={[pendingAmount * 0.6, pendingAmount * 0.7, pendingAmount * 0.8, estimatedTreasury]} color="#8b5cf6" />
             </div>
-          </SortableWidget>
+          </>
         );
-      }
 
       case 'chart-revenue':
         return (
-          <SortableWidget key={wId} id={wId} className="dash-widget-full dash-animate dash-animate-d5">
+          <>
             <h3 className="dash-card-title" style={{ textTransform: 'none', letterSpacing: 'normal', fontSize: '0.95rem' }}>
               Evolution du CA (HT)
             </h3>
             <div className="dash-chart-wrapper">
               <RevenueChart invoices={invoices} />
             </div>
-          </SortableWidget>
+          </>
         );
 
       case 'list-recent':
         return (
-          <SortableWidget key={wId} id={wId} className="dash-widget-wide dash-animate dash-animate-d5">
+          <>
             <h3 className="dash-invoices-title">{intl.formatMessage({ id: 'dashboard.recentInvoices', defaultMessage: 'Dernieres factures' })}</h3>
             {invoices.length === 0 ? (
               <div className="dash-empty">
@@ -332,12 +399,12 @@ export default function Dashboard() {
                 </div>
               </>
             )}
-          </SortableWidget>
+          </>
         );
 
       case 'list-feed':
         return (
-          <SortableWidget key={wId} id={wId} className="dash-widget-narrow dash-animate dash-animate-d6">
+          <>
             <h3 className="dash-invoices-title">{intl.formatMessage({ id: 'dashboard.activityFeed', defaultMessage: "Fil d'actualite" })}</h3>
             {activities.length === 0 ? (
               <p className="dash-feed-empty">Aucune activite recente.</p>
@@ -358,29 +425,12 @@ export default function Dashboard() {
                 ))}
               </div>
             )}
-          </SortableWidget>
+          </>
         );
 
-      case 'suggestions': {
-        const suggestions: { icon: string; text: string; action: string }[] = [];
-        if (invoices.length === 0) {
-          suggestions.push({ icon: '\u{1F4DD}', text: 'Creez votre premiere facture pour commencer', action: '/invoices/new' });
-        }
-        const overdue = invoices.filter(inv => inv.status === 'SENT' && inv.dueDate && new Date(inv.dueDate) < new Date());
-        if (overdue.length > 0) {
-          suggestions.push({ icon: '\u26A0\uFE0F', text: `${overdue.length} facture(s) en retard de paiement`, action: '/unpaid' });
-        }
-        if (pending.length > 3) {
-          suggestions.push({ icon: '\u{1F4B0}', text: "Pensez a activer l'affacturage pour recevoir vos paiements plus vite", action: '/settings' });
-        }
-        if (thisMonth.length >= 10) {
-          suggestions.push({ icon: '\u{1F3E6}', text: 'Connectez votre banque pour automatiser le rapprochement', action: '/banking' });
-        }
-        if (suggestions.length === 0) {
-          suggestions.push({ icon: '\u2705', text: 'Tout est en ordre. Continuez comme ca !', action: '/' });
-        }
+      case 'suggestions':
         return (
-          <SortableWidget key={wId} id={wId} className="dash-widget-full dash-animate dash-animate-d6">
+          <>
             <h3 className="dash-invoices-title">{intl.formatMessage({ id: 'dashboard.suggestions', defaultMessage: 'Suggestions' })}</h3>
             <div className="dash-suggestions">
               {suggestions.map((s, i) => (
@@ -393,14 +443,19 @@ export default function Dashboard() {
                 </Link>
               ))}
             </div>
-          </SortableWidget>
+          </>
         );
-      }
 
       default:
         return null;
     }
   };
+
+  const renderWidget = (wId: string) => (
+    <SortableWidget key={wId} id={wId} className={getWidgetClassName(wId)}>
+      {renderWidgetContent(wId)}
+    </SortableWidget>
+  );
 
   return (
     <div className="dash">
@@ -416,12 +471,19 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={widgets} strategy={rectSortingStrategy}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={handleDragCancel}>
+        <SortableContext items={widgets} strategy={verticalListSortingStrategy}>
           <div className="dash-grid">
             {widgets.map(renderWidget)}
           </div>
         </SortableContext>
+        <DragOverlay dropAnimation={null}>
+          {activeId ? (
+            <DragOverlayWidget className={getWidgetClassName(activeId)}>
+              {renderWidgetContent(activeId)}
+            </DragOverlayWidget>
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </div>
   );
