@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { getInvoices, sendInvoice, payInvoice, cancelInvoice, type Invoice } from '../api/factura';
 import { Link, useNavigate } from 'react-router-dom';
@@ -41,13 +41,24 @@ export default function InvoiceList() {
   const intl = useIntl();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   const navigate = useNavigate();
   const { success, error } = useToast();
+
+  // SWR: memoize params and read cache during render (not in effect)
+  const fetchParams = useMemo(() => {
+    const p: Record<string, string> = { page: String(page), itemsPerPage: String(PAGE_SIZE) };
+    if (statusFilter) p['status'] = statusFilter;
+    return p;
+  }, [statusFilter, page]);
+
+  const cachedResult = useMemo(
+    () => getCached<{ 'hydra:member': Invoice[]; 'hydra:totalItems'?: number }>('/invoices', fetchParams),
+    [fetchParams]
+  );
 
   const statusBadge = (status: string) => (
     <span className={`app-badge ${STATUS_CLASSES[status] || 'app-badge-draft'}`}>
@@ -67,35 +78,20 @@ export default function InvoiceList() {
 
   useEffect(() => {
     let cancelled = false;
-    const params: Record<string, string> = {
-      page: String(page),
-      itemsPerPage: String(PAGE_SIZE),
-    };
-    if (statusFilter) params['status'] = statusFilter;
 
-    // SWR: show cached data instantly, then refresh in background
-    const cached = getCached<{ 'hydra:member': Invoice[]; 'hydra:totalItems'?: number }>('/invoices', params);
-    if (cached) {
-      setInvoices(cached['hydra:member']);
-      const total = cached['hydra:totalItems'];
-      setTotalItems(typeof total === 'number' ? total : 0);
-      setLoading(false);
-      setRefreshing(true);
-    }
-
-    getInvoices(params)
+    getInvoices(fetchParams)
       .then((res) => {
         if (cancelled) return;
         setInvoices(res.data['hydra:member']);
         const total = (res.data as Record<string, unknown>)['hydra:totalItems'];
         setTotalItems(typeof total === 'number' ? total : 0);
-        setCache('/invoices', res.data, params);
+        setCache('/invoices', res.data, fetchParams);
       })
       .catch(() => { if (!cancelled) setInvoices([]); })
-      .finally(() => { if (!cancelled) { setLoading(false); setRefreshing(false); } });
+      .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [statusFilter, page]);
+  }, [fetchParams]);
 
   const handleFilterChange = (value: string) => {
     // Don't flash loading state — keep stale data visible while refreshing
@@ -136,9 +132,14 @@ export default function InvoiceList() {
     }
   };
 
-  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+  // SWR: derive display data from cache while fresh data loads
+  const displayInvoices = !loading ? invoices : (cachedResult?.['hydra:member'] ?? invoices);
+  const cachedTotal = cachedResult?.['hydra:totalItems'];
+  const displayTotal = !loading ? totalItems : (typeof cachedTotal === 'number' ? cachedTotal : totalItems);
+  const refreshing = loading && !!cachedResult;
+  const totalPages = Math.max(1, Math.ceil(displayTotal / PAGE_SIZE));
 
-  if (loading) return (
+  if (loading && !cachedResult) return (
     <div className="app-container">
       <div className="app-skeleton-header">
         <div className="app-skeleton app-skeleton-title" />
@@ -188,15 +189,15 @@ export default function InvoiceList() {
         ))}
       </div>
 
-      {invoices.length > 0 && viewMode === 'kanban' && (
-        <InvoiceKanbanBoard invoices={invoices} onStateChange={handleStateChange} disabled={loading} />
+      {displayInvoices.length > 0 && viewMode === 'kanban' && (
+        <InvoiceKanbanBoard invoices={displayInvoices} onStateChange={handleStateChange} disabled={loading} />
       )}
 
-      {invoices.length > 0 && viewMode === 'list' && (
+      {displayInvoices.length > 0 && viewMode === 'list' && (
         <>
           {/* Mobile: card-based list */}
           <div className="app-list app-mobile-only">
-            {invoices.map((inv) => (
+            {displayInvoices.map((inv) => (
               <Link key={inv.id} to={`/invoices/${inv.id}`} className="app-list-item">
                 <div className="app-list-item-info">
                   <div className="app-list-item-title">{inv.number || 'Brouillon'}</div>
@@ -224,7 +225,7 @@ export default function InvoiceList() {
                 </tr>
               </thead>
               <tbody>
-                {invoices.map((inv) => (
+                {displayInvoices.map((inv) => (
                   <tr key={inv.id} className="app-table-row-link" onClick={() => navigate(`/invoices/${inv.id}`)}>
                     <td>
                       <Link to={`/invoices/${inv.id}`} className="app-table-link">{inv.number || 'Brouillon'}</Link>
@@ -242,7 +243,7 @@ export default function InvoiceList() {
         </>
       )}
 
-      {invoices.length === 0 && (
+      {displayInvoices.length === 0 && (
         <EmptyState
           title="Aucune facture"
           description="Vous n'avez aucune facture correspondant a ces criteres."
