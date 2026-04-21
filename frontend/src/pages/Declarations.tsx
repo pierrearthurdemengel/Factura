@@ -228,24 +228,24 @@ export default function Declarations() {
             <div className="app-kpi-grid">
               <div className="app-card app-kpi-card">
                 <div className="app-card-value" style={{ color: 'var(--accent)' }}>
-                  {parseFloat(vatBalance.collected).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                  {Number.parseFloat(vatBalance.collected).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </div>
                 <div className="app-card-sub">TVA collectee</div>
               </div>
               <div className="app-card app-kpi-card">
                 <div className="app-card-value" style={{ color: 'var(--success)' }}>
-                  {parseFloat(vatBalance.deductible).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                  {Number.parseFloat(vatBalance.deductible).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </div>
                 <div className="app-card-sub">TVA deductible</div>
               </div>
               <div className="app-card app-kpi-card">
                 <div className="app-card-value" style={{
-                  color: parseFloat(vatBalance.balance) >= 0 ? 'var(--danger)' : 'var(--success)',
+                  color: Number.parseFloat(vatBalance.balance) >= 0 ? 'var(--danger)' : 'var(--success)',
                 }}>
-                  {parseFloat(vatBalance.balance).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                  {Number.parseFloat(vatBalance.balance).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </div>
                 <div className="app-card-sub">
-                  {parseFloat(vatBalance.balance) >= 0 ? 'TVA a payer' : 'Credit de TVA'}
+                  {Number.parseFloat(vatBalance.balance) >= 0 ? 'TVA a payer' : 'Credit de TVA'}
                 </div>
               </div>
             </div>
@@ -271,7 +271,7 @@ export default function Declarations() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <span className="app-list-item-title">Estimation {currentYear}</span>
               <span className="app-card-value" style={{ color: 'var(--accent)' }}>
-                {urssafAmount ? `${parseFloat(urssafAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €` : '—'}
+                {urssafAmount ? `${Number.parseFloat(urssafAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €` : '—'}
               </span>
             </div>
             <p className="app-card-sub" style={{ lineHeight: 1.5, margin: 0 }}>

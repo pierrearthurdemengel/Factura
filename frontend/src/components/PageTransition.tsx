@@ -27,7 +27,7 @@ const variants = {
   },
 };
 
-export default function PageTransition({ children }: { children: ReactNode }) {
+export default function PageTransition({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <motion.div
       variants={variants}

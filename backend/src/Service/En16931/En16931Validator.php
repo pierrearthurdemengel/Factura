@@ -53,77 +53,123 @@ class En16931Validator
     {
         $errors = [];
 
-        // Validation des champs obligatoires du header
+        $this->validateRequiredFields($document, $errors);
+        $this->validateCodes($document, $errors);
+        $this->validateParties($document, $errors);
+        $this->validateLines($document, $errors);
+        $this->validateTotals($document, $errors);
+
+        return [
+            'valid' => [] === $errors,
+            'errors' => $errors,
+        ];
+    }
+
+    /**
+     * Valide les champs obligatoires du header (BG-1).
+     *
+     * @param array<string, mixed> $document
+     * @param list<string>         $errors
+     */
+    private function validateRequiredFields(array $document, array &$errors): void
+    {
         foreach (self::REQUIRED_HEADER_FIELDS as $field) {
             if (!isset($document[$field]) || '' === $document[$field]) {
                 $errors[] = "Champ obligatoire manquant : {$field} (EN 16931 BT)";
             }
         }
+    }
 
-        // Validation du code devise
+    /**
+     * Valide le code devise et le code type de facture.
+     *
+     * @param array<string, mixed> $document
+     * @param list<string>         $errors
+     */
+    private function validateCodes(array $document, array &$errors): void
+    {
         $currency = $document['currencyCode'] ?? null;
         if (is_string($currency) && !in_array($currency, self::VALID_CURRENCIES, true)) {
             $errors[] = "Code devise invalide : {$currency} (ISO 4217)";
         }
 
-        // Validation du type de facture
         $typeCode = $document['invoiceTypeCode'] ?? null;
         if (is_string($typeCode) && !in_array($typeCode, self::VALID_INVOICE_TYPES, true)) {
             $errors[] = "Code type facture invalide : {$typeCode} (UNTDID 1001)";
         }
+    }
 
-        // Validation du vendeur
+    /**
+     * Valide les champs obligatoires du vendeur (BG-4) et de l'acheteur (BG-7).
+     *
+     * @param array<string, mixed> $document
+     * @param list<string>         $errors
+     */
+    private function validateParties(array $document, array &$errors): void
+    {
         foreach (self::REQUIRED_SELLER_FIELDS as $field) {
             if (!isset($document[$field]) || '' === $document[$field]) {
                 $errors[] = "Champ vendeur obligatoire manquant : {$field} (EN 16931 BG-4)";
             }
         }
 
-        // Validation de l'acheteur
         foreach (self::REQUIRED_BUYER_FIELDS as $field) {
             if (!isset($document[$field]) || '' === $document[$field]) {
                 $errors[] = "Champ acheteur obligatoire manquant : {$field} (EN 16931 BG-7)";
             }
         }
+    }
 
-        // Validation des lignes
+    /**
+     * Valide les lignes de facture (BG-25).
+     *
+     * @param array<string, mixed> $document
+     * @param list<string>         $errors
+     */
+    private function validateLines(array $document, array &$errors): void
+    {
         $lines = $document['lines'] ?? null;
         if (!is_array($lines) || [] === $lines) {
             $errors[] = 'Au moins une ligne de facture est requise (EN 16931 BG-25)';
-        } else {
-            foreach ($lines as $i => $line) {
-                if (!is_array($line)) {
-                    continue;
-                }
-                $lineNum = $i + 1;
-                if (!isset($line['description']) || '' === $line['description']) {
-                    $errors[] = "Ligne {$lineNum} : description obligatoire (BT-153)";
-                }
-                if (!isset($line['quantity'])) {
-                    $errors[] = "Ligne {$lineNum} : quantite obligatoire (BT-129)";
-                }
-                if (!isset($line['unitPrice'])) {
-                    $errors[] = "Ligne {$lineNum} : prix unitaire obligatoire (BT-146)";
-                }
-            }
+
+            return;
         }
 
-        // Validation des totaux
-        if (isset($document['totalExcludingTax']) && isset($document['totalIncludingTax'])) {
-            $ht = $document['totalExcludingTax'];
-            $ttc = $document['totalIncludingTax'];
-
-            if (is_numeric($ht) && is_numeric($ttc)) {
-                if (bccomp((string) $ttc, (string) $ht, 2) < 0) {
-                    $errors[] = 'Le total TTC ne peut pas etre inferieur au total HT';
-                }
+        foreach ($lines as $i => $line) {
+            if (!is_array($line)) {
+                continue;
+            }
+            $lineNum = $i + 1;
+            if (!isset($line['description']) || '' === $line['description']) {
+                $errors[] = "Ligne {$lineNum} : description obligatoire (BT-153)";
+            }
+            if (!isset($line['quantity'])) {
+                $errors[] = "Ligne {$lineNum} : quantite obligatoire (BT-129)";
+            }
+            if (!isset($line['unitPrice'])) {
+                $errors[] = "Ligne {$lineNum} : prix unitaire obligatoire (BT-146)";
             }
         }
+    }
 
-        return [
-            'valid' => [] === $errors,
-            'errors' => $errors,
-        ];
+    /**
+     * Valide la coherence des totaux HT/TTC.
+     *
+     * @param array<string, mixed> $document
+     * @param list<string>         $errors
+     */
+    private function validateTotals(array $document, array &$errors): void
+    {
+        if (!isset($document['totalExcludingTax']) || !isset($document['totalIncludingTax'])) {
+            return;
+        }
+
+        $ht = $document['totalExcludingTax'];
+        $ttc = $document['totalIncludingTax'];
+
+        if (is_numeric($ht) && is_numeric($ttc) && bccomp((string) $ttc, (string) $ht, 2) < 0) {
+            $errors[] = 'Le total TTC ne peut pas etre inferieur au total HT';
+        }
     }
 
     /**

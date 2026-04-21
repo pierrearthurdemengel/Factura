@@ -34,7 +34,7 @@ const COLUMNS = [
   { id: 'PAID', title: 'Payees' },
 ];
 
-function KanbanCard({ invoice }: { invoice: Invoice }) {
+function KanbanCard({ invoice }: Readonly<{ invoice: Invoice }>) {
   const {
     attributes,
     listeners,
@@ -70,7 +70,7 @@ function KanbanCard({ invoice }: { invoice: Invoice }) {
   );
 }
 
-export default function InvoiceKanbanBoard({ invoices, onStateChange, disabled }: InvoiceKanbanBoardProps) {
+export default function InvoiceKanbanBoard({ invoices, onStateChange, disabled }: Readonly<InvoiceKanbanBoardProps>) {
   const [activeInvoice, setActiveInvoice] = useState<Invoice | null>(null);
   const audio = useAudio();
 

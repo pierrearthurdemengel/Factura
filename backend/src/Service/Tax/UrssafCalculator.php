@@ -40,6 +40,9 @@ class UrssafCalculator
     public const FREQUENCY_MONTHLY = 'monthly';
     public const FREQUENCY_QUARTERLY = 'quarterly';
 
+    private const DATE_FORMAT_FIRST_OF_MONTH = '%d-%02d-01';
+    private const MODIFIER_LAST_DAY_OF_MONTH = self::MODIFIER_LAST_DAY_OF_MONTH;
+
     private const ACTIVITY_RATES = [
         self::ACTIVITY_BIC_SALE => self::RATE_BIC_SALE,
         self::ACTIVITY_BIC_SERVICE => self::RATE_BIC_SERVICE,
@@ -169,8 +172,8 @@ class UrssafCalculator
         if (self::FREQUENCY_MONTHLY === $frequency) {
             // Declaration mensuelle : le dernier jour du mois suivant
             for ($month = 1; $month <= 12; ++$month) {
-                $periodStart = new \DateTimeImmutable(sprintf('%d-%02d-01', $year, $month));
-                $periodEnd = $periodStart->modify('last day of this month');
+                $periodStart = new \DateTimeImmutable(sprintf(self::DATE_FORMAT_FIRST_OF_MONTH, $year, $month));
+                $periodEnd = $periodStart->modify(self::MODIFIER_LAST_DAY_OF_MONTH);
                 $deadline = $periodEnd->modify('+1 month last day of this month');
 
                 $deadlines[] = [
@@ -190,13 +193,13 @@ class UrssafCalculator
             ];
 
             foreach ($quarters as $i => $q) {
-                $periodStart = new \DateTimeImmutable(sprintf('%d-%02d-01', $year, $q['start']));
-                $periodEnd = new \DateTimeImmutable(sprintf('%d-%02d-01', $year, $q['end']));
-                $periodEnd = $periodEnd->modify('last day of this month');
+                $periodStart = new \DateTimeImmutable(sprintf(self::DATE_FORMAT_FIRST_OF_MONTH, $year, $q['start']));
+                $periodEnd = new \DateTimeImmutable(sprintf(self::DATE_FORMAT_FIRST_OF_MONTH, $year, $q['end']));
+                $periodEnd = $periodEnd->modify(self::MODIFIER_LAST_DAY_OF_MONTH);
 
                 $deadlineYear = 1 === $q['deadlineMonth'] ? $year + 1 : $year;
-                $deadline = new \DateTimeImmutable(sprintf('%d-%02d-01', $deadlineYear, $q['deadlineMonth']));
-                $deadline = $deadline->modify('last day of this month');
+                $deadline = new \DateTimeImmutable(sprintf(self::DATE_FORMAT_FIRST_OF_MONTH, $deadlineYear, $q['deadlineMonth']));
+                $deadline = $deadline->modify(self::MODIFIER_LAST_DAY_OF_MONTH);
 
                 $deadlines[] = [
                     'period' => sprintf('T%d %d', $i + 1, $year),

@@ -10,7 +10,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export function ThemeProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const [theme, setTheme] = useState<Theme>(() => {
     return (localStorage.getItem('factura-ui-theme') as Theme) || 'system';
   });
@@ -18,7 +18,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement;
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const mediaQuery = globalThis.matchMedia('(prefers-color-scheme: dark)');
 
     const applyTheme = () => {
       // Add the transition class safely

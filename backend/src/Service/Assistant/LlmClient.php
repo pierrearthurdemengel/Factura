@@ -98,6 +98,7 @@ class LlmClient
      */
     private function getFallbackResponse(string $question, string $category): array
     {
+        // $question intentionally unused — kept for future logging/analytics of unanswered questions
         return [
             'answer' => sprintf(
                 'Je n\'ai pas pu consulter l\'assistant en ligne pour votre question sur le theme "%s". '

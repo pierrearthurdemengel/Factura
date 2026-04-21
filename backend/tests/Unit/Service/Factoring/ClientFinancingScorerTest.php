@@ -25,7 +25,7 @@ class ClientFinancingScorerTest extends TestCase
     public function testScoreBaselineForClientWithNoInvoices(): void
     {
         $client = $this->createClient();
-        $this->mockClientInvoices($client, []);
+        $this->mockClientInvoices([]);
 
         $score = $this->scorer->calculateScore($client);
 
@@ -42,7 +42,7 @@ class ClientFinancingScorerTest extends TestCase
             $invoices[] = $this->createInvoice('PAID', '1000.00', 15);
         }
 
-        $this->mockClientInvoices($client, $invoices);
+        $this->mockClientInvoices($invoices);
 
         $score = $this->scorer->calculateScore($client);
 
@@ -60,7 +60,7 @@ class ClientFinancingScorerTest extends TestCase
             $this->createInvoice('PAID', '1200.00', 10),
         ];
 
-        $this->mockClientInvoices($client, $invoices);
+        $this->mockClientInvoices($invoices);
 
         $score = $this->scorer->calculateScore($client);
 
@@ -78,7 +78,7 @@ class ClientFinancingScorerTest extends TestCase
 
         $paid = $this->createInvoice('PAID', '1000.00', 15);
 
-        $this->mockClientInvoices($client, [$overdue, $paid, $paid, $paid, $paid]);
+        $this->mockClientInvoices([$overdue, $paid, $paid, $paid, $paid]);
 
         $score = $this->scorer->calculateScore($client);
 
@@ -94,7 +94,7 @@ class ClientFinancingScorerTest extends TestCase
         $overdue = $this->createInvoice('SENT', '5000.00');
         $overdue->setDueDate(new \DateTimeImmutable('-90 days'));
 
-        $this->mockClientInvoices($client, [$overdue]);
+        $this->mockClientInvoices([$overdue]);
 
         $score = $this->scorer->calculateScore($client);
 
@@ -137,7 +137,7 @@ class ClientFinancingScorerTest extends TestCase
             $invoices[] = $this->createInvoice('PAID', '1000.00', 10);
         }
 
-        $this->mockClientInvoices($client, $invoices);
+        $this->mockClientInvoices($invoices);
 
         $score = $this->scorer->calculateScore($client);
 
@@ -158,7 +158,7 @@ class ClientFinancingScorerTest extends TestCase
             $this->createInvoice('PAID', '50.00', 15),
         ];
 
-        $this->mockClientInvoices($client, $invoices);
+        $this->mockClientInvoices($invoices);
 
         $scoreVariable = $this->scorer->calculateScore($client);
 
@@ -168,7 +168,7 @@ class ClientFinancingScorerTest extends TestCase
             $stableInvoices[] = $this->createInvoice('PAID', '1000.00', 15);
         }
 
-        $this->mockClientInvoices($client, $stableInvoices);
+        $this->mockClientInvoices($stableInvoices);
 
         $scoreStable = $this->scorer->calculateScore($client);
 
@@ -214,7 +214,7 @@ class ClientFinancingScorerTest extends TestCase
     /**
      * @param Invoice[] $invoices
      */
-    private function mockClientInvoices(Client $client, array $invoices): void
+    private function mockClientInvoices(array $invoices): void
     {
         $repository = $this->createMock(EntityRepository::class);
         $repository->method('findBy')->willReturn($invoices);

@@ -24,13 +24,13 @@ const defaultTheme: EmbedTheme = {
  * Ecoute les messages postMessage du parent pour appliquer le theming.
  * Envoie des evenements au parent (navigation, actions).
  */
-export default function EmbedWrapper({ children }: { children: React.ReactNode }) {
+export default function EmbedWrapper({ children }: Readonly<{ children: React.ReactNode }>) {
   // Determine le mode embed depuis les parametres URL (ne change pas apres init)
-  const isEmbed = useMemo(() => new URLSearchParams(window.location.search).get('embed') === '1', []);
+  const isEmbed = useMemo(() => new URLSearchParams(globalThis.location.search).get('embed') === '1', []);
 
   const [theme, setTheme] = useState<EmbedTheme>(() => {
     if (!isEmbed) return defaultTheme;
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(globalThis.location.search);
     const urlTheme: Partial<EmbedTheme> = {};
     const pc = params.get('primaryColor');
     if (pc && /^#[0-9a-fA-F]{6}$/.test(pc)) urlTheme.primaryColor = pc;
@@ -45,7 +45,7 @@ export default function EmbedWrapper({ children }: { children: React.ReactNode }
     if (!isEmbed) return;
 
     // Notifier le parent que l'iframe est prete
-    window.parent.postMessage({ type: 'mfp:ready' }, '*');
+    globalThis.parent.postMessage({ type: 'mfp:ready' }, '*');
 
     // Ecouter les messages du parent pour le theming dynamique
     const handleMessage = (event: MessageEvent) => {
@@ -54,8 +54,8 @@ export default function EmbedWrapper({ children }: { children: React.ReactNode }
       }
     };
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    globalThis.addEventListener('message', handleMessage);
+    return () => globalThis.removeEventListener('message', handleMessage);
   }, [isEmbed]);
 
   if (!isEmbed) {
@@ -87,7 +87,7 @@ export default function EmbedWrapper({ children }: { children: React.ReactNode }
  * Utilise par les composants embarques pour signaler les actions.
  */
 export function notifyParent(eventType: string, data: Record<string, unknown> = {}): void {
-  if (window.parent !== window) {
-    window.parent.postMessage({ type: `mfp:${eventType}`, ...data }, '*');
+  if (globalThis.parent !== window) {
+    globalThis.parent.postMessage({ type: `mfp:${eventType}`, ...data }, '*');
   }
 }

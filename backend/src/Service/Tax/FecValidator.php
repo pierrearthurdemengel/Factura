@@ -66,52 +66,10 @@ class FecValidator
                 continue;
             }
 
-            // Verifier le format de date (AAAAMMJJ)
-            $date = $fields[3];
-            if (!$this->isValidDate($date)) {
-                $this->errors[] = sprintf('Ligne %d : date invalide "%s".', $lineNum, $date);
-            }
+            $previousDate = $this->validateLineFields($fields, $lineNum, $previousDate);
+            $entryNums[$fields[2]] = true;
 
-            // Verifier le tri chronologique
-            if ('' !== $previousDate && $date < $previousDate) {
-                $this->errors[] = sprintf(
-                    'Ligne %d : date %s anterieure a la date precedente %s (tri chronologique requis).',
-                    $lineNum,
-                    $date,
-                    $previousDate,
-                );
-            }
-            $previousDate = $date;
-
-            // Verifier le numero d'ecriture
-            $ecritureNum = $fields[2];
-            if ('' === $ecritureNum) {
-                $this->errors[] = sprintf('Ligne %d : numero d\'ecriture manquant.', $lineNum);
-            }
-            $entryNums[$ecritureNum] = true;
-
-            // Verifier les montants
-            $debit = $this->parseAmount($fields[11]);
-            $credit = $this->parseAmount($fields[12]);
-
-            if (null === $debit) {
-                $this->errors[] = sprintf('Ligne %d : montant debit invalide "%s".', $lineNum, $fields[11]);
-            } else {
-                /** @var numeric-string $debit */
-                $totalDebit = bcadd($totalDebit, $debit, 2);
-            }
-
-            if (null === $credit) {
-                $this->errors[] = sprintf('Ligne %d : montant credit invalide "%s".', $lineNum, $fields[12]);
-            } else {
-                /** @var numeric-string $credit */
-                $totalCredit = bcadd($totalCredit, $credit, 2);
-            }
-
-            // Verifier que le compte est renseigne
-            if ('' === trim($fields[4])) {
-                $this->errors[] = sprintf('Ligne %d : numero de compte manquant.', $lineNum);
-            }
+            [$totalDebit, $totalCredit] = $this->accumulateAmounts($fields, $lineNum, $totalDebit, $totalCredit);
         }
 
         // Verifier l'equilibre global debit/credit
@@ -134,6 +92,75 @@ class FecValidator
             'totalDebit' => $totalDebit,
             'totalCredit' => $totalCredit,
         ];
+    }
+
+    /**
+     * Valide les champs d'une ligne FEC (date, numero d'ecriture, compte).
+     *
+     * @param string[] $fields
+     *
+     * @return string La date de cette ligne (pour le controle chronologique)
+     */
+    private function validateLineFields(array $fields, int $lineNum, string $previousDate): string
+    {
+        // Verifier le format de date (AAAAMMJJ)
+        $date = $fields[3];
+        if (!$this->isValidDate($date)) {
+            $this->errors[] = sprintf('Ligne %d : date invalide "%s".', $lineNum, $date);
+        }
+
+        // Verifier le tri chronologique
+        if ('' !== $previousDate && $date < $previousDate) {
+            $this->errors[] = sprintf(
+                'Ligne %d : date %s anterieure a la date precedente %s (tri chronologique requis).',
+                $lineNum,
+                $date,
+                $previousDate,
+            );
+        }
+
+        // Verifier le numero d'ecriture
+        if ('' === $fields[2]) {
+            $this->errors[] = sprintf('Ligne %d : numero d\'ecriture manquant.', $lineNum);
+        }
+
+        // Verifier que le compte est renseigne
+        if ('' === trim($fields[4])) {
+            $this->errors[] = sprintf('Ligne %d : numero de compte manquant.', $lineNum);
+        }
+
+        return $date;
+    }
+
+    /**
+     * Accumule les montants debit/credit d'une ligne FEC.
+     *
+     * @param string[]       $fields
+     * @param numeric-string $totalDebit
+     * @param numeric-string $totalCredit
+     *
+     * @return array{numeric-string, numeric-string}
+     */
+    private function accumulateAmounts(array $fields, int $lineNum, string $totalDebit, string $totalCredit): array
+    {
+        $debit = $this->parseAmount($fields[11]);
+        $credit = $this->parseAmount($fields[12]);
+
+        if (null === $debit) {
+            $this->errors[] = sprintf('Ligne %d : montant debit invalide "%s".', $lineNum, $fields[11]);
+        } else {
+            /** @var numeric-string $debit */
+            $totalDebit = bcadd($totalDebit, $debit, 2);
+        }
+
+        if (null === $credit) {
+            $this->errors[] = sprintf('Ligne %d : montant credit invalide "%s".', $lineNum, $fields[12]);
+        } else {
+            /** @var numeric-string $credit */
+            $totalCredit = bcadd($totalCredit, $credit, 2);
+        }
+
+        return [$totalDebit, $totalCredit];
     }
 
     /**

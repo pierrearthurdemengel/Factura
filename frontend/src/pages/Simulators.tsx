@@ -137,8 +137,8 @@ export default function Simulators() {
 
           <div className="app-form-row">
             <div className="app-form-group">
-              <label className="app-label">Type d'activite</label>
-              <select value={activity} onChange={(e) => setActivity(e.target.value as 'service' | 'vente')} className="app-select">
+              <label htmlFor="sim-activity-type" className="app-label">Type d'activite</label>
+              <select id="sim-activity-type" value={activity} onChange={(e) => setActivity(e.target.value as 'service' | 'vente')} className="app-select">
                 <option value="service">Prestation de services (BNC)</option>
                 <option value="vente">Vente de marchandises (BIC)</option>
               </select>
@@ -147,13 +147,13 @@ export default function Simulators() {
 
           <div className="app-form-row">
             <div className="app-form-group">
-              <label className="app-label">Chiffre d'affaires annuel</label>
-              <input type="range" min={0} max={200000} step={5000} value={ca} onChange={(e) => setCa(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
+              <label htmlFor="sim-ca" className="app-label">Chiffre d'affaires annuel</label>
+              <input id="sim-ca" type="range" min={0} max={200000} step={5000} value={ca} onChange={(e) => setCa(Number.parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
               <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(ca)} €</span>
             </div>
             <div className="app-form-group">
-              <label className="app-label">Charges reelles annuelles</label>
-              <input type="range" min={0} max={100000} step={1000} value={charges} onChange={(e) => setCharges(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
+              <label htmlFor="sim-charges" className="app-label">Charges reelles annuelles</label>
+              <input id="sim-charges" type="range" min={0} max={100000} step={1000} value={charges} onChange={(e) => setCharges(Number.parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
               <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(charges)} €</span>
             </div>
           </div>
@@ -185,14 +185,14 @@ export default function Simulators() {
           <h2 className="app-section-title app-mt-0">Estimation impot sur le revenu</h2>
 
           <div className="app-form-group">
-            <label className="app-label">Revenu net imposable</label>
-            <input type="range" min={0} max={200000} step={1000} value={irRevenu} onChange={(e) => setIrRevenu(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
+            <label htmlFor="sim-ir-revenu" className="app-label">Revenu net imposable</label>
+            <input id="sim-ir-revenu" type="range" min={0} max={200000} step={1000} value={irRevenu} onChange={(e) => setIrRevenu(Number.parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
             <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(irRevenu)} €</span>
           </div>
 
           <div className="app-form-group">
-            <label className="app-label">Nombre de parts</label>
-            <select value={irParts} onChange={(e) => setIrParts(parseFloat(e.target.value))} className="app-select">
+            <label htmlFor="sim-ir-parts" className="app-label">Nombre de parts</label>
+            <select id="sim-ir-parts" value={irParts} onChange={(e) => setIrParts(Number.parseFloat(e.target.value))} className="app-select">
               <option value={1}>1 part (celibataire)</option>
               <option value={1.5}>1.5 parts (parent isole, 1 enfant)</option>
               <option value={2}>2 parts (couple)</option>
@@ -222,8 +222,8 @@ export default function Simulators() {
           <h2 className="app-section-title app-mt-0">Entreprise individuelle vs SASU</h2>
 
           <div className="app-form-group">
-            <label className="app-label">Chiffre d'affaires annuel</label>
-            <input type="range" min={0} max={300000} step={5000} value={sasuCa} onChange={(e) => setSasuCa(parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
+            <label htmlFor="sim-sasu-ca" className="app-label">Chiffre d'affaires annuel</label>
+            <input id="sim-sasu-ca" type="range" min={0} max={300000} step={5000} value={sasuCa} onChange={(e) => setSasuCa(Number.parseInt(e.target.value))} className="app-input" style={{ padding: 0, border: 'none', accentColor: 'var(--accent)' }} />
             <span className="app-card-sub" style={{ fontWeight: 600, color: 'var(--text-h)' }}>{fmt(sasuCa)} €</span>
           </div>
 

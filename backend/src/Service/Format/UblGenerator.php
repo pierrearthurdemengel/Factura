@@ -4,6 +4,7 @@ namespace App\Service\Format;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceLine;
+use App\Exception\CompanyNotFoundException;
 
 /**
  * Genere un fichier XML UBL 2.1 conforme au profil Peppol BIS Billing 3.0.
@@ -52,7 +53,7 @@ class UblGenerator
         // Vendeur
         $seller = $invoice->getSeller();
         if (null === $seller) {
-            throw new \RuntimeException('La facture doit avoir un vendeur pour generer le UBL.');
+            throw new CompanyNotFoundException('La facture doit avoir un vendeur pour generer le UBL.');
         }
         $this->addParty($dom, $root, 'AccountingSupplierParty', $seller);
 

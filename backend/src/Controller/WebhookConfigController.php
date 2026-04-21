@@ -22,6 +22,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/webhooks')]
 class WebhookConfigController extends AbstractController
 {
+    private const MSG_ENDPOINT_NOT_FOUND = 'Endpoint non trouve.';
+
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly WebhookDispatcher $dispatcher,
@@ -110,7 +112,7 @@ class WebhookConfigController extends AbstractController
     {
         $endpoint = $this->em->getRepository(WebhookEndpoint::class)->find($id);
         if (null === $endpoint) {
-            return new JsonResponse(['error' => 'Endpoint non trouve.'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => self::MSG_ENDPOINT_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
 
         $this->em->remove($endpoint);
@@ -127,7 +129,7 @@ class WebhookConfigController extends AbstractController
     {
         $endpoint = $this->em->getRepository(WebhookEndpoint::class)->find($id);
         if (null === $endpoint) {
-            return new JsonResponse(['error' => 'Endpoint non trouve.'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => self::MSG_ENDPOINT_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
 
         $result = [];
@@ -184,7 +186,7 @@ class WebhookConfigController extends AbstractController
     {
         $endpoint = $this->em->getRepository(WebhookEndpoint::class)->find($id);
         if (null === $endpoint) {
-            return new JsonResponse(['error' => 'Endpoint non trouve.'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => self::MSG_ENDPOINT_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
 
         $testPayload = [

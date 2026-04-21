@@ -18,6 +18,10 @@ use App\Entity\CountryConfig;
  */
 class CountryComplianceFactory
 {
+    private const PROTOCOL_PEPPOL_BIS = 'Peppol BIS';
+    private const VAT_RATE_21 = '21.00';
+    private const VAT_RATE_10 = '10.00';
+
     /**
      * Configurations de reference pour les pays europeens prioritaires.
      * Chaque pays sera active uniquement quand un client payant le demande.
@@ -31,7 +35,7 @@ class CountryComplianceFactory
             'invoiceFormat' => 'Factur-X',
             'transmissionProtocol' => 'Chorus Pro / PPF',
             'standardVatRate' => '20.00',
-            'reducedVatRates' => ['10.00', '5.50', '2.10'],
+            'reducedVatRates' => [self::VAT_RATE_10, '5.50', '2.10'],
             'taxIdFormat' => '/^FR\d{2}\d{9}$/',
             'eMandatory' => true,
             'mandatoryDate' => '2026-09-01',
@@ -42,7 +46,7 @@ class CountryComplianceFactory
             'invoiceFormat' => 'FatturaPA',
             'transmissionProtocol' => 'SDI',
             'standardVatRate' => '22.00',
-            'reducedVatRates' => ['10.00', '5.00', '4.00'],
+            'reducedVatRates' => [self::VAT_RATE_10, '5.00', '4.00'],
             'taxIdFormat' => '/^IT\d{11}$/',
             'eMandatory' => true,
             'mandatoryDate' => '2019-01-01',
@@ -51,7 +55,7 @@ class CountryComplianceFactory
             'code' => 'DE',
             'taxAuthority' => 'Bundeszentralamt fur Steuern',
             'invoiceFormat' => 'XRechnung',
-            'transmissionProtocol' => 'Peppol BIS',
+            'transmissionProtocol' => self::PROTOCOL_PEPPOL_BIS,
             'standardVatRate' => '19.00',
             'reducedVatRates' => ['7.00'],
             'taxIdFormat' => '/^DE\d{9}$/',
@@ -63,8 +67,8 @@ class CountryComplianceFactory
             'taxAuthority' => 'Agencia Tributaria',
             'invoiceFormat' => 'FacturaE',
             'transmissionProtocol' => 'VERI*FACTU / FACe',
-            'standardVatRate' => '21.00',
-            'reducedVatRates' => ['10.00', '4.00'],
+            'standardVatRate' => self::VAT_RATE_21,
+            'reducedVatRates' => [self::VAT_RATE_10, '4.00'],
             'taxIdFormat' => '/^ES[A-Z0-9]\d{7}[A-Z0-9]$/',
             'eMandatory' => true,
             'mandatoryDate' => '2026-07-01',
@@ -84,8 +88,8 @@ class CountryComplianceFactory
             'code' => 'BE',
             'taxAuthority' => 'SPF Finances',
             'invoiceFormat' => 'UBL-BE',
-            'transmissionProtocol' => 'Peppol BIS',
-            'standardVatRate' => '21.00',
+            'transmissionProtocol' => self::PROTOCOL_PEPPOL_BIS,
+            'standardVatRate' => self::VAT_RATE_21,
             'reducedVatRates' => ['12.00', '6.00'],
             'taxIdFormat' => '/^BE0\d{9}$/',
             'eMandatory' => true,
@@ -95,8 +99,8 @@ class CountryComplianceFactory
             'code' => 'NL',
             'taxAuthority' => 'Belastingdienst',
             'invoiceFormat' => 'SI-UBL 2.0',
-            'transmissionProtocol' => 'Peppol BIS',
-            'standardVatRate' => '21.00',
+            'transmissionProtocol' => self::PROTOCOL_PEPPOL_BIS,
+            'standardVatRate' => self::VAT_RATE_21,
             'reducedVatRates' => ['9.00'],
             'taxIdFormat' => '/^NL\d{9}B\d{2}$/',
             'eMandatory' => false,

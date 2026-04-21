@@ -20,7 +20,7 @@ interface LineForm {
   vatRate: string;
 }
 
-function SortableLineItem({ id, children }: { id: string, children: React.ReactNode }) {
+function SortableLineItem({ id, children }: Readonly<{ id: string, children: React.ReactNode }>) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -199,8 +199,8 @@ export default function InvoiceCreate() {
         <div className="invoice-create-form">
           <form onSubmit={handleSubmit}>
             <div className="app-form-group">
-              <label className="app-label">Client</label>
-              <select value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} required className="app-select">
+              <label htmlFor="invoice-client" className="app-label">Client</label>
+              <select id="invoice-client" value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} required className="app-select">
                 <option value="">Selectionner un client</option>
                 {clients.map((c) => (
                   <option key={c.id} value={c['@id']}>{c.name}</option>
@@ -227,8 +227,9 @@ export default function InvoiceCreate() {
                   <SortableLineItem key={line.id} id={line.id}>
                     <div className="app-form-row">
                       <div className="app-form-group flex-2">
-                        <label className="app-label">Description</label>
+                        <label htmlFor={`invoice-line-desc-${line.id}`} className="app-label">Description</label>
                         <input
+                          id={`invoice-line-desc-${line.id}`}
                           type="text"
                           value={line.description}
                           onChange={(e) => updateLine(line.id, 'description', e.target.value)}
@@ -237,8 +238,9 @@ export default function InvoiceCreate() {
                         />
                       </div>
                       <div className="app-form-group">
-                        <label className="app-label">Quantite</label>
+                        <label htmlFor={`invoice-line-qty-${line.id}`} className="app-label">Quantite</label>
                         <input
+                          id={`invoice-line-qty-${line.id}`}
                           type="number"
                           step="0.01"
                           value={line.quantity}
@@ -248,8 +250,8 @@ export default function InvoiceCreate() {
                         />
                       </div>
                       <div className="app-form-group">
-                        <label className="app-label">Unite</label>
-                        <select value={line.unit} onChange={(e) => updateLine(line.id, 'unit', e.target.value)} className="app-select">
+                        <label htmlFor={`invoice-line-unit-${line.id}`} className="app-label">Unite</label>
+                        <select id={`invoice-line-unit-${line.id}`} value={line.unit} onChange={(e) => updateLine(line.id, 'unit', e.target.value)} className="app-select">
                           <option value="EA">Unite</option>
                           <option value="HUR">Heure</option>
                           <option value="DAY">Jour</option>
@@ -258,8 +260,9 @@ export default function InvoiceCreate() {
                     </div>
                     <div className="app-form-row ic-line-bottom-row">
                       <div className="app-form-group">
-                        <label className="app-label">Prix HT</label>
+                        <label htmlFor={`invoice-line-price-${line.id}`} className="app-label">Prix HT</label>
                         <input
+                          id={`invoice-line-price-${line.id}`}
                           type="number"
                           step="0.01"
                           value={line.unitPriceExcludingTax}
@@ -269,8 +272,8 @@ export default function InvoiceCreate() {
                         />
                       </div>
                       <div className="app-form-group">
-                        <label className="app-label">TVA %</label>
-                        <select value={line.vatRate} onChange={(e) => updateLine(line.id, 'vatRate', e.target.value)} className="app-select">
+                        <label htmlFor={`invoice-line-vat-${line.id}`} className="app-label">TVA %</label>
+                        <select id={`invoice-line-vat-${line.id}`} value={line.vatRate} onChange={(e) => updateLine(line.id, 'vatRate', e.target.value)} className="app-select">
                           <option value="20">20%</option>
                           <option value="10">10%</option>
                           <option value="5.5">5.5%</option>
@@ -295,8 +298,9 @@ export default function InvoiceCreate() {
             </button>
 
             <div className="app-form-group">
-              <label className="app-label">Conditions de paiement</label>
+              <label htmlFor="invoice-payment-terms" className="app-label">Conditions de paiement</label>
               <input
+                id="invoice-payment-terms"
                 type="text"
                 value={paymentTerms}
                 onChange={(e) => setPaymentTerms(e.target.value)}
@@ -306,8 +310,9 @@ export default function InvoiceCreate() {
             </div>
 
             <div className="app-form-group">
-              <label className="app-label">Mention legale</label>
+              <label htmlFor="invoice-legal-mention" className="app-label">Mention legale</label>
               <textarea
+                id="invoice-legal-mention"
                 value={legalMention}
                 onChange={(e) => setLegalMention(e.target.value)}
                 placeholder="TVA non applicable - art. 293 B du CGI"
@@ -400,10 +405,10 @@ export default function InvoiceCreate() {
                   </tr>
                 </thead>
                 <tbody>
-                  {lines.map((line, i) => {
+                  {lines.map((line) => {
                     const t = computeLineTotal(line);
                     return (
-                      <tr key={i}>
+                      <tr key={line.id}>
                         <td>{line.description || '—'}</td>
                         <td className="text-right">{line.quantity}</td>
                         <td className="text-center">{line.unit}</td>

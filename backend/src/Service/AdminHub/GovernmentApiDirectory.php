@@ -13,6 +13,8 @@ namespace App\Service\AdminHub;
  */
 class GovernmentApiDirectory
 {
+    private const URL_IMPOTS_PROFESSIONNEL = self::URL_IMPOTS_PROFESSIONNEL;
+
     // Categories de services
     public const CATEGORY_FISCAL = 'fiscal';
     public const CATEGORY_SOCIAL = 'social';
@@ -44,7 +46,7 @@ class GovernmentApiDirectory
                 'id' => 'dgfip_tva',
                 'name' => 'DGFiP — TVA',
                 'description' => 'Declaration et calcul de TVA (CA3, CA12)',
-                'url' => 'https://www.impots.gouv.fr/professionnel',
+                'url' => self::URL_IMPOTS_PROFESSIONNEL,
                 'status' => self::STATUS_INTEGRATED,
                 'category' => self::CATEGORY_FISCAL,
             ],
@@ -52,7 +54,7 @@ class GovernmentApiDirectory
                 'id' => 'dgfip_fec',
                 'name' => 'DGFiP — FEC',
                 'description' => 'Export du Fichier des Ecritures Comptables',
-                'url' => 'https://www.impots.gouv.fr/professionnel',
+                'url' => self::URL_IMPOTS_PROFESSIONNEL,
                 'status' => self::STATUS_INTEGRATED,
                 'category' => self::CATEGORY_FISCAL,
             ],
@@ -84,7 +86,7 @@ class GovernmentApiDirectory
                 'id' => 'cfe',
                 'name' => 'CFE — Cotisation Fonciere',
                 'description' => 'Informations sur la Cotisation Fonciere des Entreprises',
-                'url' => 'https://www.impots.gouv.fr/professionnel',
+                'url' => self::URL_IMPOTS_PROFESSIONNEL,
                 'status' => self::STATUS_LINK_ONLY,
                 'category' => self::CATEGORY_FISCAL,
             ],

@@ -20,6 +20,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AuthController extends AbstractController
 {
+    private const COOKIE_PATH_AUTH = self::COOKIE_PATH_AUTH;
+
     public function __construct(
         private readonly AuthTokenService $authTokenService,
         private readonly JWTTokenManagerInterface $jwtManager,
@@ -133,7 +135,7 @@ class AuthController extends AbstractController
                 ['error' => 'Refresh token invalide ou expire.'],
                 Response::HTTP_UNAUTHORIZED,
             );
-            $response->headers->clearCookie('refresh_token', '/api/auth');
+            $response->headers->clearCookie('refresh_token', self::COOKIE_PATH_AUTH);
 
             return $response;
         }
@@ -152,7 +154,7 @@ class AuthController extends AbstractController
             Cookie::create('refresh_token')
                 ->withValue($newRawRefreshToken)
                 ->withExpires(new \DateTimeImmutable('+30 days'))
-                ->withPath('/api/auth')
+                ->withPath(self::COOKIE_PATH_AUTH)
                 ->withSecure(true)
                 ->withHttpOnly(true)
                 ->withSameSite('strict'),
@@ -178,7 +180,7 @@ class AuthController extends AbstractController
         ]);
 
         $response = new JsonResponse(['message' => 'Deconnecte.']);
-        $response->headers->clearCookie('refresh_token', '/api/auth');
+        $response->headers->clearCookie('refresh_token', self::COOKIE_PATH_AUTH);
 
         return $response;
     }

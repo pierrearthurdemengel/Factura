@@ -11,6 +11,8 @@ namespace App\Service\Assistant;
  */
 class TaxSimulator
 {
+    private const IS_REDUCED_CEILING = self::IS_REDUCED_CEILING;
+
     /**
      * Simule la comparaison micro-entrepreneur vs regime reel.
      *
@@ -303,17 +305,17 @@ class TaxSimulator
         /** @var numeric-string $beneficeNum */
         $beneficeNum = $benefice;
 
-        if (bccomp($beneficeNum, '42500', 2) <= 0) {
+        if (bccomp($beneficeNum, self::IS_REDUCED_CEILING, 2) <= 0) {
             // Tout au taux reduit de 15%
             return bcmul($beneficeNum, '0.15', 2);
         }
 
         // 15% sur les 42 500 premiers euros
         /** @var numeric-string $taxReduced */
-        $taxReduced = bcmul('42500', '0.15', 2);
+        $taxReduced = bcmul(self::IS_REDUCED_CEILING, '0.15', 2);
         // 25% sur le reste
         /** @var numeric-string $excess */
-        $excess = bcsub($beneficeNum, '42500', 2);
+        $excess = bcsub($beneficeNum, self::IS_REDUCED_CEILING, 2);
         /** @var numeric-string $taxNormal */
         $taxNormal = bcmul($excess, '0.25', 2);
 

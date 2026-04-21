@@ -153,9 +153,14 @@ export default function Settings() {
   // Calcul du montant facture cette annee
   const currentYear = new Date().getFullYear();
   const yearInvoices = billingInvoices.filter(inv => new Date(inv.issueDate).getFullYear() === currentYear);
-  const yearTotal = yearInvoices.reduce((s, inv) => s + parseFloat(inv.totalExcludingTax), 0);
+  const yearTotal = yearInvoices.reduce((s, inv) => s + Number.parseFloat(inv.totalExcludingTax), 0);
   // Estimation des frais selon le plan
-  const estimatedFees = currentPlan === 'free' ? 0 : currentPlan === 'pro' ? 14.90 * 12 : Math.max(29, yearTotal * 0.001);
+  const computeEstimatedFees = (): number => {
+    if (currentPlan === 'free') return 0;
+    if (currentPlan === 'pro') return 14.90 * 12;
+    return Math.max(29, yearTotal * 0.001);
+  };
+  const estimatedFees = computeEstimatedFees();
 
   return (
     <div className="app-container">
@@ -184,12 +189,12 @@ export default function Settings() {
 
         <div className="app-form-row">
           <div className="app-form-group flex-2">
-            <label className="app-label">Raison sociale</label>
-            <input name="name" value={form.name} onChange={handleChange} required className="app-input" />
+            <label htmlFor="settings-name" className="app-label">Raison sociale</label>
+            <input id="settings-name" name="name" value={form.name} onChange={handleChange} required className="app-input" />
           </div>
           <div className="app-form-group">
-            <label className="app-label">Forme juridique</label>
-            <select name="legalForm" value={form.legalForm} onChange={handleChange} className="app-select">
+            <label htmlFor="settings-legal-form" className="app-label">Forme juridique</label>
+            <select id="settings-legal-form" name="legalForm" value={form.legalForm} onChange={handleChange} className="app-select">
               <option value="EI">EI</option>
               <option value="EIRL">EIRL</option>
               <option value="EURL">EURL</option>
@@ -205,48 +210,48 @@ export default function Settings() {
 
         <div className="app-form-row">
           <div className="app-form-group">
-            <label className="app-label">SIREN</label>
-            <input name="siren" value={form.siren} onChange={handleChange} required maxLength={9} className="app-input" />
+            <label htmlFor="settings-siren" className="app-label">SIREN</label>
+            <input id="settings-siren" name="siren" value={form.siren} onChange={handleChange} required maxLength={9} className="app-input" />
           </div>
           <div className="app-form-group">
-            <label className="app-label">SIRET</label>
-            <input name="siret" value={form.siret} onChange={handleChange} maxLength={14} className="app-input" />
+            <label htmlFor="settings-siret" className="app-label">SIRET</label>
+            <input id="settings-siret" name="siret" value={form.siret} onChange={handleChange} maxLength={14} className="app-input" />
           </div>
         </div>
 
         <div className="app-form-row">
           <div className="app-form-group">
-            <label className="app-label">N° TVA intracommunautaire</label>
-            <input name="vatNumber" value={form.vatNumber} onChange={handleChange} maxLength={30} className="app-input" placeholder="FR00123456789" />
+            <label htmlFor="settings-vat-number" className="app-label">N° TVA intracommunautaire</label>
+            <input id="settings-vat-number" name="vatNumber" value={form.vatNumber} onChange={handleChange} maxLength={30} className="app-input" placeholder="FR00123456789" />
           </div>
           <div className="app-form-group">
-            <label className="app-label">Code NAF</label>
-            <input name="nafCode" value={form.nafCode} onChange={handleChange} maxLength={5} className="app-input" placeholder="6201Z" />
+            <label htmlFor="settings-naf-code" className="app-label">Code NAF</label>
+            <input id="settings-naf-code" name="nafCode" value={form.nafCode} onChange={handleChange} maxLength={5} className="app-input" placeholder="6201Z" />
           </div>
         </div>
 
         <div className="app-form-group">
-          <label className="app-label">Adresse (ligne 1)</label>
-          <input name="addressLine1" value={form.addressLine1} onChange={handleChange} required className="app-input" />
+          <label htmlFor="settings-address1" className="app-label">Adresse (ligne 1)</label>
+          <input id="settings-address1" name="addressLine1" value={form.addressLine1} onChange={handleChange} required className="app-input" />
         </div>
 
         <div className="app-form-group">
-          <label className="app-label">Adresse (ligne 2)</label>
-          <input name="addressLine2" value={form.addressLine2} onChange={handleChange} className="app-input" />
+          <label htmlFor="settings-address2" className="app-label">Adresse (ligne 2)</label>
+          <input id="settings-address2" name="addressLine2" value={form.addressLine2} onChange={handleChange} className="app-input" />
         </div>
 
         <div className="app-form-row">
           <div className="app-form-group">
-            <label className="app-label">Code postal</label>
-            <input name="postalCode" value={form.postalCode} onChange={handleChange} required maxLength={5} className="app-input" />
+            <label htmlFor="settings-postal-code" className="app-label">Code postal</label>
+            <input id="settings-postal-code" name="postalCode" value={form.postalCode} onChange={handleChange} required maxLength={5} className="app-input" />
           </div>
           <div className="app-form-group flex-2">
-            <label className="app-label">Ville</label>
-            <input name="city" value={form.city} onChange={handleChange} required className="app-input" />
+            <label htmlFor="settings-city" className="app-label">Ville</label>
+            <input id="settings-city" name="city" value={form.city} onChange={handleChange} required className="app-input" />
           </div>
           <div className="app-form-group">
-            <label className="app-label">Pays</label>
-            <input name="countryCode" value={form.countryCode} onChange={handleChange} maxLength={2} className="app-input" />
+            <label htmlFor="settings-country" className="app-label">Pays</label>
+            <input id="settings-country" name="countryCode" value={form.countryCode} onChange={handleChange} maxLength={2} className="app-input" />
           </div>
         </div>
 
@@ -254,20 +259,20 @@ export default function Settings() {
 
         <div className="app-form-row">
           <div className="app-form-group flex-2">
-            <label className="app-label">IBAN</label>
-            <input name="iban" value={form.iban} onChange={handleChange} maxLength={34} className="app-input" placeholder="FR76...185" />
+            <label htmlFor="settings-iban" className="app-label">IBAN</label>
+            <input id="settings-iban" name="iban" value={form.iban} onChange={handleChange} maxLength={34} className="app-input" placeholder="FR76...185" />
           </div>
           <div className="app-form-group">
-            <label className="app-label">BIC</label>
-            <input name="bic" value={form.bic} onChange={handleChange} maxLength={11} className="app-input" placeholder="BNPAFRPPXXX" />
+            <label htmlFor="settings-bic" className="app-label">BIC</label>
+            <input id="settings-bic" name="bic" value={form.bic} onChange={handleChange} maxLength={11} className="app-input" placeholder="BNPAFRPPXXX" />
           </div>
         </div>
 
         <h2 className="app-section-title">Connexion PDP</h2>
 
         <div className="app-form-group">
-          <label className="app-label">Plateforme de dematerialisation</label>
-          <select name="defaultPdp" value={form.defaultPdp} onChange={handleChange} className="app-select">
+          <label htmlFor="settings-pdp" className="app-label">Plateforme de dematerialisation</label>
+          <select id="settings-pdp" name="defaultPdp" value={form.defaultPdp} onChange={handleChange} className="app-select">
             <option value="">Aucune (mode brouillon uniquement)</option>
             <option value="chorus_pro">Chorus Pro (B2G)</option>
           </select>
@@ -290,7 +295,7 @@ export default function Settings() {
           onClick={async () => {
             try {
               const res = await getStripePortalUrl();
-              window.location.href = res.data.url;
+              globalThis.location.href = res.data.url;
             } catch {
               setError('Impossible d\'acceder au portail de facturation.');
             }
@@ -353,7 +358,7 @@ export default function Settings() {
           {/* Couleurs */}
           <div className="app-form-row app-mb-2">
             <div className="app-form-group">
-              <label className="app-label">Couleur primaire</label>
+              <label htmlFor="settings-primary-color" className="app-label">Couleur primaire</label>
               <div className="app-color-picker-row">
                 <input
                   type="color"
@@ -362,6 +367,7 @@ export default function Settings() {
                   className="app-color-swatch"
                 />
                 <input
+                  id="settings-primary-color"
                   value={primaryColor}
                   onChange={(e) => setPrimaryColor(e.target.value)}
                   className="app-input app-color-hex-input"
@@ -370,7 +376,7 @@ export default function Settings() {
               </div>
             </div>
             <div className="app-form-group">
-              <label className="app-label">Couleur secondaire</label>
+              <label htmlFor="settings-secondary-color" className="app-label">Couleur secondaire</label>
               <div className="app-color-picker-row">
                 <input
                   type="color"
@@ -379,6 +385,7 @@ export default function Settings() {
                   className="app-color-swatch"
                 />
                 <input
+                  id="settings-secondary-color"
                   value={secondaryColor}
                   onChange={(e) => setSecondaryColor(e.target.value)}
                   className="app-input app-color-hex-input"
@@ -390,8 +397,9 @@ export default function Settings() {
 
           {/* Pied de page */}
           <div className="app-form-group app-mb-2">
-            <label className="app-label">Pied de page des factures</label>
+            <label htmlFor="settings-footer-text" className="app-label">Pied de page des factures</label>
             <textarea
+              id="settings-footer-text"
               value={footerText}
               onChange={(e) => setFooterText(e.target.value)}
               className="app-input"
@@ -447,7 +455,7 @@ export default function Settings() {
                 } as unknown as Partial<Company>);
 
                 // Upload du logo si present
-                if (logoPreview && logoPreview.startsWith('data:')) {
+                if (logoPreview?.startsWith('data:')) {
                   const blob = await fetch(logoPreview).then(r => r.blob());
                   const formData = new FormData();
                   formData.append('logo', blob, 'logo.png');
@@ -494,8 +502,9 @@ export default function Settings() {
               {/* Delais */}
               <div className="app-form-row app-mb-2">
                 <div className="app-form-group">
-                  <label className="app-label">1re relance (jours apres echeance)</label>
+                  <label htmlFor="settings-reminder-first" className="app-label">1re relance (jours apres echeance)</label>
                   <input
+                    id="settings-reminder-first"
                     type="number"
                     min="1"
                     max="90"
@@ -506,8 +515,9 @@ export default function Settings() {
                   <span className="app-reminder-hint">Ton amical</span>
                 </div>
                 <div className="app-form-group">
-                  <label className="app-label">2e relance (jours)</label>
+                  <label htmlFor="settings-reminder-second" className="app-label">2e relance (jours)</label>
                   <input
+                    id="settings-reminder-second"
                     type="number"
                     min="1"
                     max="90"
@@ -518,8 +528,9 @@ export default function Settings() {
                   <span className="app-reminder-hint">Ton ferme</span>
                 </div>
                 <div className="app-form-group">
-                  <label className="app-label">Mise en demeure (jours)</label>
+                  <label htmlFor="settings-reminder-formal" className="app-label">Mise en demeure (jours)</label>
                   <input
+                    id="settings-reminder-formal"
                     type="number"
                     min="1"
                     max="180"
@@ -564,9 +575,9 @@ export default function Settings() {
                   try {
                     await api.put(`/companies/${company.id}/reminders`, {
                       enabled: remindersEnabled,
-                      firstDelay: parseInt(reminderDelays.first),
-                      secondDelay: parseInt(reminderDelays.second),
-                      formalDelay: parseInt(reminderDelays.formal),
+                      firstDelay: Number.parseInt(reminderDelays.first),
+                      secondDelay: Number.parseInt(reminderDelays.second),
+                      formalDelay: Number.parseInt(reminderDelays.formal),
                     });
                     setMessage('Parametres de relance enregistres.');
                   } catch {
@@ -627,7 +638,7 @@ export default function Settings() {
               <span className="app-billing-summary-unit">factures HT</span>
               <span className="app-billing-summary-arrow">&rarr;</span>
               <span className="app-billing-summary-fees">{estimatedFees.toFixed(2)} €</span>
-              <span className="app-billing-summary-unit">de frais {currentPlan === 'pro' ? 'annuels' : currentPlan === 'success' ? 'estimes' : ''}</span>
+              <span className="app-billing-summary-unit">de frais {(() => { if (currentPlan === 'pro') return 'annuels'; if (currentPlan === 'success') return 'estimes'; return ''; })()}</span>
             </div>
             <div className="app-billing-summary-count">
               {yearInvoices.length} facture(s) emise(s) en {currentYear}
@@ -656,8 +667,8 @@ export default function Settings() {
                 <div className="app-plan-card-price">{plan.price}</div>
                 <div className="app-plan-card-desc">{plan.desc}</div>
                 <ul className="app-plan-card-features">
-                  {plan.features.map((f, i) => (
-                    <li key={i}>&#10003; {f}</li>
+                  {plan.features.map((f) => (
+                    <li key={f}>&#10003; {f}</li>
                   ))}
                 </ul>
               </div>
@@ -688,7 +699,7 @@ export default function Settings() {
             onClick={async () => {
               try {
                 const res = await getStripePortalUrl();
-                window.location.href = res.data.url;
+                globalThis.location.href = res.data.url;
               } catch {
                 setError('Impossible d\'acceder au portail de facturation.');
               }

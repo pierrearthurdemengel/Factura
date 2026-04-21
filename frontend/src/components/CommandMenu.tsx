@@ -4,7 +4,7 @@ import { getInvoices, type Invoice } from '../api/factura';
 import Fuse from 'fuse.js';
 import './CommandMenu.css';
 
-export default function CommandMenu({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+export default function CommandMenu({ isOpen, onClose }: Readonly<{ isOpen: boolean, onClose: () => void }>) {
   const [query, setQuery] = useState('');
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const navigate = useNavigate();

@@ -132,7 +132,7 @@ function LazyFallback() {
 }
 
 // Route protegee : redirige vers /login si non authentifie
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children }: Readonly<{ children: React.ReactNode }>) {
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return <>{children}</>;
@@ -146,7 +146,7 @@ function HomePage() {
 }
 
 // Barre de navigation principale (affichee uniquement pour les utilisateurs connectes)
-function NavBar({ onOpenCommand }: { onOpenCommand: () => void }) {
+function NavBar({ onOpenCommand }: Readonly<{ onOpenCommand: () => void }>) {
   const { isAuthenticated } = useAuth();
   const { setTheme, isDark } = useTheme();
   const { locale, setLocale, supportedLocales } = useLocale();
@@ -380,11 +380,11 @@ function AnimatedAppCore() {
       // 3. Raccourcis Shift+C pour creer (hors inputs)
       if (!isInput && e.shiftKey && e.key === 'C') {
         e.preventDefault();
-        window.location.href = '/invoices/new';
+        globalThis.location.href = '/invoices/new';
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    return () => globalThis.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   return (

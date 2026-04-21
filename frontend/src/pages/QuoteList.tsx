@@ -141,7 +141,7 @@ export default function QuoteList() {
                   {intl.formatMessage({ id: cfg.intlId, defaultMessage: cfg.defaultMessage })}
                 </span>
                 <div className="app-list-item-value">
-                  {parseFloat(quote.totalIncludingTax).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                  {Number.parseFloat(quote.totalIncludingTax).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                 </div>
               </Link>
             );

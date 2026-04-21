@@ -24,11 +24,11 @@ interface ClientStats {
 function computeClientStats(clientId: string, invoices: Invoice[]): ClientStats {
   const clientInvoices = invoices.filter(inv => inv.buyer?.id === clientId);
   const total = clientInvoices.length;
-  const totalAmount = clientInvoices.reduce((s, inv) => s + parseFloat(inv.totalIncludingTax), 0);
+  const totalAmount = clientInvoices.reduce((s, inv) => s + Number.parseFloat(inv.totalIncludingTax), 0);
   const paid = clientInvoices.filter(inv => inv.status === 'PAID');
-  const paidAmount = paid.reduce((s, inv) => s + parseFloat(inv.totalIncludingTax), 0);
+  const paidAmount = paid.reduce((s, inv) => s + Number.parseFloat(inv.totalIncludingTax), 0);
   const pendingInvs = clientInvoices.filter(inv => inv.status === 'SENT' || inv.status === 'ACKNOWLEDGED');
-  const pendingAmount = pendingInvs.reduce((s, inv) => s + parseFloat(inv.totalIncludingTax), 0);
+  const pendingAmount = pendingInvs.reduce((s, inv) => s + Number.parseFloat(inv.totalIncludingTax), 0);
 
   // Delai moyen de paiement (jours entre issueDate et now pour les payees)
   let avgDelay = 0;
@@ -150,7 +150,7 @@ export default function ClientList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) return;
+    if (!globalThis.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) return;
     try {
       await deleteClient(id);
       success("Client supprimé avec succès.");

@@ -273,9 +273,9 @@ export default function InvoiceDetail() {
                 <td>{line.description}</td>
                 <td className="text-right">{line.quantity}</td>
                 <td className="text-center">{line.unit}</td>
-                <td className="text-right">{parseFloat(line.unitPriceExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
+                <td className="text-right">{Number.parseFloat(line.unitPriceExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
                 <td className="text-right">{line.vatRate}%</td>
-                <td className="text-right">{parseFloat(line.lineAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
+                <td className="text-right">{Number.parseFloat(line.lineAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
               </tr>
             ))}
           </tbody>
@@ -283,9 +283,9 @@ export default function InvoiceDetail() {
       </div>
 
       <div className="app-totals">
-        <p>Total HT : <strong>{parseFloat(invoice.totalExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
-        <p>Total TVA : <strong>{parseFloat(invoice.totalTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
-        <p className="app-totals-grand">Total TTC : <strong>{parseFloat(invoice.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p>Total HT : <strong>{Number.parseFloat(invoice.totalExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p>Total TVA : <strong>{Number.parseFloat(invoice.totalTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p className="app-totals-grand">Total TTC : <strong>{Number.parseFloat(invoice.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
       </div>
 
       {invoice.legalMention && (
@@ -293,7 +293,7 @@ export default function InvoiceDetail() {
       )}
 
       {/* Affacturage : proposition de financement pour les factures non payees */}
-      {['SENT', 'ACKNOWLEDGED'].includes(invoice.status) && parseFloat(invoice.totalIncludingTax) > 0 && (
+      {['SENT', 'ACKNOWLEDGED'].includes(invoice.status) && Number.parseFloat(invoice.totalIncludingTax) > 0 && (
         <div className="app-card app-factoring-card">
           <div className="app-factoring-inner">
             <div>
@@ -301,7 +301,7 @@ export default function InvoiceDetail() {
                 Recevoir le paiement maintenant
               </div>
               <div className="app-factoring-desc">
-                Financez cette facture et recevez {(parseFloat(invoice.totalIncludingTax) * (1 - factoringRate / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} € sous 48h
+                Financez cette facture et recevez {(Number.parseFloat(invoice.totalIncludingTax) * (1 - factoringRate / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} € sous 48h
                 <span className="app-factoring-commission"> (commission de {factoringRate}%)</span>
               </div>
             </div>

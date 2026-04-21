@@ -8,7 +8,7 @@ interface ClientDataGridProps {
   onDeleteClient: (id: string) => Promise<void>;
 }
 
-export default function ClientDataGrid({ clients, onUpdateClient, onDeleteClient }: ClientDataGridProps) {
+export default function ClientDataGrid({ clients, onUpdateClient, onDeleteClient }: Readonly<ClientDataGridProps>) {
   const [colWidths, setColWidths] = useState([200, 150, 200, 100, 150, 80]);
   const { error } = useToast();
 

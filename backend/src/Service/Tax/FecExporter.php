@@ -221,10 +221,11 @@ class FecExporter
      * Les comptes 411xxx (clients) et 401xxx (fournisseurs) peuvent
      * avoir un compte auxiliaire pour le suivi par tiers.
      */
-    private function getAuxiliaryAccount(string $account): string
+    private function getAuxiliaryAccount(string $account): string // phpcs:ignore -- $account reserved for future auxiliary account lookup
     {
         // Les comptes collectifs (411, 401) n'ont pas d'auxiliaire ici
-        // car le detail est dans le label de l'ecriture
+        // car le detail est dans le label de l'ecriture.
+        // $account intentionally unused — will be used to resolve auxiliary sub-accounts per client/supplier
         return '';
     }
 

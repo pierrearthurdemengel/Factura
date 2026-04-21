@@ -23,6 +23,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/dashboard')]
 class DashboardController extends AbstractController
 {
+    private const MSG_COMPANY_NOT_FOUND = 'Entreprise non trouvee.';
+    private const MSG_DATE_PARAMS_REQUIRED = 'Parametres from et to requis (format YYYY-MM-DD).';
+
     public function __construct(
         private readonly DashboardMetrics $metrics,
         private readonly CashFlowPredictor $cashFlowPredictor,
@@ -39,7 +42,7 @@ class DashboardController extends AbstractController
     {
         $company = $this->getCompany($request);
         if (!$company instanceof Company) {
-            return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => self::MSG_COMPANY_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
 
         $from = $this->parseDate($request->query->getString('from'));
@@ -47,7 +50,7 @@ class DashboardController extends AbstractController
 
         if (null === $from || null === $to) {
             return new JsonResponse(
-                ['error' => 'Parametres from et to requis (format YYYY-MM-DD).'],
+                ['error' => self::MSG_DATE_PARAMS_REQUIRED],
                 Response::HTTP_BAD_REQUEST,
             );
         }
@@ -63,7 +66,7 @@ class DashboardController extends AbstractController
     {
         $company = $this->getCompany($request);
         if (!$company instanceof Company) {
-            return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => self::MSG_COMPANY_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
 
         $year = $request->query->getInt('year', (int) date('Y'));
@@ -79,7 +82,7 @@ class DashboardController extends AbstractController
     {
         $company = $this->getCompany($request);
         if (!$company instanceof Company) {
-            return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => self::MSG_COMPANY_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
 
         $from = $this->parseDate($request->query->getString('from'));
@@ -87,7 +90,7 @@ class DashboardController extends AbstractController
 
         if (null === $from || null === $to) {
             return new JsonResponse(
-                ['error' => 'Parametres from et to requis (format YYYY-MM-DD).'],
+                ['error' => self::MSG_DATE_PARAMS_REQUIRED],
                 Response::HTTP_BAD_REQUEST,
             );
         }
@@ -103,7 +106,7 @@ class DashboardController extends AbstractController
     {
         $company = $this->getCompany($request);
         if (!$company instanceof Company) {
-            return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error' => self::MSG_COMPANY_NOT_FOUND], Response::HTTP_NOT_FOUND);
         }
 
         $balance = $request->query->getString('balance', '0.00');

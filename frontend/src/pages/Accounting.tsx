@@ -54,8 +54,8 @@ export default function Accounting() {
     if (!acc[e.accountNumber]) {
       acc[e.accountNumber] = { label: e.accountLabel, totalDebit: 0, totalCredit: 0, entries: [] };
     }
-    acc[e.accountNumber].totalDebit += parseFloat(e.debit || '0');
-    acc[e.accountNumber].totalCredit += parseFloat(e.credit || '0');
+    acc[e.accountNumber].totalDebit += Number.parseFloat(e.debit || '0');
+    acc[e.accountNumber].totalCredit += Number.parseFloat(e.credit || '0');
     acc[e.accountNumber].entries.push(e);
     return acc;
   }, {});
@@ -159,11 +159,11 @@ export default function Accounting() {
                     </td>
                     <td style={{ fontWeight: 500, color: 'var(--text-h)' }}>{entry.accountNumber} — {entry.accountLabel}</td>
                     <td>{entry.label}</td>
-                    <td className="text-right" style={{ color: parseFloat(entry.debit) > 0 ? 'var(--text-h)' : undefined }}>
-                      {parseFloat(entry.debit) > 0 ? parseFloat(entry.debit).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) : ''}
+                    <td className="text-right" style={{ color: Number.parseFloat(entry.debit) > 0 ? 'var(--text-h)' : undefined }}>
+                      {Number.parseFloat(entry.debit) > 0 ? Number.parseFloat(entry.debit).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) : ''}
                     </td>
-                    <td className="text-right" style={{ color: parseFloat(entry.credit) > 0 ? 'var(--text-h)' : undefined }}>
-                      {parseFloat(entry.credit) > 0 ? parseFloat(entry.credit).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) : ''}
+                    <td className="text-right" style={{ color: Number.parseFloat(entry.credit) > 0 ? 'var(--text-h)' : undefined }}>
+                      {Number.parseFloat(entry.credit) > 0 ? Number.parseFloat(entry.credit).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) : ''}
                     </td>
                   </tr>
                 ))}

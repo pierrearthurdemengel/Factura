@@ -200,7 +200,7 @@ export default function AccountantPortal() {
     }
 
     // Verification format SIREN (9 chiffres)
-    const cleanedSiren = inviteSiren.replace(/\s/g, '');
+    const cleanedSiren = inviteSiren.replaceAll(/\s/g, '');
     if (!/^\d{9}$/.test(cleanedSiren)) {
       setInviteError('Le SIREN doit contenir exactement 9 chiffres.');
       return;
@@ -450,13 +450,13 @@ export default function AccountantPortal() {
                         )}
                       </td>
                       <td className="text-right">
-                        {parseFloat(entry.debit) > 0
-                          ? parseFloat(entry.debit).toLocaleString('fr-FR', { minimumFractionDigits: 2 })
+                        {Number.parseFloat(entry.debit) > 0
+                          ? Number.parseFloat(entry.debit).toLocaleString('fr-FR', { minimumFractionDigits: 2 })
                           : ''}
                       </td>
                       <td className="text-right">
-                        {parseFloat(entry.credit) > 0
-                          ? parseFloat(entry.credit).toLocaleString('fr-FR', { minimumFractionDigits: 2 })
+                        {Number.parseFloat(entry.credit) > 0
+                          ? Number.parseFloat(entry.credit).toLocaleString('fr-FR', { minimumFractionDigits: 2 })
                           : ''}
                       </td>
                       <td className="text-center">
@@ -578,10 +578,11 @@ export default function AccountantPortal() {
 
             <div className="app-card app-factoring-container">
               <div className="app-form-group">
-                <label className="app-label">
+                <label htmlFor="accountant-cabinet-name" className="app-label">
                   Nom du cabinet
                 </label>
                 <input
+                  id="accountant-cabinet-name"
                   type="text"
                   value={whiteLabel.cabinetName}
                   onChange={(e) => setWhiteLabel({ ...whiteLabel, cabinetName: e.target.value })}
@@ -592,7 +593,7 @@ export default function AccountantPortal() {
 
               <div className="app-form-row">
                 <div className="app-form-group">
-                  <label className="app-label">
+                  <label htmlFor="accountant-primary-color" className="app-label">
                     Couleur principale
                   </label>
                   <div className="app-color-picker-row">
@@ -603,6 +604,7 @@ export default function AccountantPortal() {
                       className="app-color-swatch"
                     />
                     <input
+                      id="accountant-primary-color"
                       type="text"
                       value={whiteLabel.primaryColor}
                       onChange={(e) => setWhiteLabel({ ...whiteLabel, primaryColor: e.target.value })}
@@ -613,7 +615,7 @@ export default function AccountantPortal() {
                 </div>
 
                 <div className="app-form-group">
-                  <label className="app-label">
+                  <label htmlFor="accountant-secondary-color" className="app-label">
                     Couleur secondaire
                   </label>
                   <div className="app-color-picker-row">
@@ -624,6 +626,7 @@ export default function AccountantPortal() {
                       className="app-color-swatch"
                     />
                     <input
+                      id="accountant-secondary-color"
                       type="text"
                       value={whiteLabel.secondaryColor}
                       onChange={(e) => setWhiteLabel({ ...whiteLabel, secondaryColor: e.target.value })}

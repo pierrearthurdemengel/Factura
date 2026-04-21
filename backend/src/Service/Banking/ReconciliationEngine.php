@@ -38,42 +38,66 @@ class ReconciliationEngine
     {
         $score = 0;
 
-        // Critere 1 : montant exact (60 points)
+        $score += $this->scoreAmount($transaction, $invoice);
+        $score += $this->scoreDueDate($transaction, $invoice);
+        $score += $this->scoreBuyerLabel($transaction, $invoice);
+
+        return min(100, $score);
+    }
+
+    /**
+     * Score le critere montant (60 points max).
+     */
+    private function scoreAmount(BankTransaction $transaction, Invoice $invoice): int
+    {
         $txAmount = abs((float) $transaction->getAmount());
         $invoiceAmount = (float) $invoice->getTotalIncludingTax();
 
-        if ($invoiceAmount > 0) {
-            $diff = abs($txAmount - $invoiceAmount);
-            $tolerance = $invoiceAmount * 0.01; // 1% de tolerance
-
-            if ($diff < 0.01) {
-                // Montant exact
-                $score += 60;
-            } elseif ($diff <= $tolerance) {
-                // Montant approchant
-                $score += 30;
-            }
+        if ($invoiceAmount <= 0) {
+            return 0;
         }
 
-        // Critere 2 : date proche de l'echeance (20 points)
+        $diff = abs($txAmount - $invoiceAmount);
+
+        if ($diff < 0.01) {
+            return 60;
+        }
+
+        return $diff <= $invoiceAmount * 0.01 ? 30 : 0;
+    }
+
+    /**
+     * Score le critere date d'echeance (20 points max).
+     */
+    private function scoreDueDate(BankTransaction $transaction, Invoice $invoice): int
+    {
         $dueDate = $invoice->getDueDate();
-        if (null !== $dueDate) {
-            $txDate = $transaction->getTransactionDate();
-            $daysDiff = abs((int) $txDate->diff($dueDate)->format('%r%a'));
-
-            if ($daysDiff <= 2) {
-                $score += 20;
-            } elseif ($daysDiff <= 5) {
-                $score += 10;
-            }
+        if (null === $dueDate) {
+            return 0;
         }
 
-        // Critere 3 : libelle contenant le nom du client (20 points)
+        $daysDiff = abs((int) $transaction->getTransactionDate()->diff($dueDate)->format('%r%a'));
+
+        if ($daysDiff <= 2) {
+            return 20;
+        }
+
+        return $daysDiff <= 5 ? 10 : 0;
+    }
+
+    /**
+     * Score le critere libelle contenant le nom du client (20 points max).
+     */
+    private function scoreBuyerLabel(BankTransaction $transaction, Invoice $invoice): int
+    {
         $buyerName = strtolower($invoice->getBuyer()->getName());
         $txLabel = strtolower($transaction->getLabel());
 
-        // Recherche par mots significatifs (au moins 3 caracteres)
         $words = array_filter(explode(' ', $buyerName), static fn (string $w): bool => mb_strlen($w) >= 3);
+        if ([] === $words) {
+            return 0;
+        }
+
         $matchedWords = 0;
         foreach ($words as $word) {
             if (str_contains($txLabel, $word)) {
@@ -81,16 +105,11 @@ class ReconciliationEngine
             }
         }
 
-        if ($matchedWords > 0 && count($words) > 0) {
-            $ratio = $matchedWords / count($words);
-            if ($ratio >= 0.5) {
-                $score += 20;
-            } else {
-                $score += 10;
-            }
+        if (0 === $matchedWords) {
+            return 0;
         }
 
-        return min(100, $score);
+        return ($matchedWords / count($words)) >= 0.5 ? 20 : 10;
     }
 
     /**

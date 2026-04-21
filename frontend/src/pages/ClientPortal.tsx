@@ -24,8 +24,8 @@ function downloadBlob(blob: Blob, filename: string) {
 
 // Formate un montant en euros avec separateur de milliers
 function formatEur(amount: string): string {
-  const num = parseFloat(amount);
-  if (isNaN(num)) return `${amount} €`;
+  const num = Number.parseFloat(amount);
+  if (Number.isNaN(num)) return `${amount} €`;
   return num.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 }
 
@@ -91,7 +91,7 @@ export default function ClientPortal() {
   // Redirige vers le lien de paiement externe
   const handlePay = () => {
     if (portalData?.paymentLink) {
-      window.location.href = portalData.paymentLink;
+      globalThis.location.href = portalData.paymentLink;
     }
   };
 

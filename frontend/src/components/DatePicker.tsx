@@ -12,7 +12,7 @@ interface DatePickerProps {
   className?: string;
 }
 
-export default function DatePicker({ value, onChange, placeholder = "Sélectionner une date", className = "" }: DatePickerProps) {
+export default function DatePicker({ value, onChange, placeholder = "Sélectionner une date", className = "" }: Readonly<DatePickerProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 

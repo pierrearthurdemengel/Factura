@@ -4,6 +4,7 @@ namespace App\Service\Format;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceLine;
+use App\Exception\CompanyNotFoundException;
 use horstoeko\zugferd\ZugferdDocumentBuilder;
 use horstoeko\zugferd\ZugferdProfiles;
 
@@ -52,7 +53,7 @@ class FacturXGenerator
         // Vendeur
         $seller = $invoice->getSeller();
         if (null === $seller) {
-            throw new \RuntimeException('La facture doit avoir un vendeur pour generer le Factur-X.');
+            throw new CompanyNotFoundException('La facture doit avoir un vendeur pour generer le Factur-X.');
         }
         $doc->setDocumentSeller($seller->getName());
         $doc->setDocumentSellerAddress(

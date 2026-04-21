@@ -15,7 +15,7 @@ interface StatusDropdownProps {
   actions: Action[];
 }
 
-export default function StatusDropdown({ statusLabel, statusClass, disabled, actions }: StatusDropdownProps) {
+export default function StatusDropdown({ statusLabel, statusClass, disabled, actions }: Readonly<StatusDropdownProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 

@@ -3,6 +3,8 @@
 namespace App\Service\Pdp;
 
 use App\Entity\Invoice;
+use App\Exception\CompanyNotFoundException;
+use App\Exception\ExternalServiceException;
 use App\Exception\PdpTransmissionException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -36,7 +38,7 @@ class ChorusProClient implements PdpClientInterface
             $data = $this->callApi('/cpro/factures/v1/soumettre', $payload);
 
             if (0 !== (int) ($data['codeRetour'] ?? -1)) {
-                throw new \RuntimeException(sprintf('codeRetour=%s : %s', $data['codeRetour'] ?? '?', $data['libelle'] ?? 'Erreur inconnue'));
+                throw new ExternalServiceException(sprintf('codeRetour=%s : %s', $data['codeRetour'] ?? '?', $data['libelle'] ?? 'Erreur inconnue'));
             }
 
             return (string) $data['identifiantFactureCPP'];
@@ -126,7 +128,7 @@ class ChorusProClient implements PdpClientInterface
         $buyer = $invoice->getBuyer();
 
         if (null === $seller) {
-            throw new \RuntimeException('La facture doit avoir un vendeur pour la transmission Chorus Pro.');
+            throw new CompanyNotFoundException('La facture doit avoir un vendeur pour la transmission Chorus Pro.');
         }
 
         // Recherche de l'idStructureCPP du fournisseur via son SIRET
@@ -134,7 +136,7 @@ class ChorusProClient implements PdpClientInterface
         $sellerStructure = $this->rechercherStructure($sellerSiret);
 
         if (null === $sellerStructure) {
-            throw new \RuntimeException(sprintf('Structure fournisseur introuvable dans Chorus Pro (SIRET=%s)', $sellerSiret));
+            throw new ExternalServiceException(sprintf('Structure fournisseur introuvable dans Chorus Pro (SIRET=%s)', $sellerSiret));
         }
 
         $idFournisseur = (int) $sellerStructure['idStructureCPP'];
@@ -257,7 +259,7 @@ class ChorusProClient implements PdpClientInterface
         $this->accessToken = $data['access_token'] ?? '';
 
         if ('' === $this->accessToken) {
-            throw new \RuntimeException('Impossible d\'obtenir un token OAuth2 PISTE.');
+            throw new ExternalServiceException('Impossible d\'obtenir un token OAuth2 PISTE.');
         }
 
         return $this->accessToken;

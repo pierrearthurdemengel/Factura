@@ -20,6 +20,8 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 class AccountantPortalController extends AbstractController
 {
+    private const MSG_PROFILE_NOT_FOUND = 'Profil comptable non trouve';
+
     public function __construct(
         private readonly EntityManagerInterface $em,
     ) {
@@ -33,7 +35,7 @@ class AccountantPortalController extends AbstractController
     {
         $profile = $this->getAccountantProfile();
         if (null === $profile) {
-            return new JsonResponse(['error' => 'Profil comptable non trouve'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => self::MSG_PROFILE_NOT_FOUND], Response::HTTP_FORBIDDEN);
         }
 
         $companies = [];
@@ -60,7 +62,7 @@ class AccountantPortalController extends AbstractController
     {
         $profile = $this->getAccountantProfile();
         if (null === $profile) {
-            return new JsonResponse(['error' => 'Profil comptable non trouve'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => self::MSG_PROFILE_NOT_FOUND], Response::HTTP_FORBIDDEN);
         }
 
         /** @var array<string, mixed> $data */
@@ -153,7 +155,7 @@ class AccountantPortalController extends AbstractController
     {
         $profile = $this->getAccountantProfile();
         if (null === $profile) {
-            return new JsonResponse(['error' => 'Profil comptable non trouve'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => self::MSG_PROFILE_NOT_FOUND], Response::HTTP_FORBIDDEN);
         }
 
         $invitations = [];

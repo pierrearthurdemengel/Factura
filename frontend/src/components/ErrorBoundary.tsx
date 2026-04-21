@@ -47,7 +47,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             </pre>
           )}
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => globalThis.location.reload()}
             style={{
               padding: '0.75rem 1.5rem', background: 'var(--accent)', color: '#fff',
               border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600,

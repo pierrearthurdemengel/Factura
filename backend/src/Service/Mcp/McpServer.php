@@ -24,6 +24,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class McpServer
 {
+    private const MSG_INVOICE_NOT_FOUND = 'Facture introuvable.';
+
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly InvoiceStateMachine $stateMachine,
@@ -202,7 +204,7 @@ class McpServer
     {
         $invoice = $this->resolveInvoice($company, $arguments);
         if (null === $invoice) {
-            return $this->errorResult('Facture introuvable.');
+            return $this->errorResult(self::MSG_INVOICE_NOT_FOUND);
         }
 
         $lines = [];
@@ -270,23 +272,8 @@ class McpServer
         $invoice->setSeller($company);
         $invoice->setBuyer($client);
 
-        // Date d'emission
-        $issueDate = $arguments['issueDate'] ?? null;
-        if (is_string($issueDate) && '' !== $issueDate) {
-            $parsed = \DateTimeImmutable::createFromFormat('Y-m-d', $issueDate);
-            if (false !== $parsed) {
-                $invoice->setIssueDate($parsed);
-            }
-        }
-
-        // Date d'echeance
-        $dueDate = $arguments['dueDate'] ?? null;
-        if (is_string($dueDate) && '' !== $dueDate) {
-            $parsed = \DateTimeImmutable::createFromFormat('Y-m-d', $dueDate);
-            if (false !== $parsed) {
-                $invoice->setDueDate($parsed);
-            }
-        }
+        $this->applyOptionalDate($invoice, 'setIssueDate', $arguments['issueDate'] ?? null);
+        $this->applyOptionalDate($invoice, 'setDueDate', $arguments['dueDate'] ?? null);
 
         // Conditions de paiement
         $paymentTerms = $arguments['paymentTerms'] ?? null;
@@ -295,45 +282,9 @@ class McpServer
         }
 
         // Ajout des lignes
-        $position = 1;
-        foreach ($linesData as $lineData) {
-            if (!is_array($lineData)) {
-                continue;
-            }
-
-            $description = $lineData['description'] ?? null;
-            $quantity = $lineData['quantity'] ?? null;
-            $unitPrice = $lineData['unitPriceExcludingTax'] ?? null;
-
-            if (!is_string($description) || '' === $description) {
-                return $this->errorResult("Ligne {$position} : description obligatoire.");
-            }
-            if (!is_string($quantity) || '' === $quantity) {
-                return $this->errorResult("Ligne {$position} : quantite obligatoire.");
-            }
-            if (!is_string($unitPrice) || '' === $unitPrice) {
-                return $this->errorResult("Ligne {$position} : prix unitaire HT obligatoire.");
-            }
-
-            $line = new InvoiceLine();
-            $line->setPosition($position);
-            $line->setDescription($description);
-            $line->setQuantity($quantity);
-            $line->setUnitPriceExcludingTax($unitPrice);
-
-            $unit = $lineData['unit'] ?? null;
-            if (is_string($unit) && '' !== $unit) {
-                $line->setUnit($unit);
-            }
-
-            $vatRate = $lineData['vatRate'] ?? null;
-            if (is_string($vatRate) && '' !== $vatRate) {
-                $line->setVatRate($vatRate);
-            }
-
-            $line->computeAmounts();
-            $invoice->addLine($line);
-            ++$position;
+        $error = $this->buildInvoiceLines($invoice, $linesData);
+        if (null !== $error) {
+            return $error;
         }
 
         $invoice->computeTotals();
@@ -353,6 +304,94 @@ class McpServer
     }
 
     /**
+     * Parse une date Y-m-d et l'applique a la facture via le setter indique.
+     *
+     * @param 'setIssueDate'|'setDueDate' $setter
+     */
+    private function applyOptionalDate(Invoice $invoice, string $setter, mixed $value): void
+    {
+        if (!is_string($value) || '' === $value) {
+            return;
+        }
+
+        $parsed = \DateTimeImmutable::createFromFormat('Y-m-d', $value);
+        if (false !== $parsed) {
+            $invoice->{$setter}($parsed);
+        }
+    }
+
+    /**
+     * Construit les lignes de facture a partir des donnees MCP.
+     *
+     * @param list<mixed> $linesData
+     *
+     * @return ToolResult|null Null si OK, sinon le resultat d'erreur
+     */
+    private function buildInvoiceLines(Invoice $invoice, array $linesData): ?array
+    {
+        $position = 1;
+        foreach ($linesData as $lineData) {
+            if (!is_array($lineData)) {
+                continue;
+            }
+
+            $error = $this->validateLineData($lineData, $position);
+            if (null !== $error) {
+                return $error;
+            }
+
+            $line = new InvoiceLine();
+            $line->setPosition($position);
+            $line->setDescription((string) $lineData['description']);
+            $line->setQuantity((string) $lineData['quantity']);
+            $line->setUnitPriceExcludingTax((string) $lineData['unitPriceExcludingTax']);
+
+            $unit = $lineData['unit'] ?? null;
+            if (is_string($unit) && '' !== $unit) {
+                $line->setUnit($unit);
+            }
+
+            $vatRate = $lineData['vatRate'] ?? null;
+            if (is_string($vatRate) && '' !== $vatRate) {
+                $line->setVatRate($vatRate);
+            }
+
+            $line->computeAmounts();
+            $invoice->addLine($line);
+            ++$position;
+        }
+
+        return null;
+    }
+
+    /**
+     * Valide les champs obligatoires d'une ligne de facture MCP.
+     *
+     * @param array<string, mixed> $lineData
+     *
+     * @return ToolResult|null Null si valide, sinon le resultat d'erreur
+     */
+    private function validateLineData(array $lineData, int $position): ?array
+    {
+        $description = $lineData['description'] ?? null;
+        if (!is_string($description) || '' === $description) {
+            return $this->errorResult("Ligne {$position} : description obligatoire.");
+        }
+
+        $quantity = $lineData['quantity'] ?? null;
+        if (!is_string($quantity) || '' === $quantity) {
+            return $this->errorResult("Ligne {$position} : quantite obligatoire.");
+        }
+
+        $unitPrice = $lineData['unitPriceExcludingTax'] ?? null;
+        if (!is_string($unitPrice) || '' === $unitPrice) {
+            return $this->errorResult("Ligne {$position} : prix unitaire HT obligatoire.");
+        }
+
+        return null;
+    }
+
+    /**
      * Emet une facture : genere le numero, applique la transition, lance la transmission PDP.
      *
      * @param array<string, mixed> $arguments
@@ -363,7 +402,7 @@ class McpServer
     {
         $invoice = $this->resolveInvoice($company, $arguments);
         if (null === $invoice) {
-            return $this->errorResult('Facture introuvable.');
+            return $this->errorResult(self::MSG_INVOICE_NOT_FOUND);
         }
 
         if (!$this->stateMachine->can($invoice, 'send')) {
@@ -408,7 +447,7 @@ class McpServer
     {
         $invoice = $this->resolveInvoice($company, $arguments);
         if (null === $invoice) {
-            return $this->errorResult('Facture introuvable.');
+            return $this->errorResult(self::MSG_INVOICE_NOT_FOUND);
         }
 
         if (!$this->stateMachine->can($invoice, 'pay')) {
@@ -440,7 +479,7 @@ class McpServer
     {
         $invoice = $this->resolveInvoice($company, $arguments);
         if (null === $invoice) {
-            return $this->errorResult('Facture introuvable.');
+            return $this->errorResult(self::MSG_INVOICE_NOT_FOUND);
         }
 
         if (!$this->stateMachine->can($invoice, 'cancel')) {
@@ -472,7 +511,7 @@ class McpServer
     {
         $invoice = $this->resolveInvoice($company, $arguments);
         if (null === $invoice) {
-            return $this->errorResult('Facture introuvable.');
+            return $this->errorResult(self::MSG_INVOICE_NOT_FOUND);
         }
 
         $invoiceId = $invoice->getId();

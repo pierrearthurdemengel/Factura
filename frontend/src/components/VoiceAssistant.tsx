@@ -14,7 +14,7 @@ export default function VoiceAssistant() {
 
   useEffect(() => {
     // @ts-expect-error - API Web Speech non standard selon les navigateurs
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition;
     if (!SpeechRecognition) return;
 
     const recognition = new SpeechRecognition();
@@ -85,12 +85,12 @@ export default function VoiceAssistant() {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      globalThis.removeEventListener('keydown', handleKeyDown);
+      globalThis.removeEventListener('keyup', handleKeyUp);
       recognition.abort();
     };
   }, [audio, navigate, success, info]);

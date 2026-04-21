@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Quote;
 use App\Entity\QuoteEvent;
+use App\Exception\CompanyNotFoundException;
 use App\Service\Quote\QuoteNumberGenerator;
 use App\Service\Quote\QuoteStateMachine;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,7 +37,7 @@ class QuoteSendProcessor implements ProcessorInterface
         if (null === $quote->getNumber()) {
             $seller = $quote->getSeller();
             if (null === $seller) {
-                throw new \RuntimeException('Le devis doit avoir un vendeur pour etre envoye.');
+                throw new CompanyNotFoundException('Le devis doit avoir un vendeur pour etre envoye.');
             }
             $number = $this->numberGenerator->generate($seller);
             $quote->setNumber($number);

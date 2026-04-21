@@ -8,7 +8,7 @@ interface DrawerProps {
   children: React.ReactNode;
 }
 
-export default function Drawer({ isOpen, onClose, title, children }: DrawerProps) {
+export default function Drawer({ isOpen, onClose, title, children }: Readonly<DrawerProps>) {
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'auto';
@@ -19,8 +19,8 @@ export default function Drawer({ isOpen, onClose, title, children }: DrawerProps
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) onClose();
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    globalThis.addEventListener('keydown', handleEsc);
+    return () => globalThis.removeEventListener('keydown', handleEsc);
   }, [isOpen, onClose]);
 
   return (

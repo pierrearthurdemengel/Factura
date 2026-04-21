@@ -56,12 +56,14 @@ export default function Banking() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const filtered = filter === 'all' ? transactions
-    : filter === 'reconciled' ? transactions.filter((t) => t.reconciled)
-    : transactions.filter((t) => !t.reconciled);
+  const filtered = (() => {
+    if (filter === 'all') return transactions;
+    if (filter === 'reconciled') return transactions.filter((t) => t.reconciled);
+    return transactions.filter((t) => !t.reconciled);
+  })();
 
-  const totalCredit = transactions.filter((t) => t.type === 'credit').reduce((s, t) => s + parseFloat(t.amount), 0);
-  const totalDebit = transactions.filter((t) => t.type === 'debit').reduce((s, t) => s + Math.abs(parseFloat(t.amount)), 0);
+  const totalCredit = transactions.filter((t) => t.type === 'credit').reduce((s, t) => s + Number.parseFloat(t.amount), 0);
+  const totalDebit = transactions.filter((t) => t.type === 'debit').reduce((s, t) => s + Math.abs(Number.parseFloat(t.amount)), 0);
   const unreconciledCount = transactions.filter((t) => !t.reconciled).length;
 
   // Reconciliation manuelle
@@ -206,14 +208,21 @@ export default function Banking() {
                     </div>
                   </div>
                   <div className="app-list-item-value" style={{ color: tx.type === 'credit' ? 'var(--success)' : 'var(--danger)' }}>
-                    {tx.type === 'credit' ? '+' : '-'}{Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                    {tx.type === 'credit' ? '+' : '-'}{Math.abs(Number.parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                   </div>
-                  <span className="app-status-pill" style={{
-                    background: tx.reconciled ? 'var(--success-bg)' : tx.suggestedInvoice ? 'var(--accent-bg)' : 'rgba(156,163,175,0.1)',
-                    color: tx.reconciled ? 'var(--success)' : tx.suggestedInvoice ? 'var(--accent)' : 'var(--text-tertiary)',
-                  }}>
-                    {tx.reconciled ? 'Reconciliee' : tx.suggestedInvoice ? 'Suggestion' : 'Non reconciliee'}
-                  </span>
+                  {(() => {
+                    let bg: string;
+                    let color: string;
+                    let label: string;
+                    if (tx.reconciled) {
+                      bg = 'var(--success-bg)'; color = 'var(--success)'; label = 'Reconciliee';
+                    } else if (tx.suggestedInvoice) {
+                      bg = 'var(--accent-bg)'; color = 'var(--accent)'; label = 'Suggestion';
+                    } else {
+                      bg = 'rgba(156,163,175,0.1)'; color = 'var(--text-tertiary)'; label = 'Non reconciliee';
+                    }
+                    return <span className="app-status-pill" style={{ background: bg, color }}>{label}</span>;
+                  })()}
                 </div>
               ))}
             </div>
@@ -242,7 +251,7 @@ export default function Banking() {
                       {new Date(tx.date).toLocaleDateString('fr-FR')}
                     </div>
                     <p className="app-card-value" style={{ fontSize: '1rem', marginTop: '0.5rem', color: tx.type === 'credit' ? 'var(--success)' : 'var(--danger)' }}>
-                      {tx.type === 'credit' ? '+' : '-'}{Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                      {tx.type === 'credit' ? '+' : '-'}{Math.abs(Number.parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                     </p>
                     {/* Selecteur de categorie */}
                     <div className="app-form-group" style={{ marginTop: '0.5rem', marginBottom: 0 }}>
@@ -335,14 +344,14 @@ export default function Banking() {
               <div key={tx.id} className="app-list-item">
                 <div className="app-list-item-info">
                   <div className="app-list-item-title">{tx.label}</div>
-                  <div className="app-list-item-sub">{new Date(tx.date).toLocaleDateString('fr-FR')} — {Math.abs(parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</div>
+                  <div className="app-list-item-sub">{new Date(tx.date).toLocaleDateString('fr-FR')} — {Math.abs(Number.parseFloat(tx.amount)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</div>
                 </div>
                 {tx.receiptId ? (
                   <span className="app-status-pill app-status-pill--connected">Justificatif lie</span>
                 ) : (
                   <label className="app-table-link" style={{ cursor: 'pointer' }}>
                     <input type="file" accept="image/*,.pdf" className="app-hidden" onChange={(e) => handleReceiptUpload(e.target.files, tx.id)} />
-                    + Ajouter
+                    {'+ Ajouter'}
                   </label>
                 )}
               </div>
@@ -372,7 +381,7 @@ export default function Banking() {
               </div>
               {connectStep === 0 && (
                 <div className="app-form-group" style={{ marginTop: '0.75rem' }}>
-                  <select className="app-select">
+                  <select id="banking-bank-select" className="app-select" aria-label="Selectionnez votre banque">
                     <option value="">Selectionnez votre banque</option>
                     <option value="bnp">BNP Paribas</option>
                     <option value="sg">Societe Generale</option>
@@ -395,7 +404,7 @@ export default function Banking() {
             {/* Etape 2 */}
             <div className="app-card" style={{ opacity: connectStep >= 1 ? 1 : 0.5 }}>
               <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
-                <span className="app-health-indicator" style={{ background: connectStep >= 2 ? 'var(--success)' : connectStep >= 1 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
+                <span className="app-health-indicator" style={{ background: (() => { if (connectStep >= 2) return 'var(--success)'; if (connectStep >= 1) return 'var(--accent)'; return 'var(--border)'; })(), color: '#fff' }}>
                   {connectStep >= 2 ? '✓' : '2'}
                 </span>
                 <span className="app-list-item-title">Authentification DSP2</span>
@@ -415,7 +424,7 @@ export default function Banking() {
             {/* Etape 3 */}
             <div className="app-card" style={{ opacity: connectStep >= 2 ? 1 : 0.5 }}>
               <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
-                <span className="app-health-indicator" style={{ background: connectStep >= 3 ? 'var(--success)' : connectStep >= 2 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
+                <span className="app-health-indicator" style={{ background: (() => { if (connectStep >= 3) return 'var(--success)'; if (connectStep >= 2) return 'var(--accent)'; return 'var(--border)'; })(), color: '#fff' }}>
                   {connectStep >= 3 ? '✓' : '3'}
                 </span>
                 <span className="app-list-item-title">Synchronisation</span>

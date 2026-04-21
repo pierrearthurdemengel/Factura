@@ -216,7 +216,7 @@ export default function OnboardingWizard() {
       {/* Indicateur d'etapes : cercles numerotes relies par une ligne */}
       <div className="onboarding-steps">
         {STEP_LABELS.map((label, index) => (
-          <div key={index} className="onboarding-step">
+          <div key={label} className="onboarding-step">
             {/* Cercle numerote */}
             <div className="onboarding-step-col">
               <div className={`onboarding-step-circle${index <= currentStep ? ' onboarding-step-circle--active' : ''}`}>
@@ -331,8 +331,9 @@ export default function OnboardingWizard() {
             </label>
             <div className="app-form-row">
               <div className="app-form-group">
-                <label className="app-label">Debut</label>
+                <label htmlFor="onboarding-exercise-start" className="app-label">Debut</label>
                 <select
+                  id="onboarding-exercise-start"
                   value={exerciseStartMonth}
                   onChange={(e) => setExerciseStartMonth(e.target.value)}
                   className="app-select"
@@ -344,8 +345,9 @@ export default function OnboardingWizard() {
                 </select>
               </div>
               <div className="app-form-group">
-                <label className="app-label">Fin</label>
+                <label htmlFor="onboarding-exercise-end" className="app-label">Fin</label>
                 <select
+                  id="onboarding-exercise-end"
                   value={exerciseEndMonth}
                   onChange={(e) => setExerciseEndMonth(e.target.value)}
                   className="app-select"
@@ -410,7 +412,7 @@ export default function OnboardingWizard() {
 
           {/* Couleur primaire */}
           <div className="app-form-group app-mb-2">
-            <label className="app-label">Couleur primaire des factures</label>
+            <label htmlFor="onboarding-primary-color" className="app-label">Couleur primaire des factures</label>
             <div className="onboarding-color-row">
               <input
                 type="color"
@@ -419,6 +421,7 @@ export default function OnboardingWizard() {
                 className="onboarding-color-swatch"
               />
               <input
+                id="onboarding-primary-color"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
                 className="app-input onboarding-color-hex"
@@ -434,8 +437,9 @@ export default function OnboardingWizard() {
 
           {/* Conditions de paiement par defaut */}
           <div className="app-form-group">
-            <label className="app-label">Conditions de paiement par defaut</label>
+            <label htmlFor="onboarding-payment-terms" className="app-label">Conditions de paiement par defaut</label>
             <select
+              id="onboarding-payment-terms"
               value={defaultPaymentTerms}
               onChange={(e) => setDefaultPaymentTerms(e.target.value)}
               className="app-select"

@@ -205,7 +205,7 @@ export default function InvoiceList() {
                     {inv.buyer?.name} &middot; {new Date(inv.issueDate).toLocaleDateString('fr-FR')}
                   </div>
                 </div>
-                <div className="app-list-item-value">{parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</div>
+                <div className="app-list-item-value">{Number.parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</div>
                 {statusBadge(inv.status)}
               </Link>
             ))}
@@ -232,8 +232,8 @@ export default function InvoiceList() {
                     </td>
                     <td>{inv.buyer?.name}</td>
                     <td>{new Date(inv.issueDate).toLocaleDateString('fr-FR')}</td>
-                    <td className="text-right">{parseFloat(inv.totalExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
-                    <td className="text-right">{parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
+                    <td className="text-right">{Number.parseFloat(inv.totalExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
+                    <td className="text-right">{Number.parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
                     <td className="text-center">{statusBadge(inv.status)}</td>
                   </tr>
                 ))}

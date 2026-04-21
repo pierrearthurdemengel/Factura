@@ -4,6 +4,7 @@ namespace App\Service\Stripe;
 
 use App\Entity\Subscription;
 use App\Entity\User;
+use App\Exception\SubscriptionException;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -52,12 +53,12 @@ class SubscriptionManager
         }
 
         if (null === $subscription) {
-            throw new \RuntimeException('Abonnement introuvable pour cet utilisateur.');
+            throw new SubscriptionException('Abonnement introuvable pour cet utilisateur.');
         }
 
         $customerId = $subscription->getStripeCustomerId();
         if (null === $customerId) {
-            throw new \RuntimeException('Identifiant client Stripe manquant.');
+            throw new SubscriptionException('Identifiant client Stripe manquant.');
         }
 
         $stripeSubscription = \Stripe\Subscription::create([

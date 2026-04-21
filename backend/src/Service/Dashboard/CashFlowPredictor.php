@@ -140,6 +140,7 @@ class CashFlowPredictor
      */
     private function estimatePendingInflows(Company $company, \DateTimeImmutable $now): array
     {
+        // $now intentionally unused — reserved for future due-date proximity weighting
         $qb = $this->em->createQueryBuilder();
         $invoices = $qb->select('i')
             ->from(Invoice::class, 'i')
@@ -249,6 +250,7 @@ class CashFlowPredictor
     {
         // Estimation simplifiee basee sur les charges fiscales recentes
         // En production, se baserait sur les declarations reelles
+        // $company and $now intentionally unused — will query tax declaration deadlines in a future iteration
         return [];
     }
 
@@ -312,6 +314,7 @@ class CashFlowPredictor
         string $currentBalance,
         string $alertThreshold,
     ): array {
+        // $currentBalance and $alertThreshold intentionally unused — reserved for balance-weighted overdue alerts
         $alerts = [];
 
         // Factures dont l'echeance est depassee

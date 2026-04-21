@@ -18,6 +18,9 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 class InvoiceExportController extends AbstractController
 {
+    private const MSG_INVOICE_NOT_FOUND = 'Facture introuvable.';
+    private const CONTENT_DISPOSITION_ATTACHMENT = 'attachment; filename="%s"';
+
     /**
      * Telecharge la facture au format Factur-X PDF/A-3 (PDF avec XML CII D16B embarque).
      */
@@ -31,7 +34,7 @@ class InvoiceExportController extends AbstractController
         $invoice = $this->findInvoiceForUser($id, $em);
 
         if (null === $invoice) {
-            return new Response('Facture introuvable.', Response::HTTP_NOT_FOUND);
+            return new Response(self::MSG_INVOICE_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
         // Generer le document CII D16B via le builder
@@ -50,7 +53,7 @@ class InvoiceExportController extends AbstractController
 
         return new Response($mergedPdf, Response::HTTP_OK, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            'Content-Disposition' => sprintf(self::CONTENT_DISPOSITION_ATTACHMENT, $filename),
         ]);
     }
 
@@ -66,7 +69,7 @@ class InvoiceExportController extends AbstractController
         $invoice = $this->findInvoiceForUser($id, $em);
 
         if (null === $invoice) {
-            return new Response('Facture introuvable.', Response::HTTP_NOT_FOUND);
+            return new Response(self::MSG_INVOICE_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
         $xml = $generator->generate($invoice);
@@ -74,7 +77,7 @@ class InvoiceExportController extends AbstractController
 
         return new Response($xml, Response::HTTP_OK, [
             'Content-Type' => 'application/xml',
-            'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            'Content-Disposition' => sprintf(self::CONTENT_DISPOSITION_ATTACHMENT, $filename),
         ]);
     }
 
@@ -90,7 +93,7 @@ class InvoiceExportController extends AbstractController
         $invoice = $this->findInvoiceForUser($id, $em);
 
         if (null === $invoice) {
-            return new Response('Facture introuvable.', Response::HTTP_NOT_FOUND);
+            return new Response(self::MSG_INVOICE_NOT_FOUND, Response::HTTP_NOT_FOUND);
         }
 
         $xml = $generator->generate($invoice);
@@ -98,7 +101,7 @@ class InvoiceExportController extends AbstractController
 
         return new Response($xml, Response::HTTP_OK, [
             'Content-Type' => 'application/xml',
-            'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            'Content-Disposition' => sprintf(self::CONTENT_DISPOSITION_ATTACHMENT, $filename),
         ]);
     }
 

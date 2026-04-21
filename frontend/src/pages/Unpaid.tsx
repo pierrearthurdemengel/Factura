@@ -89,7 +89,7 @@ export default function Unpaid() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const totalUnpaid = invoices.reduce((s, inv) => s + parseFloat(inv.totalIncludingTax), 0);
+  const totalUnpaid = invoices.reduce((s, inv) => s + Number.parseFloat(inv.totalIncludingTax), 0);
 
   // Regroupement par tranche de retard
   const brackets = [
@@ -180,7 +180,7 @@ export default function Unpaid() {
                   J+{inv.daysOverdue}
                 </span>
                 <div className="app-list-item-value" style={{ color: 'var(--danger)' }}>
-                  {parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                  {Number.parseFloat(inv.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </div>
               </Link>
             );

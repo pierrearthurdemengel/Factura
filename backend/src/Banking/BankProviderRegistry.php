@@ -3,6 +3,7 @@
 namespace App\Banking;
 
 use App\Banking\Provider\BankProviderInterface;
+use App\Exception\ExternalServiceException;
 
 /**
  * Registre de providers Open Banking.
@@ -63,7 +64,7 @@ class BankProviderRegistry
             }
         }
 
-        throw new \RuntimeException(sprintf('Aucun provider ne supporte la banque "%s" (pays: %s).', $bankIdentifier, $countryCode));
+        throw new ExternalServiceException(sprintf('Aucun provider ne supporte la banque "%s" (pays: %s).', $bankIdentifier, $countryCode));
     }
 
     /**

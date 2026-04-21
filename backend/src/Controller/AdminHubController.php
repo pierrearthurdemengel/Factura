@@ -19,6 +19,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/admin-hub')]
 class AdminHubController extends AbstractController
 {
+    private const MSG_INSEE_NOT_CONFIGURED = 'API INSEE non configuree. Ajoutez INSEE_API_TOKEN dans .env.local.';
+
     public function __construct(
         private readonly GovernmentApiDirectory $directory,
         private readonly InseeClient $inseeClient,
@@ -60,7 +62,7 @@ class AdminHubController extends AbstractController
     {
         if (!$this->inseeClient->isConfigured()) {
             return $this->json(
-                ['error' => 'API INSEE non configuree. Ajoutez INSEE_API_TOKEN dans .env.local.'],
+                ['error' => self::MSG_INSEE_NOT_CONFIGURED],
                 Response::HTTP_SERVICE_UNAVAILABLE,
             );
         }
@@ -82,7 +84,7 @@ class AdminHubController extends AbstractController
     {
         if (!$this->inseeClient->isConfigured()) {
             return $this->json(
-                ['error' => 'API INSEE non configuree. Ajoutez INSEE_API_TOKEN dans .env.local.'],
+                ['error' => self::MSG_INSEE_NOT_CONFIGURED],
                 Response::HTTP_SERVICE_UNAVAILABLE,
             );
         }
@@ -104,7 +106,7 @@ class AdminHubController extends AbstractController
     {
         if (!$this->inseeClient->isConfigured()) {
             return $this->json(
-                ['error' => 'API INSEE non configuree. Ajoutez INSEE_API_TOKEN dans .env.local.'],
+                ['error' => self::MSG_INSEE_NOT_CONFIGURED],
                 Response::HTTP_SERVICE_UNAVAILABLE,
             );
         }

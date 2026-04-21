@@ -23,9 +23,9 @@ export default function CustomCursor() {
       }
     };
 
-    window.addEventListener('pointermove', moveCursor as EventListener);
+    globalThis.addEventListener('pointermove', moveCursor as EventListener);
     return () => {
-       window.removeEventListener('pointermove', moveCursor as EventListener);
+       globalThis.removeEventListener('pointermove', moveCursor as EventListener);
     };
   }, [cursorX, cursorY]);
 

@@ -4,6 +4,7 @@ namespace App\Service\Accounting;
 
 use App\Entity\AccountingEntry;
 use App\Entity\Invoice;
+use App\Exception\CompanyNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -30,7 +31,7 @@ class PaymentToAccountingMapper
         $entries = [];
         $company = $invoice->getSeller();
         if (null === $company) {
-            throw new \RuntimeException('La facture doit avoir un vendeur pour generer les ecritures comptables.');
+            throw new CompanyNotFoundException('La facture doit avoir un vendeur pour generer les ecritures comptables.');
         }
         $amount = $invoice->getTotalIncludingTax();
 

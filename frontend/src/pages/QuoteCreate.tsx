@@ -40,10 +40,10 @@ export default function QuoteCreate() {
   }, []);
 
   const computeLineTotal = (line: LineForm) => {
-    const qty = parseFloat(line.quantity) || 0;
-    const price = parseFloat(line.unitPriceExcludingTax) || 0;
+    const qty = Number.parseFloat(line.quantity) || 0;
+    const price = Number.parseFloat(line.unitPriceExcludingTax) || 0;
     const ht = qty * price;
-    const vat = isNaN(parseFloat(line.vatRate)) ? 0 : ht * parseFloat(line.vatRate) / 100;
+    const vat = Number.isNaN(Number.parseFloat(line.vatRate)) ? 0 : ht * Number.parseFloat(line.vatRate) / 100;
     return { ht, vat, ttc: ht + vat };
   };
 
@@ -94,7 +94,7 @@ export default function QuoteCreate() {
         })),
       };
       if (depositEnabled) {
-        const pct = parseFloat(depositPercent) || 0;
+        const pct = Number.parseFloat(depositPercent) || 0;
         data.depositPercent = pct;
         data.depositAmount = (totals.ttc * pct / 100).toFixed(2);
       }
@@ -112,8 +112,8 @@ export default function QuoteCreate() {
 
       <form onSubmit={handleSubmit} style={{ maxWidth: 700 }}>
         <div className="app-form-group">
-          <label className="app-label">Client</label>
-          <select value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} required className="app-select">
+          <label htmlFor="quote-client" className="app-label">Client</label>
+          <select id="quote-client" value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} required className="app-select">
             <option value="">Selectionner un client</option>
             {clients.map((c) => (
               <option key={c.id} value={c['@id']}>{c.name}</option>
@@ -138,16 +138,16 @@ export default function QuoteCreate() {
           <div key={line.id} className="app-card app-mb-2">
             <div className="app-form-row">
               <div className="app-form-group flex-2">
-                <label className="app-label">Description</label>
-                <input type="text" value={line.description} onChange={(e) => updateLine(line.id, 'description', e.target.value)} required className="app-input" />
+                <label htmlFor={`quote-line-desc-${line.id}`} className="app-label">Description</label>
+                <input id={`quote-line-desc-${line.id}`} type="text" value={line.description} onChange={(e) => updateLine(line.id, 'description', e.target.value)} required className="app-input" />
               </div>
               <div className="app-form-group">
-                <label className="app-label">Quantite</label>
-                <input type="number" step="0.01" value={line.quantity} onChange={(e) => updateLine(line.id, 'quantity', e.target.value)} required className="app-input" />
+                <label htmlFor={`quote-line-qty-${line.id}`} className="app-label">Quantite</label>
+                <input id={`quote-line-qty-${line.id}`} type="number" step="0.01" value={line.quantity} onChange={(e) => updateLine(line.id, 'quantity', e.target.value)} required className="app-input" />
               </div>
               <div className="app-form-group">
-                <label className="app-label">Unite</label>
-                <select value={line.unit} onChange={(e) => updateLine(line.id, 'unit', e.target.value)} className="app-select">
+                <label htmlFor={`quote-line-unit-${line.id}`} className="app-label">Unite</label>
+                <select id={`quote-line-unit-${line.id}`} value={line.unit} onChange={(e) => updateLine(line.id, 'unit', e.target.value)} className="app-select">
                   <option value="EA">Unite</option>
                   <option value="HUR">Heure</option>
                   <option value="DAY">Jour</option>
@@ -156,12 +156,12 @@ export default function QuoteCreate() {
             </div>
             <div className="app-form-row" style={{ alignItems: 'flex-end', marginTop: '0.75rem' }}>
               <div className="app-form-group">
-                <label className="app-label">Prix HT</label>
-                <input type="number" step="0.01" value={line.unitPriceExcludingTax} onChange={(e) => updateLine(line.id, 'unitPriceExcludingTax', e.target.value)} required className="app-input" />
+                <label htmlFor={`quote-line-price-${line.id}`} className="app-label">Prix HT</label>
+                <input id={`quote-line-price-${line.id}`} type="number" step="0.01" value={line.unitPriceExcludingTax} onChange={(e) => updateLine(line.id, 'unitPriceExcludingTax', e.target.value)} required className="app-input" />
               </div>
               <div className="app-form-group">
-                <label className="app-label">TVA %</label>
-                <select value={line.vatRate} onChange={(e) => updateLine(line.id, 'vatRate', e.target.value)} className="app-select">
+                <label htmlFor={`quote-line-vat-${line.id}`} className="app-label">TVA %</label>
+                <select id={`quote-line-vat-${line.id}`} value={line.vatRate} onChange={(e) => updateLine(line.id, 'vatRate', e.target.value)} className="app-select">
                   <option value="20">20%</option>
                   <option value="10">10%</option>
                   <option value="5.5">5.5%</option>
@@ -200,8 +200,9 @@ export default function QuoteCreate() {
           {depositEnabled && (
             <div className="app-form-row">
               <div className="app-form-group">
-                <label className="app-label">Pourcentage</label>
+                <label htmlFor="quote-deposit-percent" className="app-label">Pourcentage</label>
                 <select
+                  id="quote-deposit-percent"
                   value={depositPercent}
                   onChange={(e) => setDepositPercent(e.target.value)}
                   className="app-select"
@@ -216,13 +217,13 @@ export default function QuoteCreate() {
               <div className="app-form-group">
                 <label className="app-label">Montant de l'acompte TTC</label>
                 <p className="app-card-value" style={{ margin: 0 }}>
-                  {(totals.ttc * (parseFloat(depositPercent) || 0) / 100).toFixed(2)} €
+                  {(totals.ttc * (Number.parseFloat(depositPercent) || 0) / 100).toFixed(2)} €
                 </p>
               </div>
               <div className="app-form-group">
                 <label className="app-label">Solde restant TTC</label>
                 <p className="app-card-value" style={{ margin: 0 }}>
-                  {(totals.ttc - totals.ttc * (parseFloat(depositPercent) || 0) / 100).toFixed(2)} €
+                  {(totals.ttc - totals.ttc * (Number.parseFloat(depositPercent) || 0) / 100).toFixed(2)} €
                 </p>
               </div>
             </div>
@@ -230,13 +231,13 @@ export default function QuoteCreate() {
         </div>
 
         <div className="app-form-group">
-          <label className="app-label">Conditions de paiement</label>
-          <input type="text" value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} placeholder="Paiement a 30 jours fin de mois" className="app-input" />
+          <label htmlFor="quote-payment-terms" className="app-label">Conditions de paiement</label>
+          <input id="quote-payment-terms" type="text" value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} placeholder="Paiement a 30 jours fin de mois" className="app-input" />
         </div>
 
         <div className="app-form-group">
-          <label className="app-label">Mention legale</label>
-          <textarea value={legalMention} onChange={(e) => setLegalMention(e.target.value)} placeholder="TVA non applicable - art. 293 B du CGI" className="app-input" style={{ resize: 'vertical', minHeight: '80px' }} />
+          <label htmlFor="quote-legal-mention" className="app-label">Mention legale</label>
+          <textarea id="quote-legal-mention" value={legalMention} onChange={(e) => setLegalMention(e.target.value)} placeholder="TVA non applicable - art. 293 B du CGI" className="app-input" style={{ resize: 'vertical', minHeight: '80px' }} />
         </div>
 
         <div className="app-card app-totals" style={{ background: 'var(--social-bg)' }}>

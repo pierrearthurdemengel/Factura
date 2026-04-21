@@ -5,6 +5,7 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Invoice;
+use App\Exception\CompanyNotFoundException;
 use App\Message\TransmitInvoiceToPdpMessage;
 use App\Service\Invoice\AuditTrailRecorder;
 use App\Service\Invoice\InvoiceNumberGenerator;
@@ -36,7 +37,7 @@ class InvoiceSendProcessor implements ProcessorInterface
         if (null === $data->getNumber()) {
             $seller = $data->getSeller();
             if (null === $seller) {
-                throw new \RuntimeException('La facture doit avoir un vendeur pour etre envoyee.');
+                throw new CompanyNotFoundException('La facture doit avoir un vendeur pour etre envoyee.');
             }
             $number = $this->numberGenerator->generate($seller);
             $data->setNumber($number);

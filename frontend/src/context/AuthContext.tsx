@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 // Fournisseur du contexte d'authentification.
 // Le JWT est stocke en memoire (sessionStorage), le refresh token est en cookie httpOnly.
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [token, setToken] = useState<string | null>(
     sessionStorage.getItem('jwt_token'),
   );

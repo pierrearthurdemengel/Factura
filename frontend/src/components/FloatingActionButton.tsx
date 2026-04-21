@@ -6,7 +6,7 @@ interface FABProps {
   onOpenSearch: () => void;
 }
 
-export default function FloatingActionButton({ onOpenSearch }: FABProps) {
+export default function FloatingActionButton({ onOpenSearch }: Readonly<FABProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 

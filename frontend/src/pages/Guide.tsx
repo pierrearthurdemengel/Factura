@@ -282,9 +282,9 @@ export default function Guide() {
 
   /* ─── Nav scroll detection ─── */
   useEffect(() => {
-    const handleScroll = () => setNavScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => setNavScrolled(globalThis.scrollY > 20);
+    globalThis.addEventListener('scroll', handleScroll, { passive: true });
+    return () => globalThis.removeEventListener('scroll', handleScroll);
   }, []);
 
   /* ─── IntersectionObserver for active TOC section ─── */

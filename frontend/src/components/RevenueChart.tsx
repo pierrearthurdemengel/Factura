@@ -10,7 +10,7 @@ interface DataPoint {
   total: number;
 }
 
-export default function RevenueChart({ invoices }: RevenueChartProps) {
+export default function RevenueChart({ invoices }: Readonly<RevenueChartProps>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -44,7 +44,7 @@ export default function RevenueChart({ invoices }: RevenueChartProps) {
       const invD = new Date(inv.issueDate);
       const key = `${invD.getFullYear()}-${invD.getMonth()}`;
       if (months[key]) {
-        months[key].total += parseFloat(inv.totalExcludingTax || '0');
+        months[key].total += Number.parseFloat(inv.totalExcludingTax || '0');
       }
     });
 

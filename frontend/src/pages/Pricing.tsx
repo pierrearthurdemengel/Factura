@@ -147,7 +147,7 @@ export default function Pricing() {
             max={500000}
             step={5000}
             value={revenue}
-            onChange={(e) => setRevenue(parseInt(e.target.value))}
+            onChange={(e) => setRevenue(Number.parseInt(e.target.value))}
             style={{ width: '100%', accentColor: 'var(--accent)' }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text)' }}>

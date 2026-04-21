@@ -10,6 +10,9 @@ namespace App\Service\Mcp;
  */
 class McpToolRegistry
 {
+    private const DESC_INVOICE_UUID = 'Invoice UUID';
+    private const DESC_INVOICE_NUMBER_ALT = 'Invoice number (alternative to id)';
+
     /**
      * Retourne la liste complete des tools MCP avec leurs schemas.
      *
@@ -86,7 +89,7 @@ class McpToolRegistry
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
-                        'id' => ['type' => 'string', 'description' => 'Invoice UUID'],
+                        'id' => ['type' => 'string', 'description' => self::DESC_INVOICE_UUID],
                         'number' => ['type' => 'string', 'description' => 'Invoice number (e.g. FA-2026-0001)'],
                     ],
                 ],
@@ -136,8 +139,8 @@ class McpToolRegistry
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
-                        'id' => ['type' => 'string', 'description' => 'Invoice UUID'],
-                        'number' => ['type' => 'string', 'description' => 'Invoice number (alternative to id)'],
+                        'id' => ['type' => 'string', 'description' => self::DESC_INVOICE_UUID],
+                        'number' => ['type' => 'string', 'description' => self::DESC_INVOICE_NUMBER_ALT],
                     ],
                 ],
                 'annotations' => [
@@ -152,8 +155,8 @@ class McpToolRegistry
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
-                        'id' => ['type' => 'string', 'description' => 'Invoice UUID'],
-                        'number' => ['type' => 'string', 'description' => 'Invoice number (alternative to id)'],
+                        'id' => ['type' => 'string', 'description' => self::DESC_INVOICE_UUID],
+                        'number' => ['type' => 'string', 'description' => self::DESC_INVOICE_NUMBER_ALT],
                     ],
                 ],
                 'annotations' => [
@@ -168,8 +171,8 @@ class McpToolRegistry
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
-                        'id' => ['type' => 'string', 'description' => 'Invoice UUID'],
-                        'number' => ['type' => 'string', 'description' => 'Invoice number (alternative to id)'],
+                        'id' => ['type' => 'string', 'description' => self::DESC_INVOICE_UUID],
+                        'number' => ['type' => 'string', 'description' => self::DESC_INVOICE_NUMBER_ALT],
                     ],
                 ],
                 'annotations' => [
@@ -184,8 +187,8 @@ class McpToolRegistry
                 'inputSchema' => [
                     'type' => 'object',
                     'properties' => [
-                        'id' => ['type' => 'string', 'description' => 'Invoice UUID'],
-                        'number' => ['type' => 'string', 'description' => 'Invoice number (alternative to id)'],
+                        'id' => ['type' => 'string', 'description' => self::DESC_INVOICE_UUID],
+                        'number' => ['type' => 'string', 'description' => self::DESC_INVOICE_NUMBER_ALT],
                     ],
                 ],
                 'annotations' => [

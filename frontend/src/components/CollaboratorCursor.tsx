@@ -11,8 +11,8 @@ export default function CollaboratorCursor() {
     if (location.pathname !== '/invoices' && location.pathname !== '/') return;
 
     const moveAlice = () => {
-      const rx = (window.innerWidth * 0.1) + Math.random() * (window.innerWidth * 0.8);
-      const ry = (window.innerHeight * 0.2) + Math.random() * (window.innerHeight * 0.6);
+      const rx = (globalThis.innerWidth * 0.1) + Math.random() * (globalThis.innerWidth * 0.8);
+      const ry = (globalThis.innerHeight * 0.2) + Math.random() * (globalThis.innerHeight * 0.6);
       setPosition({ x: rx, y: ry });
     };
 

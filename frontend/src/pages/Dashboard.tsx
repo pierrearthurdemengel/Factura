@@ -10,7 +10,7 @@ import { getCached, setCache } from '../utils/apiCache';
 import './Dashboard.css';
 
 // --- Sparkline (SVG pur) ---
-function Sparkline({ data, color }: { data: number[], color: string }) {
+function Sparkline({ data, color }: Readonly<{ data: number[], color: string }>) {
   const w = 64;
   const h = 28;
   const pad = 2;
@@ -52,7 +52,7 @@ const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
   CANCELLED: { label: 'Annulee', cls: 'dash-badge--cancelled' },
 };
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: Readonly<{ status: string }>) {
   const cfg = STATUS_CONFIG[status] || { label: status, cls: 'dash-badge--draft' };
   return <span className={`dash-badge ${cfg.cls}`}>{cfg.label}</span>;
 }
@@ -67,7 +67,7 @@ const EVENT_LABELS: Record<string, string> = {
 };
 
 // --- Sortable Widget ---
-function SortableWidget({ id, className, children }: { id: string, className: string, children: React.ReactNode }) {
+function SortableWidget({ id, className, children }: Readonly<{ id: string, className: string, children: React.ReactNode }>) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style: React.CSSProperties = {
@@ -100,7 +100,7 @@ function SortableWidget({ id, className, children }: { id: string, className: st
 }
 
 // --- Drag Overlay Widget (static, no sortable hooks) ---
-function DragOverlayWidget({ className, children }: { className: string, children: React.ReactNode }) {
+function DragOverlayWidget({ className, children }: Readonly<{ className: string, children: React.ReactNode }>) {
   return (
     <div className={className} style={{ display: 'flex', flexDirection: 'column', cursor: 'grabbing' }}>
       <div className="dash-card dash-card--dragging" style={{ flex: 1, position: 'relative' }}>
@@ -215,7 +215,7 @@ export default function Dashboard() {
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
 
-  const totalHt = thisMonth.reduce((sum, inv) => sum + parseFloat(inv.totalExcludingTax), 0);
+  const totalHt = thisMonth.reduce((sum, inv) => sum + Number.parseFloat(inv.totalExcludingTax), 0);
   const pending = invoices.filter((inv) => inv.status === 'SENT' || inv.status === 'ACKNOWLEDGED');
 
   const lastMonth = invoices.filter((inv) => {
@@ -225,7 +225,7 @@ export default function Dashboard() {
     return d.getMonth() === lastM && d.getFullYear() === lastY;
   });
 
-  const totalHtLastMonth = lastMonth.reduce((sum, inv) => sum + parseFloat(inv.totalExcludingTax), 0);
+  const totalHtLastMonth = lastMonth.reduce((sum, inv) => sum + Number.parseFloat(inv.totalExcludingTax), 0);
   const trendHt = totalHtLastMonth > 0 ? ((totalHt - totalHtLastMonth) / totalHtLastMonth) * 100 : 100;
 
   // --- Loading skeleton ---
@@ -242,7 +242,7 @@ export default function Dashboard() {
   );
 
   // --- Widget config ---
-  const pendingAmount = pending.reduce((s, inv) => s + parseFloat(inv.totalIncludingTax), 0);
+  const pendingAmount = pending.reduce((s, inv) => s + Number.parseFloat(inv.totalIncludingTax), 0);
   const estimatedTreasury = pendingAmount * 0.85;
 
   const suggestions: { icon: string; text: string; action: string }[] = [];
@@ -416,9 +416,9 @@ export default function Dashboard() {
             ) : (
               <div className="dash-feed">
                 <div className="dash-feed-line" />
-                {activities.slice(0, 5).map((act, idx) => (
-                  <div key={idx} className="dash-feed-item">
-                    <div className={`dash-feed-dot ${act.eventType === 'PAID' ? 'dash-feed-dot--paid' : act.eventType === 'CREATED' ? 'dash-feed-dot--created' : 'dash-feed-dot--default'}`} />
+                {activities.slice(0, 5).map((act) => (
+                  <div key={act.id} className="dash-feed-item">
+                    <div className={`dash-feed-dot ${(() => { if (act.eventType === 'PAID') return 'dash-feed-dot--paid'; if (act.eventType === 'CREATED') return 'dash-feed-dot--created'; return 'dash-feed-dot--default'; })()}`} />
                     <div className="dash-feed-content">
                       <p className="dash-feed-label">Facture {act.invoiceNumber}</p>
                       <p className="dash-feed-desc">{EVENT_LABELS[act.eventType] || `(${act.eventType})`}</p>

@@ -16,6 +16,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class InseeClient
 {
     private const API_BASE_URL = 'https://api.insee.fr/entreprises/sirene/V3.11';
+    private const HEADER_BEARER_PREFIX = 'Bearer ';
+    private const CONTENT_TYPE_JSON = 'application/json';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -42,8 +44,8 @@ class InseeClient
         try {
             $response = $this->httpClient->request('GET', self::API_BASE_URL . '/siren/' . $siren, [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->inseeApiToken,
-                    'Accept' => 'application/json',
+                    'Authorization' => self::HEADER_BEARER_PREFIX . $this->inseeApiToken,
+                    'Accept' => self::CONTENT_TYPE_JSON,
                 ],
                 'timeout' => 10,
             ]);
@@ -79,8 +81,8 @@ class InseeClient
         try {
             $response = $this->httpClient->request('GET', self::API_BASE_URL . '/siret/' . $siret, [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->inseeApiToken,
-                    'Accept' => 'application/json',
+                    'Authorization' => self::HEADER_BEARER_PREFIX . $this->inseeApiToken,
+                    'Accept' => self::CONTENT_TYPE_JSON,
                 ],
                 'timeout' => 10,
             ]);
@@ -113,8 +115,8 @@ class InseeClient
         try {
             $response = $this->httpClient->request('GET', self::API_BASE_URL . '/siren', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->inseeApiToken,
-                    'Accept' => 'application/json',
+                    'Authorization' => self::HEADER_BEARER_PREFIX . $this->inseeApiToken,
+                    'Accept' => self::CONTENT_TYPE_JSON,
                 ],
                 'query' => [
                     'q' => 'denominationUniteLegale:"' . addslashes($query) . '"',
@@ -244,44 +246,10 @@ class InseeClient
         }
 
         $unite = $etablissement['uniteLegale'] ?? [];
-        $adresse = $etablissement['adresseEtablissement'] ?? [];
-
-        $denomination = '';
-        if (is_array($unite)) {
-            $denomination = $unite['denominationUniteLegale'] ?? '';
-            if (!is_string($denomination) || '' === $denomination) {
-                $nom = $unite['nomUniteLegale'] ?? '';
-                $prenom = $unite['prenom1UniteLegale'] ?? '';
-                $denomination = is_string($nom) && is_string($prenom)
-                    ? trim($prenom . ' ' . $nom)
-                    : '';
-            }
-        }
-
-        $adresseStr = '';
-        if (is_array($adresse)) {
-            $parts = array_filter([
-                is_string($adresse['numeroVoieEtablissement'] ?? null) ? $adresse['numeroVoieEtablissement'] : '',
-                is_string($adresse['typeVoieEtablissement'] ?? null) ? $adresse['typeVoieEtablissement'] : '',
-                is_string($adresse['libelleVoieEtablissement'] ?? null) ? $adresse['libelleVoieEtablissement'] : '',
-                is_string($adresse['codePostalEtablissement'] ?? null) ? $adresse['codePostalEtablissement'] : '',
-                is_string($adresse['libelleCommuneEtablissement'] ?? null) ? $adresse['libelleCommuneEtablissement'] : '',
-            ], static fn (string $part): bool => '' !== $part);
-            $adresseStr = implode(' ', $parts);
-        }
-
-        $periodesEtab = $etablissement['periodesEtablissement'] ?? [];
-        $periodeEtab = is_array($periodesEtab) && [] !== $periodesEtab && is_array($periodesEtab[0]) ? $periodesEtab[0] : [];
-        $etat = $periodeEtab['etatAdministratifEtablissement'] ?? '';
-
-        $naf = '';
-        if (is_array($unite)) {
-            $periodesUnite = $unite['periodesUniteLegale'] ?? [];
-            $periodeUnite = is_array($periodesUnite) && [] !== $periodesUnite && is_array($periodesUnite[0]) ? $periodesUnite[0] : [];
-            $nafVal = $periodeUnite['activitePrincipaleUniteLegale'] ?? '';
-            $naf = is_string($nafVal) ? $nafVal : '';
-        }
-
+        $denomination = is_array($unite) ? $this->extractDenomination($unite) : '';
+        $adresseStr = $this->buildAdresse($etablissement['adresseEtablissement'] ?? []);
+        $etat = $this->extractEtatAdministratif($etablissement);
+        $naf = is_array($unite) ? $this->extractNaf($unite) : '';
         $dateCreation = $etablissement['dateCreationEtablissement'] ?? '';
 
         return [
@@ -293,5 +261,82 @@ class InseeClient
             'dateCreation' => is_string($dateCreation) ? $dateCreation : '',
             'etatAdministratif' => is_string($etat) ? $etat : '',
         ];
+    }
+
+    /**
+     * Extrait la denomination d'une unite legale.
+     *
+     * @param array<string, mixed> $unite
+     */
+    private function extractDenomination(array $unite): string
+    {
+        $denomination = $unite['denominationUniteLegale'] ?? '';
+        if (is_string($denomination) && '' !== $denomination) {
+            return $denomination;
+        }
+
+        $nom = $unite['nomUniteLegale'] ?? '';
+        $prenom = $unite['prenom1UniteLegale'] ?? '';
+
+        return is_string($nom) && is_string($prenom)
+            ? trim($prenom . ' ' . $nom)
+            : '';
+    }
+
+    /**
+     * Construit la chaine d'adresse a partir des donnees d'etablissement.
+     */
+    private function buildAdresse(mixed $adresse): string
+    {
+        if (!is_array($adresse)) {
+            return '';
+        }
+
+        $keys = [
+            'numeroVoieEtablissement',
+            'typeVoieEtablissement',
+            'libelleVoieEtablissement',
+            'codePostalEtablissement',
+            'libelleCommuneEtablissement',
+        ];
+
+        $parts = array_filter(
+            array_map(
+                static fn (string $key): string => is_string($adresse[$key] ?? null) ? $adresse[$key] : '',
+                $keys,
+            ),
+            static fn (string $part): bool => '' !== $part,
+        );
+
+        return implode(' ', $parts);
+    }
+
+    /**
+     * Extrait l'etat administratif de l'etablissement.
+     *
+     * @param array<string, mixed> $etablissement
+     */
+    private function extractEtatAdministratif(array $etablissement): string
+    {
+        $periodesEtab = $etablissement['periodesEtablissement'] ?? [];
+        $periodeEtab = is_array($periodesEtab) && [] !== $periodesEtab && is_array($periodesEtab[0]) ? $periodesEtab[0] : [];
+
+        $etat = $periodeEtab['etatAdministratifEtablissement'] ?? '';
+
+        return is_string($etat) ? $etat : '';
+    }
+
+    /**
+     * Extrait le code NAF de l'unite legale.
+     *
+     * @param array<string, mixed> $unite
+     */
+    private function extractNaf(array $unite): string
+    {
+        $periodesUnite = $unite['periodesUniteLegale'] ?? [];
+        $periodeUnite = is_array($periodesUnite) && [] !== $periodesUnite && is_array($periodesUnite[0]) ? $periodesUnite[0] : [];
+        $nafVal = $periodeUnite['activitePrincipaleUniteLegale'] ?? '';
+
+        return is_string($nafVal) ? $nafVal : '';
     }
 }

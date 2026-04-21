@@ -3,6 +3,7 @@
 namespace App\Service\Reminder;
 
 use App\Entity\Invoice;
+use App\Exception\CompanyNotFoundException;
 
 /**
  * Genere un PDF de mise en demeure conforme au droit francais.
@@ -24,7 +25,7 @@ class FormalNoticePdfGenerator
         $buyer = $invoice->getBuyer();
 
         if (null === $seller) {
-            throw new \RuntimeException('La facture doit avoir un vendeur pour generer une mise en demeure.');
+            throw new CompanyNotFoundException('La facture doit avoir un vendeur pour generer une mise en demeure.');
         }
 
         $today = new \DateTimeImmutable();

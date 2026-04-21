@@ -117,6 +117,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
+        // No temporary sensitive data to erase — password is hashed, no plain-text stored
     }
 
     public function getFirstName(): string

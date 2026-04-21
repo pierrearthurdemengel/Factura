@@ -3,6 +3,7 @@
 namespace App\Service\Format;
 
 use App\Entity\Invoice;
+use App\Exception\CompanyNotFoundException;
 
 /**
  * Genere un PDF de mise en page pour une facture.
@@ -26,7 +27,7 @@ class InvoicePdfGenerator
         $buyer = $invoice->getBuyer();
 
         if (null === $seller) {
-            throw new \RuntimeException('La facture doit avoir un vendeur pour generer un PDF.');
+            throw new CompanyNotFoundException('La facture doit avoir un vendeur pour generer un PDF.');
         }
 
         // Couleur primaire personnalisee ou bleu par defaut

@@ -14,21 +14,21 @@ interface AudioContextType {
 
 const AudioScopeContext = createContext<AudioContextType>({ playPop: () => {}, playTick: () => {}, playArpeggio: () => {} });
 
-export function AudioProvider({ children }: { children: React.ReactNode }) {
+export function AudioProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const audioCtx = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     // Initialize AudioContext on first user interaction to bypass autoplay policies
     const initAudio = () => {
       if (!audioCtx.current) {
-        audioCtx.current = new (window.AudioContext || window.webkitAudioContext!)();
+        audioCtx.current = new (globalThis.AudioContext || globalThis.webkitAudioContext!)();
       }
     };
-    window.addEventListener('mousedown', initAudio, { once: true });
-    window.addEventListener('keydown', initAudio, { once: true });
+    globalThis.addEventListener('mousedown', initAudio, { once: true });
+    globalThis.addEventListener('keydown', initAudio, { once: true });
     return () => {
-      window.removeEventListener('mousedown', initAudio);
-      window.removeEventListener('keydown', initAudio);
+      globalThis.removeEventListener('mousedown', initAudio);
+      globalThis.removeEventListener('keydown', initAudio);
     };
   }, []);
 

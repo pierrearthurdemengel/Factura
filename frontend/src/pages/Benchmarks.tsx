@@ -48,9 +48,12 @@ function formatDiff(userValue: number, sectorValue: number, unit: string, lowerI
     ? sign + diff.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' \u20AC'
     : sign + diff.toFixed(1) + unit;
   if (diff === 0) return '=';
-  const qualifier = lowerIsBetter
-    ? (diff < 0 ? ' (mieux)' : ' (moins bien)')
-    : (diff > 0 ? ' (mieux)' : ' (moins bien)');
+  let qualifier: string;
+  if (lowerIsBetter) {
+    qualifier = diff < 0 ? ' (mieux)' : ' (moins bien)';
+  } else {
+    qualifier = diff > 0 ? ' (mieux)' : ' (moins bien)';
+  }
   return formatted + qualifier;
 }
 
@@ -61,13 +64,13 @@ function KpiCard({
   sectorValue,
   unit,
   lowerIsBetter,
-}: {
+}: Readonly<{
   title: string;
   userValue: number;
   sectorValue: number;
   unit: string;
   lowerIsBetter: boolean;
-}) {
+}>) {
   const safeUser = userValue ?? 0;
   const safeSector = sectorValue ?? 0;
   const color = diffColor(safeUser, safeSector, lowerIsBetter);
@@ -104,11 +107,11 @@ function KpiCard({
             borderRadius: '6px',
             fontWeight: 600,
             color,
-            backgroundColor: color === 'var(--success)'
-              ? 'var(--success-bg)'
-              : color === 'var(--danger)'
-                ? 'var(--danger-bg)'
-                : 'var(--social-bg)',
+            backgroundColor: (() => {
+              if (color === 'var(--success)') return 'var(--success-bg)';
+              if (color === 'var(--danger)') return 'var(--danger-bg)';
+              return 'var(--social-bg)';
+            })(),
             textAlign: 'center',
             display: 'block',
             width: '100%',
@@ -163,7 +166,7 @@ export default function Benchmarks() {
 
   // Gestion du changement de secteur
   const handleSectorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSector(e.target.value as typeof sector);
+    setSector(e.target.value);
   };
 
   // Squelette de chargement

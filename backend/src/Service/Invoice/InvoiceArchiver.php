@@ -3,6 +3,8 @@
 namespace App\Service\Invoice;
 
 use App\Entity\Invoice;
+use App\Exception\CompanyNotFoundException;
+use App\Exception\ExternalServiceException;
 use App\Service\Format\FacturXGenerator;
 use App\Service\Format\UblGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -44,7 +46,7 @@ class InvoiceArchiver
         // Chemin S3 : {siren}/{year}/{invoice_number}/
         $seller = $invoice->getSeller();
         if (null === $seller) {
-            throw new \RuntimeException('La facture doit avoir un vendeur pour etre archivee.');
+            throw new CompanyNotFoundException('La facture doit avoir un vendeur pour etre archivee.');
         }
         $siren = $seller->getSiren();
         $year = $invoice->getIssueDate()->format('Y');
@@ -133,7 +135,7 @@ class InvoiceArchiver
 
         $ch = curl_init($url);
         if (false === $ch) {
-            throw new \RuntimeException('Impossible d\'initialiser cURL pour l\'upload S3.');
+            throw new ExternalServiceException('Impossible d\'initialiser cURL pour l\'upload S3.');
         }
 
         curl_setopt_array($ch, [
@@ -154,7 +156,7 @@ class InvoiceArchiver
         curl_close($ch);
 
         if ($httpCode < 200 || $httpCode >= 300) {
-            throw new \RuntimeException(sprintf('Erreur S3 lors de l\'upload de %s : HTTP %d — %s', $path, $httpCode, is_string($response) ? $response : ''));
+            throw new ExternalServiceException(sprintf('Erreur S3 lors de l\'upload de %s : HTTP %d — %s', $path, $httpCode, is_string($response) ? $response : ''));
         }
     }
 }

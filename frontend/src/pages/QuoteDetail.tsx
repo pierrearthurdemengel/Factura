@@ -153,9 +153,9 @@ export default function QuoteDetail() {
                 <td>{line.description}</td>
                 <td className="text-right">{line.quantity}</td>
                 <td className="text-center">{line.unit}</td>
-                <td className="text-right">{parseFloat(line.unitPriceExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
+                <td className="text-right">{Number.parseFloat(line.unitPriceExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
                 <td className="text-right">{line.vatRate}%</td>
-                <td className="text-right">{parseFloat(line.lineAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
+                <td className="text-right">{Number.parseFloat(line.lineAmount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</td>
               </tr>
             ))}
           </tbody>
@@ -163,9 +163,9 @@ export default function QuoteDetail() {
       </div>
 
       <div className="app-totals">
-        <p>Total HT : <strong>{parseFloat(quote.totalExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
-        <p>Total TVA : <strong>{parseFloat(quote.totalTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
-        <p className="app-totals-grand">Total TTC : <strong>{parseFloat(quote.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p>Total HT : <strong>{Number.parseFloat(quote.totalExcludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p>Total TVA : <strong>{Number.parseFloat(quote.totalTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
+        <p className="app-totals-grand">Total TTC : <strong>{Number.parseFloat(quote.totalIncludingTax).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €</strong></p>
       </div>
 
       {quote.depositPercent != null && quote.depositPercent > 0 && (
@@ -179,13 +179,13 @@ export default function QuoteDetail() {
             <div className="app-kpi-card">
               <div className="app-card-sub">Montant acompte TTC</div>
               <div className="app-card-value" style={{ color: 'var(--accent)' }}>
-                {parseFloat(quote.depositAmount || String(parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                {Number.parseFloat(quote.depositAmount || String(Number.parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
               </div>
             </div>
             <div className="app-kpi-card">
               <div className="app-card-sub">Solde restant TTC</div>
               <div className="app-card-value">
-                {(parseFloat(quote.totalIncludingTax) - (parseFloat(quote.depositAmount || '0') || parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                {(Number.parseFloat(quote.totalIncludingTax) - (Number.parseFloat(quote.depositAmount || '0') || Number.parseFloat(quote.totalIncludingTax) * quote.depositPercent / 100)).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
               </div>
             </div>
           </div>

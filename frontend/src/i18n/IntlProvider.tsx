@@ -28,7 +28,7 @@ function detectBrowserLocale(): (typeof SUPPORTED_LOCALES)[number]["code"] {
 }
 
 // Fournisseur d'internationalisation pour l'application
-export function AppIntlProvider({ children }: { children: ReactNode }) {
+export function AppIntlProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [locale, setLocaleState] = useState<string>(() => {
     const saved = localStorage.getItem('factura-locale');
     return saved || detectBrowserLocale();
@@ -40,7 +40,7 @@ export function AppIntlProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Fallback sur le francais si des cles manquent
-  const messages = { ...fr, ...(allMessages[locale] || {}) };
+  const messages = { ...fr, ...allMessages[locale] };
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale, supportedLocales: SUPPORTED_LOCALES }}>

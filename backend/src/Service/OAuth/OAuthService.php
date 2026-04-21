@@ -100,10 +100,8 @@ class OAuthService
         }
 
         // Verification PKCE
-        if (null !== $authCode->getCodeChallenge()) {
-            if (null === $codeVerifier || !$authCode->verifyCodeChallenge($codeVerifier)) {
-                return null;
-            }
+        if (null !== $authCode->getCodeChallenge() && (null === $codeVerifier || !$authCode->verifyCodeChallenge($codeVerifier))) {
+            return null;
         }
 
         // Marquer le code comme utilise (usage unique)

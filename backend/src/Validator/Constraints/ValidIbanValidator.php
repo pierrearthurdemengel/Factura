@@ -11,6 +11,8 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  */
 class ValidIbanValidator extends ConstraintValidator
 {
+    private const PARAM_VALUE = '{{ value }}';
+
     public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof ValidIban) {
@@ -27,7 +29,7 @@ class ValidIbanValidator extends ConstraintValidator
         // Longueur minimale 15 caracteres, maximale 34
         if (strlen($iban) < 15 || strlen($iban) > 34) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ value }}', (string) $value)
+                ->setParameter(self::PARAM_VALUE, (string) $value)
                 ->addViolation();
 
             return;
@@ -36,7 +38,7 @@ class ValidIbanValidator extends ConstraintValidator
         // Format : 2 lettres (pays) + 2 chiffres (cle) + BBAN alphanumerique
         if (!preg_match('/^[A-Z]{2}\d{2}[A-Z0-9]+$/', $iban)) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ value }}', (string) $value)
+                ->setParameter(self::PARAM_VALUE, (string) $value)
                 ->addViolation();
 
             return;
@@ -59,7 +61,7 @@ class ValidIbanValidator extends ConstraintValidator
         // Modulo 97 sur le nombre obtenu (doit donner 1)
         if (1 !== self::mod97($numericString)) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ value }}', (string) $value)
+                ->setParameter(self::PARAM_VALUE, (string) $value)
                 ->addViolation();
         }
     }
