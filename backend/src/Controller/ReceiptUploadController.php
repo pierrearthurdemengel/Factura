@@ -41,38 +41,20 @@ class ReceiptUploadController extends AbstractController
     #[Route('/api/receipts/upload', name: 'api_receipt_upload', methods: ['POST'])]
     public function upload(Request $request): JsonResponse
     {
-        /** @var User|null $user */
+        $validationError = $this->validateUpload($request);
+        if (null !== $validationError) {
+            return $validationError;
+        }
+
+        /** @var User $user */
         $user = $this->getUser();
-        if (!$user instanceof User) {
-            return new JsonResponse(['error' => 'Non authentifie'], Response::HTTP_UNAUTHORIZED);
-        }
-
+        /** @var \App\Entity\Company $company */
         $company = $user->getCompany();
-        if (null === $company) {
-            return new JsonResponse(['error' => 'Aucune entreprise configuree'], Response::HTTP_BAD_REQUEST);
-        }
-
+        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
         $file = $request->files->get('receipt');
-        if (null === $file) {
-            return new JsonResponse(['error' => 'Aucun fichier envoye'], Response::HTTP_BAD_REQUEST);
-        }
 
-        // Validation du type MIME
+        /** @var string $mimeType */
         $mimeType = $file->getMimeType();
-        if (null === $mimeType || !in_array($mimeType, self::ALLOWED_MIME_TYPES, true)) {
-            return new JsonResponse(
-                ['error' => 'Format non accepte. Formats autorises : PDF, PNG, JPG.'],
-                Response::HTTP_UNPROCESSABLE_ENTITY,
-            );
-        }
-
-        // Validation de la taille
-        if ($file->getSize() > self::MAX_FILE_SIZE) {
-            return new JsonResponse(
-                ['error' => 'Fichier trop volumineux. Taille maximale : 10 Mo.'],
-                Response::HTTP_UNPROCESSABLE_ENTITY,
-            );
-        }
 
         // Hash du fichier original (valeur probante)
         $tempPath = $file->getPathname();
@@ -113,5 +95,42 @@ class ReceiptUploadController extends AbstractController
             'originalFilename' => $receipt->getOriginalFilename(),
             'ocrStatus' => 'PENDING',
         ], Response::HTTP_CREATED);
+    }
+
+    /**
+     * Valide les preconditions de l'upload d'un justificatif.
+     */
+    private function validateUpload(Request $request): ?JsonResponse
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+        if (!$user instanceof User || null === $user->getCompany()) {
+            return new JsonResponse(
+                ['error' => !($user instanceof User) ? 'Non authentifie' : 'Aucune entreprise configuree'],
+                !($user instanceof User) ? Response::HTTP_UNAUTHORIZED : Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $file = $request->files->get('receipt');
+        if (null === $file) {
+            return new JsonResponse(['error' => 'Aucun fichier envoye'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $mimeType = $file->getMimeType();
+        if (null === $mimeType || !in_array($mimeType, self::ALLOWED_MIME_TYPES, true)) {
+            return new JsonResponse(
+                ['error' => 'Format non accepte. Formats autorises : PDF, PNG, JPG.'],
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+            );
+        }
+
+        if ($file->getSize() > self::MAX_FILE_SIZE) {
+            return new JsonResponse(
+                ['error' => 'Fichier trop volumineux. Taille maximale : 10 Mo.'],
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+            );
+        }
+
+        return null;
     }
 }

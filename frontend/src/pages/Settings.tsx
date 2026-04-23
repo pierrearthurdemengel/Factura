@@ -83,7 +83,9 @@ export default function Settings() {
         .catch(() => setBillingInvoices([]));
       api.get<{ plan: 'free' | 'pro' | 'success' }>('/subscription/current')
         .then(res => {
-          if (res.data?.plan) setCurrentPlan(res.data.plan);
+          if (res.data?.plan) {
+            setCurrentPlan(res.data.plan);
+          }
         })
         .catch(() => {/* Plan par defaut si endpoint non disponible */});
     }
@@ -110,22 +112,24 @@ export default function Settings() {
     }
   };
 
-  if (loading) return (
-    <div className="app-container">
-      <div className="app-skeleton app-skeleton-title" />
-      <div className="app-skeleton app-skeleton-title" />
-      <div className="app-form-row">
-        <div className="app-skeleton app-skeleton-table-row flex-2" />
+  if (loading) {
+    return (
+      <div className="app-container">
+        <div className="app-skeleton app-skeleton-title" />
+        <div className="app-skeleton app-skeleton-title" />
+        <div className="app-form-row">
+          <div className="app-skeleton app-skeleton-table-row flex-2" />
+          <div className="app-skeleton app-skeleton-table-row" />
+        </div>
+        <div className="app-form-row">
+          <div className="app-skeleton app-skeleton-table-row" />
+          <div className="app-skeleton app-skeleton-table-row" />
+        </div>
         <div className="app-skeleton app-skeleton-table-row" />
+        <div className="app-skeleton" />
       </div>
-      <div className="app-form-row">
-        <div className="app-skeleton app-skeleton-table-row" />
-        <div className="app-skeleton app-skeleton-table-row" />
-      </div>
-      <div className="app-skeleton app-skeleton-table-row" />
-      <div className="app-skeleton" />
-    </div>
-  );
+    );
+  }
 
   // Gestion de l'upload du logo
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,8 +160,12 @@ export default function Settings() {
   const yearTotal = yearInvoices.reduce((s, inv) => s + Number.parseFloat(inv.totalExcludingTax), 0);
   // Estimation des frais selon le plan
   const computeEstimatedFees = (): number => {
-    if (currentPlan === 'free') return 0;
-    if (currentPlan === 'pro') return 14.90 * 12;
+    if (currentPlan === 'free') {
+      return 0;
+    }
+    if (currentPlan === 'pro') {
+      return 14.9 * 12;
+    }
     return Math.max(29, yearTotal * 0.001);
   };
   const estimatedFees = computeEstimatedFees();
@@ -328,6 +336,9 @@ export default function Settings() {
             <div className="app-logo-upload-row">
               <div
                 onClick={() => fileInputRef.current?.click()}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
+                role="button"
+                tabIndex={0}
                 className="app-logo-dropzone"
                 style={logoPreview ? { backgroundImage: `url(${logoPreview})` } : undefined}
               >
@@ -638,7 +649,7 @@ export default function Settings() {
               <span className="app-billing-summary-unit">factures HT</span>
               <span className="app-billing-summary-arrow">&rarr;</span>
               <span className="app-billing-summary-fees">{estimatedFees.toFixed(2)} €</span>
-              <span className="app-billing-summary-unit">de frais {(() => { if (currentPlan === 'pro') return 'annuels'; if (currentPlan === 'success') return 'estimes'; return ''; })()}</span>
+              <span className="app-billing-summary-unit">de frais {currentPlan === 'pro' ? 'annuels' : currentPlan === 'success' ? 'estimes' : ''}</span>
             </div>
             <div className="app-billing-summary-count">
               {yearInvoices.length} facture(s) emise(s) en {currentYear}
@@ -656,6 +667,9 @@ export default function Settings() {
               <div
                 key={plan.key}
                 onClick={() => setCurrentPlan(plan.key)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCurrentPlan(plan.key); } }}
+                role="button"
+                tabIndex={0}
                 className={`app-card app-plan-card ${currentPlan === plan.key ? 'app-plan-card--selected' : ''}`}
               >
                 {currentPlan === plan.key && (

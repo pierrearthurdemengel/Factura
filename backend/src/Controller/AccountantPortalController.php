@@ -111,14 +111,42 @@ class AccountantPortalController extends AbstractController
     #[Route('/api/accountant/accept/{token}', name: 'api_accountant_accept', methods: ['POST'])]
     public function acceptInvitation(string $token): JsonResponse
     {
+        $validationError = $this->validateAcceptInvitation($token);
+        if (null !== $validationError) {
+            return $validationError;
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+        /** @var \App\Entity\Company $company */
+        $company = $user->getCompany();
+
+        /** @var AccountantInvitation $invitation */
+        $invitation = $this->em->getRepository(AccountantInvitation::class)->findOneBy([
+            'token' => $token,
+        ]);
+
+        $invitation->accept($company);
+        $this->em->flush();
+
+        return new JsonResponse([
+            'status' => 'accepted',
+            'firmName' => $invitation->getAccountantProfile()->getFirmName(),
+        ]);
+    }
+
+    /**
+     * Valide les preconditions pour accepter une invitation comptable.
+     */
+    private function validateAcceptInvitation(string $token): ?JsonResponse
+    {
         /** @var User|null $user */
         $user = $this->getUser();
         if (!$user instanceof User) {
             return new JsonResponse(['error' => 'Non authentifie'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $company = $user->getCompany();
-        if (null === $company) {
+        if (null === $user->getCompany()) {
             return new JsonResponse(['error' => 'Aucune entreprise configuree'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -138,13 +166,7 @@ class AccountantPortalController extends AbstractController
             );
         }
 
-        $invitation->accept($company);
-        $this->em->flush();
-
-        return new JsonResponse([
-            'status' => 'accepted',
-            'firmName' => $invitation->getAccountantProfile()->getFirmName(),
-        ]);
+        return null;
     }
 
     /**

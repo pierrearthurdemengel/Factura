@@ -101,28 +101,16 @@ class ReminderScheduler
         $diff = $today->diff($dueDate);
         $daysFromDue = (int) $diff->format('%r%a');
         // daysFromDue est negatif si la date d'echeance est passee (today > dueDate)
+        $daysOverdue = -$daysFromDue;
 
-        // Mise en demeure : echeance depassee de N jours
-        if (-$daysFromDue >= $config->getDaysFormalNotice() && $config->isFormalNoticeEnabled()) {
-            return ReminderTemplate::TYPE_FORMAL_NOTICE;
-        }
-
-        // Deuxieme relance
-        if (-$daysFromDue >= $config->getDaysSecondReminder()) {
-            return ReminderTemplate::TYPE_SECOND_REMINDER;
-        }
-
-        // Premiere relance
-        if (-$daysFromDue >= $config->getDaysFirstReminder()) {
-            return ReminderTemplate::TYPE_FIRST_REMINDER;
-        }
-
-        // Rappel avant echeance
-        if ($daysFromDue > 0 && $daysFromDue <= $config->getDaysBefore()) {
-            return ReminderTemplate::TYPE_BEFORE_DUE;
-        }
-
-        return null;
+        // Echeance depassee : determiner le niveau de relance le plus avance
+        return match (true) {
+            $daysOverdue >= $config->getDaysFormalNotice() && $config->isFormalNoticeEnabled() => ReminderTemplate::TYPE_FORMAL_NOTICE,
+            $daysOverdue >= $config->getDaysSecondReminder() => ReminderTemplate::TYPE_SECOND_REMINDER,
+            $daysOverdue >= $config->getDaysFirstReminder() => ReminderTemplate::TYPE_FIRST_REMINDER,
+            $daysFromDue > 0 && $daysFromDue <= $config->getDaysBefore() => ReminderTemplate::TYPE_BEFORE_DUE,
+            default => null,
+        };
     }
 
     /**

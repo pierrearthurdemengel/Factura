@@ -47,9 +47,9 @@ export default function StatusDropdown({ statusLabel, statusClass, disabled, act
       {isOpen && actions.length > 0 && (
         <div className="status-dropdown-menu">
           <div className="status-dropdown-header">Modifier le statut</div>
-          {actions.map((action, idx) => (
-            <button 
-              key={idx} 
+          {actions.map((action) => (
+            <button
+              key={action.label}
               className={`status-dropdown-item ${action.danger ? 'danger' : ''}`}
               onClick={() => {
                 setIsOpen(false);

@@ -96,9 +96,9 @@ class LlmClient
      *
      * @return array{answer: string, references: list<string>, actions: list<string>, model: string}
      */
-    private function getFallbackResponse(string $question, string $category): array
+    private function getFallbackResponse(string $_question, string $category): array
     {
-        // $question intentionally unused — kept for future logging/analytics of unanswered questions
+        // $_question kept for future logging/analytics of unanswered questions
         return [
             'answer' => sprintf(
                 'Je n\'ai pas pu consulter l\'assistant en ligne pour votre question sur le theme "%s". '
@@ -189,7 +189,7 @@ class LlmClient
         $answer = $text;
 
         // Extraire les references legales (pattern : Article XXX du CGI, BOI-XXX)
-        if (preg_match_all('/(?:Article\s+[\d\w\s-]+du\s+\w+|BOI-[\w-]+)/', $text, $matches)) {
+        if (preg_match_all('/(?:Article\s+[\w\s-]+du\s+\w+|BOI-[\w-]+)/', $text, $matches)) {
             $references = array_values(array_unique($matches[0]));
         }
 

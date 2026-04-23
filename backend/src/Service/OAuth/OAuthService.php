@@ -82,25 +82,13 @@ class OAuthService
             'code' => $code,
         ]);
 
-        if (null === $authCode) {
-            return null;
-        }
-
-        // Verifications de securite
-        if ($authCode->isExpired() || $authCode->isUsed()) {
-            return null;
-        }
-
-        if ($authCode->getClient()->getClientId() !== $clientId) {
-            return null;
-        }
-
-        if ($authCode->getRedirectUri() !== $redirectUri) {
-            return null;
-        }
-
-        // Verification PKCE
-        if (null !== $authCode->getCodeChallenge() && (null === $codeVerifier || !$authCode->verifyCodeChallenge($codeVerifier))) {
+        if (null === $authCode
+            || $authCode->isExpired()
+            || $authCode->isUsed()
+            || $authCode->getClient()->getClientId() !== $clientId
+            || $authCode->getRedirectUri() !== $redirectUri
+            || (null !== $authCode->getCodeChallenge() && (null === $codeVerifier || !$authCode->verifyCodeChallenge($codeVerifier)))
+        ) {
             return null;
         }
 

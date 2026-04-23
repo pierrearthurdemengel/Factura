@@ -315,6 +315,9 @@ export default function AccountantPortal() {
                   key={client.id}
                   className={`app-card app-client-card ${selectedClientId === client.id ? 'app-plan-card--selected' : ''}`}
                   onClick={() => setSelectedClientId(client.id)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedClientId(client.id); } }}
+                  role="button"
+                  tabIndex={0}
                   style={{ cursor: 'pointer' }}
                 >
                   <div className="app-client-card-header">

@@ -68,50 +68,13 @@ class AssistantService
 
         $convId = (string) $conversation->getId();
 
-        // Detecter les demandes de simulation
-        $simulationResult = $this->detectAndRunSimulation($normalized, $context);
-        if (null !== $simulationResult) {
-            $this->saveAssistantMessage($conversation, $simulationResult, $category, 'simulation');
-            $this->em->flush();
+        // Resoudre la reponse par simulation, cache, base de connaissances ou LLM
+        $resolved = $this->resolveAnswer($question, $normalized, $category, $context);
 
-            return $this->buildResponse($simulationResult, $category, 'simulation', $convId);
-        }
-
-        // 1. Chercher en cache
-        $cached = $this->cacheService->get($question);
-        if (null !== $cached) {
-            $this->saveAssistantMessage($conversation, $cached, $category, 'cache');
-            $this->em->flush();
-
-            return $this->buildResponse($cached, $category, 'cache', $convId);
-        }
-
-        // 2. Chercher dans la base de connaissances locale
-        $kbAnswer = $this->knowledgeBase->findAnswer($normalized);
-        if (null !== $kbAnswer) {
-            // Mettre en cache pour les prochaines fois
-            $this->cacheService->put($question, $kbAnswer, $category);
-            $this->saveAssistantMessage($conversation, $kbAnswer, $category, 'knowledge_base');
-            $this->em->flush();
-
-            return $this->buildResponse($kbAnswer, $kbAnswer['category'], 'knowledge_base', $convId);
-        }
-
-        // 3. Appeler le LLM
-        $llmAnswer = $this->llmClient->ask($question, $category, $context);
-        $response = [
-            'answer' => $llmAnswer['answer'],
-            'references' => $llmAnswer['references'],
-            'category' => $category,
-            'actions' => $llmAnswer['actions'],
-        ];
-
-        // Mettre en cache
-        $this->cacheService->put($question, $response, $category);
-        $this->saveAssistantMessage($conversation, $response, $category, $llmAnswer['model']);
+        $this->saveAssistantMessage($conversation, $resolved['data'], $category, $resolved['source']);
         $this->em->flush();
 
-        return $this->buildResponse($response, $category, $llmAnswer['model'], $convId);
+        return $this->buildResponse($resolved['data'], $resolved['category'], $resolved['source'], $convId);
     }
 
     /**
@@ -163,6 +126,60 @@ class AssistantService
         }
 
         return $result;
+    }
+
+    /**
+     * Resout la reponse par simulation, cache, base de connaissances ou LLM.
+     *
+     * @param array<string, mixed> $context
+     *
+     * @return array{data: array<string, mixed>, source: string, category: string}
+     */
+    private function resolveAnswer(string $question, string $normalized, string $category, array $context): array
+    {
+        // Detecter les demandes de simulation
+        $simulationResult = $this->detectAndRunSimulation($normalized, $context);
+        if (null !== $simulationResult) {
+            return ['data' => $simulationResult, 'source' => 'simulation', 'category' => $category];
+        }
+
+        // 1. Chercher en cache
+        $cached = $this->cacheService->get($question);
+        if (null !== $cached) {
+            return ['data' => $cached, 'source' => 'cache', 'category' => $category];
+        }
+
+        // 2. Chercher dans la base de connaissances locale ou appeler le LLM
+        return $this->resolveFromKnowledgeBaseOrLlm($question, $normalized, $category, $context);
+    }
+
+    /**
+     * Resout la reponse via la base de connaissances ou le LLM en fallback.
+     *
+     * @param array<string, mixed> $context
+     *
+     * @return array{data: array<string, mixed>, source: string, category: string}
+     */
+    private function resolveFromKnowledgeBaseOrLlm(string $question, string $normalized, string $category, array $context): array
+    {
+        $kbAnswer = $this->knowledgeBase->findAnswer($normalized);
+        if (null !== $kbAnswer) {
+            $this->cacheService->put($question, $kbAnswer, $category);
+
+            return ['data' => $kbAnswer, 'source' => 'knowledge_base', 'category' => $kbAnswer['category']];
+        }
+
+        $llmAnswer = $this->llmClient->ask($question, $category, $context);
+        $response = [
+            'answer' => $llmAnswer['answer'],
+            'references' => $llmAnswer['references'],
+            'category' => $category,
+            'actions' => $llmAnswer['actions'],
+        ];
+
+        $this->cacheService->put($question, $response, $category);
+
+        return ['data' => $response, 'source' => $llmAnswer['model'], 'category' => $category];
     }
 
     /**
@@ -250,58 +267,73 @@ class AssistantService
      */
     private function detectAndRunSimulation(string $normalizedQuestion, array $context): ?array
     {
-        // Detection simulation micro vs reel
-        if (str_contains($normalizedQuestion, 'simuler micro') || str_contains($normalizedQuestion, 'simulation micro vs reel')) {
-            /** @var string $turnover */
-            $turnover = (string) ($context['turnover'] ?? '50000');
-            /** @var string $expenses */
-            $expenses = (string) ($context['expenses'] ?? '15000');
-            /** @var string $activityType */
-            $activityType = (string) ($context['activityType'] ?? 'bnc');
-
-            $result = $this->taxSimulator->simulateMicroVsReel($turnover, $expenses, $activityType);
-
-            return [
-                'answer' => $this->formatSimulationResult('micro_vs_reel', $result),
-                'references' => ['Article 50-0 du CGI', 'Article 102 ter du CGI'],
-                'actions' => ['Modifier les parametres de simulation', 'Consulter un expert-comptable'],
-            ];
+        $type = $this->detectSimulationType($normalizedQuestion);
+        if (null === $type) {
+            return null;
         }
 
-        // Detection simulation EI vs societe
-        if (str_contains($normalizedQuestion, 'simuler passage societe') || str_contains($normalizedQuestion, 'simulation ei vs societe')) {
-            /** @var string $turnover */
-            $turnover = (string) ($context['turnover'] ?? '80000');
-            /** @var string $expenses */
-            $expenses = (string) ($context['expenses'] ?? '20000');
-            /** @var string $salary */
-            $salary = (string) ($context['salary'] ?? '30000');
+        return $this->executeSimulation($type, $context);
+    }
 
-            $result = $this->taxSimulator->simulateEiVsSociete($turnover, $expenses, $salary);
+    /**
+     * Detecte le type de simulation demandee dans la question.
+     */
+    private function detectSimulationType(string $normalizedQuestion): ?string
+    {
+        $patterns = [
+            'micro_vs_reel' => ['simuler micro', 'simulation micro vs reel'],
+            'ei_vs_societe' => ['simuler passage societe', 'simulation ei vs societe'],
+            'ir' => ['estimer impot', 'estimation impot revenu'],
+        ];
 
-            return [
-                'answer' => $this->formatSimulationResult('ei_vs_societe', $result),
-                'references' => ['Article 206 du CGI', 'Article 8 du CGI'],
-                'actions' => ['Modifier les parametres de simulation', 'Consulter un expert-comptable'],
-            ];
-        }
-
-        // Detection estimation IR
-        if (str_contains($normalizedQuestion, 'estimer impot') || str_contains($normalizedQuestion, 'estimation impot revenu')) {
-            /** @var string $taxableIncome */
-            $taxableIncome = (string) ($context['taxableIncome'] ?? '40000');
-            $parts = (int) ($context['parts'] ?? 1);
-
-            $result = $this->taxSimulator->estimateIncomeTax($taxableIncome, $parts);
-
-            return [
-                'answer' => $this->formatSimulationResult('ir', $result),
-                'references' => ['Article 197 du CGI'],
-                'actions' => ['Modifier le revenu imposable', 'Modifier le nombre de parts'],
-            ];
+        foreach ($patterns as $type => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (str_contains($normalizedQuestion, $keyword)) {
+                    return $type;
+                }
+            }
         }
 
         return null;
+    }
+
+    /**
+     * Execute la simulation du type donne et retourne le resultat formate.
+     *
+     * @param array<string, mixed> $context
+     *
+     * @return array{answer: string, references: list<string>, actions: list<string>}
+     */
+    private function executeSimulation(string $type, array $context): array
+    {
+        return match ($type) {
+            'micro_vs_reel' => [
+                'answer' => $this->formatSimulationResult('micro_vs_reel', $this->taxSimulator->simulateMicroVsReel(
+                    (string) ($context['turnover'] ?? '50000'),
+                    (string) ($context['expenses'] ?? '15000'),
+                    (string) ($context['activityType'] ?? 'bnc'),
+                )),
+                'references' => ['Article 50-0 du CGI', 'Article 102 ter du CGI'],
+                'actions' => ['Modifier les parametres de simulation', 'Consulter un expert-comptable'],
+            ],
+            'ei_vs_societe' => [
+                'answer' => $this->formatSimulationResult('ei_vs_societe', $this->taxSimulator->simulateEiVsSociete(
+                    (string) ($context['turnover'] ?? '80000'),
+                    (string) ($context['expenses'] ?? '20000'),
+                    (string) ($context['salary'] ?? '30000'),
+                )),
+                'references' => ['Article 206 du CGI', 'Article 8 du CGI'],
+                'actions' => ['Modifier les parametres de simulation', 'Consulter un expert-comptable'],
+            ],
+            default => [
+                'answer' => $this->formatSimulationResult('ir', $this->taxSimulator->estimateIncomeTax(
+                    (string) ($context['taxableIncome'] ?? '40000'),
+                    (int) ($context['parts'] ?? 1),
+                )),
+                'references' => ['Article 197 du CGI'],
+                'actions' => ['Modifier le revenu imposable', 'Modifier le nombre de parts'],
+            ],
+        };
     }
 
     /**

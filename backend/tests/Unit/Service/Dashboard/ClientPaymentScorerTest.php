@@ -10,10 +10,12 @@ use App\Service\Dashboard\ClientPaymentScorer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use App\Tests\Trait\ReflectionHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 class ClientPaymentScorerTest extends TestCase
 {
+    use ReflectionHelperTrait;
     /**
      * Cree un scorer avec des factures mockees pour un client.
      *
@@ -77,12 +79,10 @@ class ClientPaymentScorerTest extends TestCase
         $invoice->setSeller($company);
         $invoice->setBuyer($client);
 
-        $ref = new \ReflectionProperty(Invoice::class, 'status');
-        $ref->setValue($invoice, $status);
+        $this->setPrivateProperty($invoice, 'status', $status);
 
         // Setter la date d'echeance
-        $refDue = new \ReflectionProperty(Invoice::class, 'dueDate');
-        $refDue->setValue($invoice, new \DateTimeImmutable(sprintf('+%d days', $dueDays)));
+        $this->setPrivateProperty($invoice, 'dueDate', new \DateTimeImmutable(sprintf('+%d days', $dueDays)));
 
         $line = new InvoiceLine();
         $line->setDescription('Prestation');

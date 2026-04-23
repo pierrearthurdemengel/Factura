@@ -11,10 +11,12 @@ use App\Service\Factoring\FactoringEligibilityChecker;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
+use App\Tests\Trait\ReflectionHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 class FactoringEligibilityCheckerTest extends TestCase
 {
+    use ReflectionHelperTrait;
     private ClientFinancingScorer&MockObject $scorer;
     private EntityManagerInterface&MockObject $em;
     private FactoringEligibilityChecker $checker;
@@ -147,11 +149,8 @@ class FactoringEligibilityCheckerTest extends TestCase
         $company = new Company();
         $client = new Client();
 
-        $nameRef = new \ReflectionProperty(Client::class, 'name');
-        $nameRef->setValue($client, 'Client Test');
-
-        $companyRef = new \ReflectionProperty(Client::class, 'company');
-        $companyRef->setValue($client, $company);
+        $this->setPrivateProperty($client, 'name', 'Client Test');
+        $this->setPrivateProperty($client, 'company', $company);
 
         $invoice = new Invoice();
         $invoice->setStatus($status);

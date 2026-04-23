@@ -32,12 +32,8 @@ class InseeClient
      */
     public function findBySiren(string $siren): ?array
     {
-        if ('' === $this->inseeApiToken) {
-            return null;
-        }
-
         $siren = preg_replace('/\s+/', '', $siren);
-        if (null === $siren || 1 !== preg_match('/^\d{9}$/', $siren)) {
+        if ('' === $this->inseeApiToken || null === $siren || 1 !== preg_match('/^\d{9}$/', $siren)) {
             return null;
         }
 
@@ -50,13 +46,7 @@ class InseeClient
                 'timeout' => 10,
             ]);
 
-            if (200 !== $response->getStatusCode()) {
-                return null;
-            }
-
-            $data = $response->toArray();
-
-            return $this->mapUniteLegale($data);
+            return 200 === $response->getStatusCode() ? $this->mapUniteLegale($response->toArray()) : null;
         } catch (\Throwable) {
             return null;
         }
@@ -69,12 +59,8 @@ class InseeClient
      */
     public function findBySiret(string $siret): ?array
     {
-        if ('' === $this->inseeApiToken) {
-            return null;
-        }
-
         $siret = preg_replace('/\s+/', '', $siret);
-        if (null === $siret || 1 !== preg_match('/^\d{14}$/', $siret)) {
+        if ('' === $this->inseeApiToken || null === $siret || 1 !== preg_match('/^\d{14}$/', $siret)) {
             return null;
         }
 
@@ -87,13 +73,7 @@ class InseeClient
                 'timeout' => 10,
             ]);
 
-            if (200 !== $response->getStatusCode()) {
-                return null;
-            }
-
-            $data = $response->toArray();
-
-            return $this->mapEtablissement($data);
+            return 200 === $response->getStatusCode() ? $this->mapEtablissement($response->toArray()) : null;
         } catch (\Throwable) {
             return null;
         }
@@ -125,32 +105,38 @@ class InseeClient
                 'timeout' => 10,
             ]);
 
-            if (200 !== $response->getStatusCode()) {
-                return [];
-            }
-
-            $data = $response->toArray();
-            $results = [];
-
-            $unitesLegales = $data['unitesLegales'] ?? [];
-            if (!is_array($unitesLegales)) {
-                return [];
-            }
-
-            foreach ($unitesLegales as $unite) {
-                if (!is_array($unite)) {
-                    continue;
-                }
-                $mapped = $this->mapUniteLegaleItem($unite);
-                if (null !== $mapped) {
-                    $results[] = $mapped;
-                }
-            }
-
-            return $results;
+            return 200 === $response->getStatusCode() ? $this->mapUnitesLegalesResponse($response->toArray()) : [];
         } catch (\Throwable) {
             return [];
         }
+    }
+
+    /**
+     * Mappe la reponse de recherche en liste de resultats.
+     *
+     * @param array<string, mixed> $data
+     *
+     * @return list<SireneResult>
+     */
+    private function mapUnitesLegalesResponse(array $data): array
+    {
+        $unitesLegales = $data['unitesLegales'] ?? [];
+        if (!is_array($unitesLegales)) {
+            return [];
+        }
+
+        $results = [];
+        foreach ($unitesLegales as $unite) {
+            if (!is_array($unite)) {
+                continue;
+            }
+            $mapped = $this->mapUniteLegaleItem($unite);
+            if (null !== $mapped) {
+                $results[] = $mapped;
+            }
+        }
+
+        return $results;
     }
 
     /**

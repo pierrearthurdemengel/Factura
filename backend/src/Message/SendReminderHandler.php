@@ -35,45 +35,16 @@ class SendReminderHandler
     {
         $invoice = $this->em->getRepository(Invoice::class)->find($message->getInvoiceId());
 
-        if (null === $invoice) {
-            $this->logger->error('Facture introuvable pour la relance.', [
-                'invoiceId' => $message->getInvoiceId(),
-            ]);
-
+        if (!$this->isEligibleForReminder($invoice, $message)) {
             return;
         }
 
-        // Ne relancer que les factures en statut SENT (envoyees, non payees)
-        if ('SENT' !== $invoice->getStatus()) {
-            $this->logger->info('Relance ignoree : facture non en statut SENT.', [
-                'invoiceNumber' => $invoice->getNumber(),
-                'status' => $invoice->getStatus(),
-            ]);
-
-            return;
-        }
-
+        \assert(null !== $invoice);
         $buyer = $invoice->getBuyer();
+        /** @var string $recipientEmail */
         $recipientEmail = $buyer->getEmail();
-
-        if (null === $recipientEmail || '' === $recipientEmail) {
-            $this->logger->warning('Relance impossible : pas d\'email pour le client.', [
-                'invoiceNumber' => $invoice->getNumber(),
-                'clientName' => $buyer->getName(),
-            ]);
-
-            return;
-        }
-
+        /** @var \App\Entity\Company $seller */
         $seller = $invoice->getSeller();
-        if (null === $seller) {
-            $this->logger->error('Relance impossible : facture sans vendeur.', [
-                'invoiceId' => $message->getInvoiceId(),
-            ]);
-
-            return;
-        }
-
         $reminderType = $message->getReminderType();
 
         // Recuperer le template (personnalise ou par defaut)
@@ -146,6 +117,49 @@ class SendReminderHandler
 
             throw $e;
         }
+    }
+
+    /**
+     * Verifie que la facture est eligible a une relance.
+     */
+    private function isEligibleForReminder(?Invoice $invoice, SendReminderMessage $message): bool
+    {
+        if (null === $invoice) {
+            $this->logger->error('Facture introuvable pour la relance.', [
+                'invoiceId' => $message->getInvoiceId(),
+            ]);
+
+            return false;
+        }
+
+        if ('SENT' !== $invoice->getStatus()) {
+            $this->logger->info('Relance ignoree : facture non en statut SENT.', [
+                'invoiceNumber' => $invoice->getNumber(),
+                'status' => $invoice->getStatus(),
+            ]);
+
+            return false;
+        }
+
+        $recipientEmail = $invoice->getBuyer()->getEmail();
+        if (null === $recipientEmail || '' === $recipientEmail) {
+            $this->logger->warning('Relance impossible : pas d\'email pour le client.', [
+                'invoiceNumber' => $invoice->getNumber(),
+                'clientName' => $invoice->getBuyer()->getName(),
+            ]);
+
+            return false;
+        }
+
+        if (null === $invoice->getSeller()) {
+            $this->logger->error('Relance impossible : facture sans vendeur.', [
+                'invoiceId' => $message->getInvoiceId(),
+            ]);
+
+            return false;
+        }
+
+        return true;
     }
 
     /**

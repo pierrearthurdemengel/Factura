@@ -42,16 +42,14 @@ class ApiKeyController extends AbstractController
         /** @var array{company_id?: string, name?: string, plan?: string, scopes?: list<string>} $data */
         $data = json_decode((string) $request->getContent(), true) ?? [];
 
+        $validationError = $this->validateCreateKey($data);
+        if (null !== $validationError) {
+            return $validationError;
+        }
+
+        /** @var Company $company */
         $company = $this->getCompany($data['company_id'] ?? '');
-        if (null === $company) {
-            return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
-        }
-
         $name = $data['name'] ?? '';
-        if ('' === $name) {
-            return new JsonResponse(['error' => 'Le nom de la cle est requis.'], Response::HTTP_BAD_REQUEST);
-        }
-
         $plan = $data['plan'] ?? ApiKey::PLAN_FREE;
         /** @var list<string> $scopes */
         $scopes = $data['scopes'] ?? [];
@@ -66,6 +64,26 @@ class ApiKeyController extends AbstractController
             'rateLimit' => $result['apiKey']->getRateLimit(),
             'key' => $result['plainKey'],
         ], Response::HTTP_CREATED);
+    }
+
+    /**
+     * Valide les donnees de creation d'une cle d'API.
+     *
+     * @param array<string, mixed> $data
+     */
+    private function validateCreateKey(array $data): ?JsonResponse
+    {
+        $company = $this->getCompany($data['company_id'] ?? '');
+        if (null === $company) {
+            return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $name = $data['name'] ?? '';
+        if ('' === $name) {
+            return new JsonResponse(['error' => 'Le nom de la cle est requis.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        return null;
     }
 
     /**

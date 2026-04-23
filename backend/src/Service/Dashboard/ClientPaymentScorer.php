@@ -47,7 +47,7 @@ class ClientPaymentScorer
     {
         $invoices = $this->getClientInvoices($client);
 
-        if (0 === \count($invoices)) {
+        if ([] === $invoices) {
             return 50; // Score neutre pour un nouveau client
         }
 
@@ -85,7 +85,7 @@ class ClientPaymentScorer
             $delays[] = $delay;
         }
 
-        if (0 === \count($delays)) {
+        if ([] === $delays) {
             return null;
         }
 
@@ -198,20 +198,13 @@ class ClientPaymentScorer
      */
     private function getLevel(int $score): string
     {
-        if ($score >= self::THRESHOLD_EXCELLENT) {
-            return 'excellent';
-        }
-        if ($score >= self::THRESHOLD_GOOD) {
-            return 'good';
-        }
-        if ($score >= self::THRESHOLD_WARNING) {
-            return 'average';
-        }
-        if ($score >= self::THRESHOLD_POOR) {
-            return 'poor';
-        }
-
-        return 'critical';
+        return match (true) {
+            $score >= self::THRESHOLD_EXCELLENT => 'excellent',
+            $score >= self::THRESHOLD_GOOD => 'good',
+            $score >= self::THRESHOLD_WARNING => 'average',
+            $score >= self::THRESHOLD_POOR => 'poor',
+            default => 'critical',
+        };
     }
 
     /**
@@ -282,17 +275,12 @@ class ClientPaymentScorer
     {
         $count = \count($invoices);
 
-        if ($count >= 12) {
-            return 20;
-        }
-        if ($count >= 6) {
-            return 15;
-        }
-        if ($count >= 3) {
-            return 10;
-        }
-
-        return 5;
+        return match (true) {
+            $count >= 12 => 20,
+            $count >= 6 => 15,
+            $count >= 3 => 10,
+            default => 5,
+        };
     }
 
     /**

@@ -10,10 +10,12 @@ use App\Service\Tax\VatCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use App\Tests\Trait\ReflectionHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 class VatCalculatorTest extends TestCase
 {
+    use ReflectionHelperTrait;
     /**
      * Cree un mock du VatCalculator qui retourne les factures et ecritures fournies.
      *
@@ -64,8 +66,7 @@ class VatCalculatorTest extends TestCase
         $invoice->setSeller($company);
 
         // Utiliser la reflexion pour setter le statut
-        $ref = new \ReflectionProperty(Invoice::class, 'status');
-        $ref->setValue($invoice, $status);
+        $this->setPrivateProperty($invoice, 'status', $status);
 
         foreach ($lines as $lineData) {
             $line = new InvoiceLine();

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { getInvoices, getInvoiceEvents, type Invoice, type InvoiceEvent } from '../api/factura';
 import { Link } from 'react-router-dom';
@@ -110,6 +110,21 @@ function DragOverlayWidget({ className, children }: Readonly<{ className: string
   );
 }
 
+// --- Widget class names ---
+function getWidgetClassName(wId: string): string {
+  switch (wId) {
+    case 'kpi-month': return 'dash-widget-kpi dash-animate dash-animate-d1';
+    case 'kpi-revenue': return 'dash-widget-kpi dash-animate dash-animate-d2';
+    case 'kpi-pending': return 'dash-widget-kpi dash-animate dash-animate-d3';
+    case 'kpi-treasury': return 'dash-widget-kpi dash-animate dash-animate-d4';
+    case 'chart-revenue': return 'dash-widget-full dash-animate dash-animate-d5';
+    case 'list-recent': return 'dash-widget-wide dash-animate dash-animate-d5';
+    case 'list-feed': return 'dash-widget-narrow dash-animate dash-animate-d6';
+    case 'suggestions': return 'dash-widget-full dash-animate dash-animate-d6';
+    default: return '';
+  }
+}
+
 // --- Dashboard ---
 const DEFAULT_WIDGETS = ['kpi-month', 'kpi-revenue', 'kpi-pending', 'kpi-treasury', 'chart-revenue', 'list-recent', 'list-feed', 'suggestions'];
 
@@ -186,11 +201,11 @@ export default function Dashboard() {
     return () => { cancelled = true; };
   }, []);
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id.toString());
-  };
+  }, []);
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     setActiveId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -202,11 +217,11 @@ export default function Dashboard() {
         return newLayout;
       });
     }
-  };
+  }, []);
 
-  const handleDragCancel = () => {
+  const handleDragCancel = useCallback(() => {
     setActiveId(null);
-  };
+  }, []);
 
   // --- Computed data ---
   const now = new Date();
@@ -229,17 +244,19 @@ export default function Dashboard() {
   const trendHt = totalHtLastMonth > 0 ? ((totalHt - totalHtLastMonth) / totalHtLastMonth) * 100 : 100;
 
   // --- Loading skeleton ---
-  if (loading) return (
-    <div className="dash">
-      <div className="dash-skeleton dash-skeleton-title" />
-      <div className="dash-grid">
-        <div className="dash-skeleton dash-skeleton-card dash-widget-kpi" />
-        <div className="dash-skeleton dash-skeleton-card dash-widget-kpi" />
-        <div className="dash-skeleton dash-skeleton-card dash-widget-kpi" />
-        <div className="dash-skeleton dash-skeleton-card dash-widget-kpi" />
+  if (loading) {
+    return (
+      <div className="dash">
+        <div className="dash-skeleton dash-skeleton-title" />
+        <div className="dash-grid">
+          <div className="dash-skeleton dash-skeleton-card dash-widget-kpi" />
+          <div className="dash-skeleton dash-skeleton-card dash-widget-kpi" />
+          <div className="dash-skeleton dash-skeleton-card dash-widget-kpi" />
+          <div className="dash-skeleton dash-skeleton-card dash-widget-kpi" />
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   // --- Widget config ---
   const pendingAmount = pending.reduce((s, inv) => s + Number.parseFloat(inv.totalIncludingTax), 0);
@@ -262,20 +279,6 @@ export default function Dashboard() {
   if (suggestions.length === 0) {
     suggestions.push({ icon: '\u2705', text: 'Tout est en ordre. Continuez comme ca !', action: '/' });
   }
-
-  const getWidgetClassName = (wId: string): string => {
-    switch (wId) {
-      case 'kpi-month': return 'dash-widget-kpi dash-animate dash-animate-d1';
-      case 'kpi-revenue': return 'dash-widget-kpi dash-animate dash-animate-d2';
-      case 'kpi-pending': return 'dash-widget-kpi dash-animate dash-animate-d3';
-      case 'kpi-treasury': return 'dash-widget-kpi dash-animate dash-animate-d4';
-      case 'chart-revenue': return 'dash-widget-full dash-animate dash-animate-d5';
-      case 'list-recent': return 'dash-widget-wide dash-animate dash-animate-d5';
-      case 'list-feed': return 'dash-widget-narrow dash-animate dash-animate-d6';
-      case 'suggestions': return 'dash-widget-full dash-animate dash-animate-d6';
-      default: return '';
-    }
-  };
 
   const renderWidgetContent = (wId: string) => {
     switch (wId) {
@@ -418,7 +421,7 @@ export default function Dashboard() {
                 <div className="dash-feed-line" />
                 {activities.slice(0, 5).map((act) => (
                   <div key={act.id} className="dash-feed-item">
-                    <div className={`dash-feed-dot ${(() => { if (act.eventType === 'PAID') return 'dash-feed-dot--paid'; if (act.eventType === 'CREATED') return 'dash-feed-dot--created'; return 'dash-feed-dot--default'; })()}`} />
+                    <div className={`dash-feed-dot ${act.eventType === 'PAID' ? 'dash-feed-dot--paid' : act.eventType === 'CREATED' ? 'dash-feed-dot--created' : 'dash-feed-dot--default'}`} />
                     <div className="dash-feed-content">
                       <p className="dash-feed-label">Facture {act.invoiceNumber}</p>
                       <p className="dash-feed-desc">{EVENT_LABELS[act.eventType] || `(${act.eventType})`}</p>

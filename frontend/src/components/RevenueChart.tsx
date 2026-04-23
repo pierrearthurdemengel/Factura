@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react';
-import { type Invoice } from '../api/factura';
+import type { Invoice } from '../api/factura';
 
 interface RevenueChartProps {
   invoices: Invoice[];

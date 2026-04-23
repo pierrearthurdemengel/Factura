@@ -57,20 +57,12 @@ function getDefaultDeadlines(year: number): Deadline[] {
       amount: null,
     });
   });
-  // CFE (15 juin et 15 decembre)
+  // CFE (15 juin et 15 decembre) + IR (declaration de revenus, debut juin)
   deadlines.push(
     { id: 'cfe-1', type: 'cfe', label: 'Acompte CFE', dueDate: `${year}-06-15`, status: new Date(`${year}-06-15`) < now ? 'done' : 'pending', amount: null },
     { id: 'cfe-2', type: 'cfe', label: 'Solde CFE', dueDate: `${year}-12-15`, status: new Date(`${year}-12-15`) < now ? 'done' : 'pending', amount: null },
+    { id: 'ir-1', type: 'ir', label: 'Declaration de revenus', dueDate: `${year}-06-08`, status: new Date(`${year}-06-08`) < now ? 'done' : 'pending', amount: null },
   );
-  // IR (declaration de revenus, debut juin)
-  deadlines.push({
-    id: 'ir-1',
-    type: 'ir',
-    label: 'Declaration de revenus',
-    dueDate: `${year}-06-08`,
-    status: new Date(`${year}-06-08`) < now ? 'done' : 'pending',
-    amount: null,
-  });
   return deadlines;
 }
 
@@ -84,6 +76,9 @@ export default function Declarations() {
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
     // Check SWR cache for instant display
     const deadlinesParams = { year: String(currentYear) };
     const vatParams = { year: String(currentYear), month: String(new Date().getMonth() + 1) };
@@ -93,6 +88,7 @@ export default function Declarations() {
     const cachedUrssaf = getCached<{ totalContributions: string }>('/tax/urssaf/contributions', urssafParams);
     if (cachedDeadlines || cachedVat || cachedUrssaf) {
       queueMicrotask(() => {
+        if (signal.aborted) return;
         if (Array.isArray(cachedDeadlines) && cachedDeadlines.length > 0) {
           setDeadlines(cachedDeadlines);
         } else {
@@ -105,26 +101,27 @@ export default function Declarations() {
     }
     // Tenter de charger les echeances depuis l'API, sinon utiliser le calendrier par defaut
     Promise.all([
-      api.get<{ 'hydra:member': Deadline[] }>('/declarations/deadlines', { params: { year: currentYear } })
+      api.get<{ 'hydra:member': Deadline[] }>('/declarations/deadlines', { params: { year: currentYear }, signal })
         .then(res => {
           const data = res.data['hydra:member'] || res.data;
           setCache('/declarations/deadlines', data, deadlinesParams);
           return data;
         })
         .catch(() => null),
-      api.get<VatBalance>('/tax/vat/balance', { params: { year: currentYear, month: new Date().getMonth() + 1 } })
+      api.get<VatBalance>('/tax/vat/balance', { params: { year: currentYear, month: new Date().getMonth() + 1 }, signal })
         .then(res => {
           setCache('/tax/vat/balance', res.data, vatParams);
           return res;
         })
         .catch(() => null),
-      api.get<{ totalContributions: string }>('/tax/urssaf/contributions', { params: { year: currentYear } })
+      api.get<{ totalContributions: string }>('/tax/urssaf/contributions', { params: { year: currentYear }, signal })
         .then(res => {
           setCache('/tax/urssaf/contributions', res.data, urssafParams);
           return res;
         })
         .catch(() => null),
     ]).then(([deadlinesRes, vatRes, urssafRes]) => {
+      if (signal.aborted) return;
       if (Array.isArray(deadlinesRes) && deadlinesRes.length > 0) {
         setDeadlines(deadlinesRes);
       } else {
@@ -132,7 +129,9 @@ export default function Declarations() {
       }
       if (vatRes?.data) setVatBalance(vatRes.data as VatBalance);
       if (urssafRes?.data?.totalContributions) setUrssafAmount(urssafRes.data.totalContributions);
-    }).finally(() => setLoading(false));
+    }).finally(() => { if (!signal.aborted) setLoading(false); });
+
+    return () => controller.abort();
   }, [currentYear]);
 
   const sections: { key: typeof activeSection; label: string }[] = [

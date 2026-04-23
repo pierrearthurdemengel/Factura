@@ -57,8 +57,12 @@ export default function Banking() {
   }, []);
 
   const filtered = (() => {
-    if (filter === 'all') return transactions;
-    if (filter === 'reconciled') return transactions.filter((t) => t.reconciled);
+    if (filter === 'all') {
+      return transactions;
+    }
+    if (filter === 'reconciled') {
+      return transactions.filter((t) => t.reconciled);
+    }
     return transactions.filter((t) => !t.reconciled);
   })();
 
@@ -111,14 +115,16 @@ export default function Banking() {
     { key: 'connect', label: 'Connexion' },
   ];
 
-  if (loading) return (
-    <div className="app-container">
-      <div className="app-skeleton app-skeleton-title" />
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="app-skeleton app-skeleton-table-row" />
-      ))}
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="app-container">
+        <div className="app-skeleton app-skeleton-title" />
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="app-skeleton app-skeleton-table-row" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">
@@ -163,11 +169,11 @@ export default function Banking() {
       {activeTab === 'transactions' && (
         <>
           <div className="app-pills">
-            {[
-              { key: 'all' as const, label: `Toutes (${transactions.length})` },
-              { key: 'unreconciled' as const, label: `Non reconciliees (${unreconciledCount})` },
-              { key: 'reconciled' as const, label: `Reconciliees (${transactions.length - unreconciledCount})` },
-            ].map((f) => (
+            {([
+              { key: 'all', label: `Toutes (${transactions.length})` },
+              { key: 'unreconciled', label: `Non reconciliees (${unreconciledCount})` },
+              { key: 'reconciled', label: `Reconciliees (${transactions.length - unreconciledCount})` },
+            ] as const).map((f) => (
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
@@ -198,6 +204,9 @@ export default function Banking() {
                     background: selectedTx === tx.id ? 'var(--accent-bg)' : undefined,
                   }}
                   onClick={() => setSelectedTx(selectedTx === tx.id ? null : tx.id)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedTx(selectedTx === tx.id ? null : tx.id); } }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <div className="app-list-item-info">
                     <div className="app-list-item-title">{tx.label}</div>
@@ -313,6 +322,9 @@ export default function Banking() {
             onDragLeave={() => setDragOver(false)}
             onDrop={(e) => { e.preventDefault(); setDragOver(false); handleReceiptUpload(e.dataTransfer.files); }}
             onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
+            role="button"
+            tabIndex={0}
             className="app-logo-dropzone"
             style={{
               width: '100%',
@@ -404,7 +416,7 @@ export default function Banking() {
             {/* Etape 2 */}
             <div className="app-card" style={{ opacity: connectStep >= 1 ? 1 : 0.5 }}>
               <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
-                <span className="app-health-indicator" style={{ background: (() => { if (connectStep >= 2) return 'var(--success)'; if (connectStep >= 1) return 'var(--accent)'; return 'var(--border)'; })(), color: '#fff' }}>
+                <span className="app-health-indicator" style={{ background: connectStep >= 2 ? 'var(--success)' : connectStep >= 1 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
                   {connectStep >= 2 ? '✓' : '2'}
                 </span>
                 <span className="app-list-item-title">Authentification DSP2</span>
@@ -424,7 +436,7 @@ export default function Banking() {
             {/* Etape 3 */}
             <div className="app-card" style={{ opacity: connectStep >= 2 ? 1 : 0.5 }}>
               <div className="app-list-item" style={{ border: 'none', padding: 0 }}>
-                <span className="app-health-indicator" style={{ background: (() => { if (connectStep >= 3) return 'var(--success)'; if (connectStep >= 2) return 'var(--accent)'; return 'var(--border)'; })(), color: '#fff' }}>
+                <span className="app-health-indicator" style={{ background: connectStep >= 3 ? 'var(--success)' : connectStep >= 2 ? 'var(--accent)' : 'var(--border)', color: '#fff' }}>
                   {connectStep >= 3 ? '✓' : '3'}
                 </span>
                 <span className="app-list-item-title">Synchronisation</span>

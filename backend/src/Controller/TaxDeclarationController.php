@@ -39,20 +39,17 @@ class TaxDeclarationController extends AbstractController
     #[Route('/vat/balance', methods: ['GET'])]
     public function vatBalance(Request $request): JsonResponse
     {
+        $validationError = $this->validateCompanyAndDateRange($request);
+        if (null !== $validationError) {
+            return $validationError;
+        }
+
+        /** @var Company $company */
         $company = $this->getCompany($request);
-        if (!$company instanceof Company) {
-            return new JsonResponse(['error' => self::MSG_COMPANY_NOT_FOUND], Response::HTTP_NOT_FOUND);
-        }
-
+        /** @var \DateTimeImmutable $from */
         $from = $this->parseDate($request->query->getString('from'));
+        /** @var \DateTimeImmutable $to */
         $to = $this->parseDate($request->query->getString('to'));
-
-        if (null === $from || null === $to) {
-            return new JsonResponse(
-                ['error' => self::MSG_DATE_PARAMS_REQUIRED],
-                Response::HTTP_BAD_REQUEST,
-            );
-        }
 
         $balance = $this->vatCalculator->calculateVatBalance($company, $from, $to);
 
@@ -65,20 +62,17 @@ class TaxDeclarationController extends AbstractController
     #[Route('/vat/ca3', methods: ['GET'])]
     public function generateCA3(Request $request): JsonResponse
     {
+        $validationError = $this->validateCompanyAndDateRange($request);
+        if (null !== $validationError) {
+            return $validationError;
+        }
+
+        /** @var Company $company */
         $company = $this->getCompany($request);
-        if (!$company instanceof Company) {
-            return new JsonResponse(['error' => self::MSG_COMPANY_NOT_FOUND], Response::HTTP_NOT_FOUND);
-        }
-
+        /** @var \DateTimeImmutable $from */
         $from = $this->parseDate($request->query->getString('from'));
+        /** @var \DateTimeImmutable $to */
         $to = $this->parseDate($request->query->getString('to'));
-
-        if (null === $from || null === $to) {
-            return new JsonResponse(
-                ['error' => self::MSG_DATE_PARAMS_REQUIRED],
-                Response::HTTP_BAD_REQUEST,
-            );
-        }
 
         $ca3 = $this->vatDeclarationGenerator->generateCA3($company, $from, $to);
 
@@ -109,21 +103,18 @@ class TaxDeclarationController extends AbstractController
     #[Route('/urssaf/contributions', methods: ['GET'])]
     public function urssafContributions(Request $request): JsonResponse
     {
-        $company = $this->getCompany($request);
-        if (!$company instanceof Company) {
-            return new JsonResponse(['error' => self::MSG_COMPANY_NOT_FOUND], Response::HTTP_NOT_FOUND);
+        $validationError = $this->validateCompanyAndDateRange($request);
+        if (null !== $validationError) {
+            return $validationError;
         }
 
+        /** @var Company $company */
+        $company = $this->getCompany($request);
+        /** @var \DateTimeImmutable $from */
         $from = $this->parseDate($request->query->getString('from'));
+        /** @var \DateTimeImmutable $to */
         $to = $this->parseDate($request->query->getString('to'));
         $activityType = $request->query->getString('activityType', UrssafCalculator::ACTIVITY_BNC_LIBERAL);
-
-        if (null === $from || null === $to) {
-            return new JsonResponse(
-                ['error' => self::MSG_DATE_PARAMS_REQUIRED],
-                Response::HTTP_BAD_REQUEST,
-            );
-        }
 
         try {
             $contributions = $this->urssafCalculator->calculateContributions(
@@ -151,6 +142,29 @@ class TaxDeclarationController extends AbstractController
         $deadlines = $this->urssafCalculator->getDeclarationDeadlines($year, $frequency);
 
         return new JsonResponse(['year' => $year, 'frequency' => $frequency, 'deadlines' => $deadlines]);
+    }
+
+    /**
+     * Valide que le company_id et les dates from/to sont presents et valides.
+     */
+    private function validateCompanyAndDateRange(Request $request): ?JsonResponse
+    {
+        $company = $this->getCompany($request);
+        if (!$company instanceof Company) {
+            return new JsonResponse(['error' => self::MSG_COMPANY_NOT_FOUND], Response::HTTP_NOT_FOUND);
+        }
+
+        $from = $this->parseDate($request->query->getString('from'));
+        $to = $this->parseDate($request->query->getString('to'));
+
+        if (null === $from || null === $to) {
+            return new JsonResponse(
+                ['error' => self::MSG_DATE_PARAMS_REQUIRED],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        return null;
     }
 
     /**

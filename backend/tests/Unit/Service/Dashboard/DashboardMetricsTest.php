@@ -10,10 +10,12 @@ use App\Service\Dashboard\DashboardMetrics;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use App\Tests\Trait\ReflectionHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 class DashboardMetricsTest extends TestCase
 {
+    use ReflectionHelperTrait;
     /**
      * Cree un service avec des factures mockees.
      *
@@ -60,8 +62,7 @@ class DashboardMetricsTest extends TestCase
         $invoice->setSeller($company);
         $invoice->setBuyer($client);
 
-        $ref = new \ReflectionProperty(Invoice::class, 'status');
-        $ref->setValue($invoice, $status);
+        $this->setPrivateProperty($invoice, 'status', $status);
 
         $line = new InvoiceLine();
         $line->setDescription('Prestation');

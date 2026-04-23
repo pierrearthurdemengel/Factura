@@ -48,7 +48,10 @@ export default function EmbedWrapper({ children }: Readonly<{ children: React.Re
     globalThis.parent.postMessage({ type: 'mfp:ready' }, '*');
 
     // Ecouter les messages du parent pour le theming dynamique
+    // Derive allowed origin from the parent referrer (the embedding page)
+    const allowedOrigin = document.referrer ? new URL(document.referrer).origin : globalThis.location.origin;
     const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== allowedOrigin) return;
       if (event.data?.type === 'mfp:theme') {
         setTheme((prev) => ({ ...prev, ...event.data.theme }));
       }

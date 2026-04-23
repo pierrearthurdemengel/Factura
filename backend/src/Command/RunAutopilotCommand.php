@@ -112,9 +112,7 @@ class RunAutopilotCommand extends Command
             return null !== $company ? [$company] : [];
         }
 
-        /** @var list<Company> $companies */
-        $companies = $repo->findAll();
-
-        return $companies;
+        /** @var list<Company> */
+        return $repo->findAll();
     }
 }

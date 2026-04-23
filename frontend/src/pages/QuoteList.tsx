@@ -27,7 +27,7 @@ const STATUS_CONFIG: Record<string, { intlId: string; defaultMessage: string; co
   CONVERTED: { intlId: 'quote.converted', defaultMessage: 'Converti', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
 };
 
-export default function QuoteList() {
+export default function QuoteList(): JSX.Element {
   const intl = useIntl();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,7 +80,7 @@ export default function QuoteList() {
       <div className="app-pills">
         <button
           onClick={() => setFilter('')}
-          className={`app-pill${!filter ? ' app-pill--active' : ''}`}
+          className={`app-pill${filter ? '' : ' app-pill--active'}`}
         >
           {intl.formatMessage({ id: 'common.all', defaultMessage: 'Tous' })} ({quotes.length})
         </button>

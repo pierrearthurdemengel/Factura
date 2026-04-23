@@ -35,6 +35,7 @@ class FactoringEligibilityChecker
     {
         $client = $invoice->getBuyer();
         $clientScore = $this->scorer->calculateScore($client);
+        $amountCents = (int) round((float) $invoice->getTotalIncludingTax() * 100);
 
         $base = [
             'eligible' => false,
@@ -47,44 +48,9 @@ class FactoringEligibilityChecker
             'commission' => null,
         ];
 
-        // Verification du statut
-        if (!in_array($invoice->getStatus(), ['SENT', 'ACKNOWLEDGED'], true)) {
-            $base['reason'] = 'La facture doit etre en statut SENT ou ACKNOWLEDGED.';
-
-            return $base;
-        }
-
-        // Verification du montant minimum
-        $amountCents = (int) round((float) $invoice->getTotalIncludingTax() * 100);
-        if ($amountCents < $this->minAmountCents) {
-            $base['reason'] = sprintf(
-                'Le montant TTC (%.2f EUR) est inferieur au seuil minimum (%.2f EUR).',
-                $amountCents / 100,
-                $this->minAmountCents / 100,
-            );
-
-            return $base;
-        }
-
-        // Verification du score client
-        if ($clientScore < $this->minClientScore) {
-            $base['reason'] = sprintf(
-                'Le score du client (%d) est inferieur au minimum requis (%d).',
-                $clientScore,
-                $this->minClientScore,
-            );
-
-            return $base;
-        }
-
-        // Verification qu'il n'y a pas de demande active
-        $existingRequest = $this->em->getRepository(FactoringRequest::class)->findOneBy([
-            'invoice' => $invoice,
-            'status' => [FactoringRequest::STATUS_PENDING, FactoringRequest::STATUS_APPROVED],
-        ]);
-
-        if (null !== $existingRequest) {
-            $base['reason'] = 'Une demande d\'affacturage est deja en cours pour cette facture.';
+        $rejectionReason = $this->findRejectionReason($invoice, $clientScore, $amountCents);
+        if (null !== $rejectionReason) {
+            $base['reason'] = $rejectionReason;
 
             return $base;
         }
@@ -108,5 +74,42 @@ class FactoringEligibilityChecker
             'clientScore' => $clientScore,
             'commission' => $commission,
         ];
+    }
+
+    /**
+     * Verifie les conditions d'eligibilite et retourne la raison du rejet, ou null si eligible.
+     */
+    private function findRejectionReason(Invoice $invoice, int $clientScore, int $amountCents): ?string
+    {
+        if (!in_array($invoice->getStatus(), ['SENT', 'ACKNOWLEDGED'], true)) {
+            return 'La facture doit etre en statut SENT ou ACKNOWLEDGED.';
+        }
+
+        if ($amountCents < $this->minAmountCents) {
+            return sprintf(
+                'Le montant TTC (%.2f EUR) est inferieur au seuil minimum (%.2f EUR).',
+                $amountCents / 100,
+                $this->minAmountCents / 100,
+            );
+        }
+
+        if ($clientScore < $this->minClientScore) {
+            return sprintf(
+                'Le score du client (%d) est inferieur au minimum requis (%d).',
+                $clientScore,
+                $this->minClientScore,
+            );
+        }
+
+        $existingRequest = $this->em->getRepository(FactoringRequest::class)->findOneBy([
+            'invoice' => $invoice,
+            'status' => [FactoringRequest::STATUS_PENDING, FactoringRequest::STATUS_APPROVED],
+        ]);
+
+        if (null !== $existingRequest) {
+            return 'Une demande d\'affacturage est deja en cours pour cette facture.';
+        }
+
+        return null;
     }
 }

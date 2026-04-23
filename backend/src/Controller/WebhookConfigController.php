@@ -39,21 +39,17 @@ class WebhookConfigController extends AbstractController
         /** @var array{company_id?: string, url?: string, events?: list<string>, description?: string} $data */
         $data = json_decode((string) $request->getContent(), true) ?? [];
 
+        $validationError = $this->validateCreateEndpoint($data);
+        if (null !== $validationError) {
+            return $validationError;
+        }
+
+        /** @var Company $company */
         $company = $this->getCompany($data['company_id'] ?? '');
-        if (null === $company) {
-            return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
-        }
-
+        /** @var string $url */
         $url = $data['url'] ?? '';
-        if ('' === $url) {
-            return new JsonResponse(['error' => 'L\'URL est requise.'], Response::HTTP_BAD_REQUEST);
-        }
-
         /** @var list<string> $events */
         $events = $data['events'] ?? [];
-        if ([] === $events) {
-            return new JsonResponse(['error' => 'Au moins un evenement est requis.'], Response::HTTP_BAD_REQUEST);
-        }
 
         $endpoint = new WebhookEndpoint();
         $endpoint->setCompany($company);
@@ -72,6 +68,32 @@ class WebhookConfigController extends AbstractController
             'secret' => $endpoint->getSecret(),
             'active' => $endpoint->isActive(),
         ], Response::HTTP_CREATED);
+    }
+
+    /**
+     * Valide les donnees de creation d'un endpoint webhook.
+     *
+     * @param array<string, mixed> $data
+     */
+    private function validateCreateEndpoint(array $data): ?JsonResponse
+    {
+        $company = $this->getCompany($data['company_id'] ?? '');
+        if (null === $company) {
+            return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $url = $data['url'] ?? '';
+        if ('' === $url) {
+            return new JsonResponse(['error' => 'L\'URL est requise.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        /** @var list<string> $events */
+        $events = $data['events'] ?? [];
+        if ([] === $events) {
+            return new JsonResponse(['error' => 'Au moins un evenement est requis.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        return null;
     }
 
     /**

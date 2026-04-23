@@ -53,19 +53,19 @@ describe('Simulateurs', () => {
   it('charge la config fiscale depuis l\'API', () => {
     cy.intercept('GET', '/api/tax/config', {
       body: {
-        microAbatementService: 0.50,
+        microAbatementService: 0.5,
         microAbatementVente: 0.71,
         microUrssafService: 0.22,
         microUrssafVente: 0.123,
         reelUrssafRate: 0.45,
-        sasuChargesRate: 0.30,
-        sasuRemunerationRate: 0.60,
+        sasuChargesRate: 0.3,
+        sasuRemunerationRate: 0.6,
         sasuISRate: 0.25,
         eiUrssafRate: 0.22,
         irBrackets: [
           { limit: 11497, rate: 0 },
           { limit: 29315, rate: 0.11 },
-          { limit: 82341, rate: 0.30 },
+          { limit: 82341, rate: 0.3 },
           { limit: 177106, rate: 0.41 },
           { limit: 999999999, rate: 0.45 },
         ],

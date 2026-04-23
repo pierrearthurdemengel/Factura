@@ -101,24 +101,33 @@ class McpController extends AbstractController
             return $this->jsonRpcError($id, -32602, 'Parametre "name" manquant.');
         }
 
-        /** @var array<string, mixed> $arguments */
-        $arguments = is_array($params['arguments'] ?? null) ? $params['arguments'] : [];
-
-        // L'utilisateur est authentifie via OAuth (Bearer mfp_*)
         $user = $this->getUser();
         if (!$user instanceof User) {
             return $this->jsonRpcError($id, -32000, 'Authentification requise.');
         }
 
+        /** @var array<string, mixed> $arguments */
+        $arguments = is_array($params['arguments'] ?? null) ? $params['arguments'] : [];
+
+        return $this->executeToolCall($id, $toolName, $arguments, $user);
+    }
+
+    /**
+     * Execute le tool MCP et retourne la reponse JSON-RPC.
+     *
+     * @param array<string, mixed> $arguments
+     */
+    private function executeToolCall(mixed $id, string $toolName, array $arguments, User $user): JsonResponse
+    {
         try {
             $result = $this->mcpServer->executeTool($toolName, $arguments, $user);
         } catch (\Throwable $e) {
-            return $this->jsonRpcResult($id, [
+            $result = [
                 'content' => [
                     ['type' => 'text', 'text' => 'Erreur interne : ' . $e->getMessage()],
                 ],
                 'isError' => true,
-            ]);
+            ];
         }
 
         return $this->jsonRpcResult($id, $result);

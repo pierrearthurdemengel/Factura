@@ -18,19 +18,19 @@ interface TaxConfig {
 }
 
 const defaultTaxConfig: TaxConfig = {
-  microAbatementService: 0.50,
+  microAbatementService: 0.5,
   microAbatementVente: 0.71,
   microUrssafService: 0.212,
   microUrssafVente: 0.123,
   reelUrssafRate: 0.45,
-  sasuChargesRate: 0.30,
-  sasuRemunerationRate: 0.60,
+  sasuChargesRate: 0.3,
+  sasuRemunerationRate: 0.6,
   sasuISRate: 0.25,
   eiUrssafRate: 0.212,
   irBrackets: [
     { limit: 11497, rate: 0 },
     { limit: 29315, rate: 0.11 },
-    { limit: 82341, rate: 0.30 },
+    { limit: 82341, rate: 0.3 },
     { limit: 177106, rate: 0.41 },
     { limit: Infinity, rate: 0.45 },
   ],

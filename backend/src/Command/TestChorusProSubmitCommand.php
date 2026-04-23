@@ -32,13 +32,39 @@ class TestChorusProSubmitCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $baseUrl = $_ENV['CHORUS_PRO_BASE_URL'] ?? '';
-        $oauthUrl = $_ENV['CHORUS_PRO_OAUTH_URL'] ?? '';
-        $clientId = $_ENV['CHORUS_PRO_CLIENT_ID'] ?? '';
-        $clientSecret = $_ENV['CHORUS_PRO_CLIENT_SECRET'] ?? '';
         $techLogin = $_ENV['CHORUS_PRO_TECH_LOGIN'] ?? '';
         $techPassword = $_ENV['CHORUS_PRO_TECH_PASSWORD'] ?? '';
 
         // --- Etape 1 : Token OAuth2 ---
+        $accessToken = $this->authenticateOAuth($io);
+        if (null === $accessToken) {
+            return Command::FAILURE;
+        }
+
+        $cproAccount = base64_encode($techLogin . ':' . $techPassword);
+
+        // --- Etape 2 : Recherche structure fournisseur ---
+        $idFournisseur = $this->findSupplierStructure($io);
+        if (null === $idFournisseur) {
+            return Command::FAILURE;
+        }
+
+        // --- Etape 3 : Recherche d'un destinataire ---
+        $codeDestinataire = $this->findRecipient($io, $baseUrl, $accessToken, $cproAccount);
+
+        // --- Etape 4 : soumettreFacture ---
+        return $this->submitInvoice($io, $baseUrl, $accessToken, $cproAccount, $idFournisseur, $codeDestinataire);
+    }
+
+    /**
+     * Authentification OAuth2 PISTE et retour du token.
+     */
+    private function authenticateOAuth(SymfonyStyle $io): ?string
+    {
+        $oauthUrl = $_ENV['CHORUS_PRO_OAUTH_URL'] ?? '';
+        $clientId = $_ENV['CHORUS_PRO_CLIENT_ID'] ?? '';
+        $clientSecret = $_ENV['CHORUS_PRO_CLIENT_SECRET'] ?? '';
+
         $io->section('1. Authentification OAuth2 PISTE');
 
         try {
@@ -56,7 +82,7 @@ class TestChorusProSubmitCommand extends Command
             if ('' === $accessToken) {
                 $io->error('Token OAuth2 vide.');
 
-                return Command::FAILURE;
+                return null;
             }
 
             $io->success(sprintf(
@@ -64,15 +90,20 @@ class TestChorusProSubmitCommand extends Command
                 $tokenData['scope'] ?? 'N/A',
                 $tokenData['expires_in'] ?? '?'
             ));
+
+            return $accessToken;
         } catch (\Throwable $e) {
             $io->error('Erreur OAuth2 : ' . $e->getMessage());
 
-            return Command::FAILURE;
+            return null;
         }
+    }
 
-        $cproAccount = base64_encode($techLogin . ':' . $techPassword);
-
-        // --- Etape 2 : Recherche structure fournisseur via ChorusProClient ---
+    /**
+     * Recherche la structure fournisseur via ChorusProClient.
+     */
+    private function findSupplierStructure(SymfonyStyle $io): ?int
+    {
         $io->section('2. Recherche structure fournisseur (via ChorusProClient)');
 
         try {
@@ -81,7 +112,7 @@ class TestChorusProSubmitCommand extends Command
             if (null === $structure) {
                 $io->error('Structure fournisseur introuvable.');
 
-                return Command::FAILURE;
+                return null;
             }
 
             $idFournisseur = (int) $structure['idStructureCPP'];
@@ -91,13 +122,20 @@ class TestChorusProSubmitCommand extends Command
                 $idFournisseur,
                 $structure['identifiantStructure'] ?? 'N/A'
             ));
+
+            return $idFournisseur;
         } catch (\Throwable $e) {
             $io->error('Erreur recherche structure : ' . $e->getMessage());
 
-            return Command::FAILURE;
+            return null;
         }
+    }
 
-        // --- Etape 3 : Recherche d'un destinataire dans le sandbox ---
+    /**
+     * Recherche un destinataire dans le sandbox Chorus Pro.
+     */
+    private function findRecipient(SymfonyStyle $io, string $baseUrl, string $accessToken, string $cproAccount): string
+    {
         $io->section('3. Recherche d\'un destinataire');
 
         $destResponse = $this->client->request('POST', rtrim($baseUrl, '/') . '/cpro/structures/v1/rechercher', [
@@ -121,26 +159,28 @@ class TestChorusProSubmitCommand extends Command
         $destinataires = $destData['listeStructures'] ?? [];
 
         // Choisir un destinataire qui n'est pas le fournisseur
-        $codeDestinataire = null;
         foreach ($destinataires as $dest) {
             if (($dest['identifiantStructure'] ?? '') !== '31582210396351') {
-                $codeDestinataire = $dest['identifiantStructure'];
                 $io->success(sprintf(
                     '%s (SIRET=%s)',
                     $dest['designationStructure'] ?? 'N/A',
-                    $codeDestinataire
+                    $dest['identifiantStructure']
                 ));
 
-                break;
+                return $dest['identifiantStructure'];
             }
         }
 
-        if (null === $codeDestinataire) {
-            $io->warning('Pas de destinataire distinct, utilisation d\'un SIRET par defaut.');
-            $codeDestinataire = '99986401570264';
-        }
+        $io->warning('Pas de destinataire distinct, utilisation d\'un SIRET par defaut.');
 
-        // --- Etape 4 : soumettreFacture ---
+        return '99986401570264';
+    }
+
+    /**
+     * Soumet la facture de test sur le sandbox Chorus Pro.
+     */
+    private function submitInvoice(SymfonyStyle $io, string $baseUrl, string $accessToken, string $cproAccount, int $idFournisseur, string $codeDestinataire): int
+    {
         $io->section('4. soumettreFacture');
 
         $numero = 'FA-TEST-' . date('YmdHis');

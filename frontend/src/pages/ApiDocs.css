@@ -236,13 +236,19 @@
 }
 
 .api-tab-count--active {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--accent);
   color: #fff;
 }
 
 .api-tab-count--inactive {
   background: var(--social-bg);
   color: var(--text);
+}
+
+/* Contraste WCAG AA en thème sombre : --text (#a1a1aa) sur fond sombre ~3:1,
+   on utilise --text-h (#f4f4f5) qui atteint ~10:1 */
+[data-theme="dark"] .api-tab-count--inactive {
+  color: var(--text-h);
 }
 
 /* ─── JSON Syntax Colors ─── */

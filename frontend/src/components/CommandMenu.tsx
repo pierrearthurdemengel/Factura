@@ -43,8 +43,8 @@ export default function CommandMenu({ isOpen, onClose }: Readonly<{ isOpen: bool
   };
 
   return (
-    <div className="command-overlay" onClick={onClose}>
-      <div className="command-dialog" onClick={(e) => e.stopPropagation()}>
+    <div className="command-overlay" onClick={onClose} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }} role="button" tabIndex={0}>
+      <div className="command-dialog" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} role="presentation">
         <div className="command-header">
           <svg className="command-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <circle cx="11" cy="11" r="8"></circle>

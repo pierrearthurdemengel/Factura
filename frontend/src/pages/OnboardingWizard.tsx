@@ -264,6 +264,9 @@ export default function OnboardingWizard() {
               <div
                 key={form.value}
                 onClick={() => setSelectedLegalForm(form.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedLegalForm(form.value); } }}
+                role="button"
+                tabIndex={0}
                 className={`app-card onboarding-selectable-card${selectedLegalForm === form.value ? ' onboarding-selectable-card--selected' : ''}`}
               >
                 <div className="onboarding-card-header">
@@ -307,6 +310,9 @@ export default function OnboardingWizard() {
                 <div
                   key={regime.value}
                   onClick={() => setVatRegime(regime.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setVatRegime(regime.value); } }}
+                  role="button"
+                  tabIndex={0}
                   className={`app-card onboarding-radio-card${vatRegime === regime.value ? ' onboarding-radio-card--selected' : ''}`}
                 >
                   {/* Indicateur radio */}
@@ -382,6 +388,9 @@ export default function OnboardingWizard() {
             <div className="onboarding-logo-row">
               <div
                 onClick={() => fileInputRef.current?.click()}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
+                role="button"
+                tabIndex={0}
                 className="onboarding-logo-dropzone"
                 style={logoPreview ? { background: `url(${logoPreview}) center/contain no-repeat` } : undefined}
               >

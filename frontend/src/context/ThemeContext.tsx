@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 type Theme = 'light' | 'dark' | 'system';
 
@@ -53,8 +53,10 @@ export function ThemeProvider({ children }: Readonly<{ children: React.ReactNode
     localStorage.setItem('factura-ui-theme', theme);
   }, [theme]);
 
+  const contextValue = useMemo(() => ({ theme, setTheme, isDark }), [theme, isDark]);
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, isDark }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

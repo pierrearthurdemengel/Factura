@@ -39,11 +39,11 @@ export default function QuoteCreate() {
       .catch(() => setClients([]));
   }, []);
 
-  const computeLineTotal = (line: LineForm) => {
-    const qty = Number.parseFloat(line.quantity) || 0;
-    const price = Number.parseFloat(line.unitPriceExcludingTax) || 0;
+  const computeLineTotal = ({ quantity, unitPriceExcludingTax, vatRate }: LineForm) => {
+    const qty = Number.parseFloat(quantity) || 0;
+    const price = Number.parseFloat(unitPriceExcludingTax) || 0;
     const ht = qty * price;
-    const vat = Number.isNaN(Number.parseFloat(line.vatRate)) ? 0 : ht * Number.parseFloat(line.vatRate) / 100;
+    const vat = Number.isNaN(Number.parseFloat(vatRate)) ? 0 : ht * Number.parseFloat(vatRate) / 100;
     return { ht, vat, ttc: ht + vat };
   };
 

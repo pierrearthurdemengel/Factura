@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
 import { IntlProvider as ReactIntlProvider } from 'react-intl';
 import { allMessages, fr, SUPPORTED_LOCALES } from './messages';
 
@@ -40,10 +40,12 @@ export function AppIntlProvider({ children }: Readonly<{ children: ReactNode }>)
   }, []);
 
   // Fallback sur le francais si des cles manquent
-  const messages = { ...fr, ...allMessages[locale] };
+  const messages = useMemo(() => ({ ...fr, ...allMessages[locale] }), [locale]);
+
+  const localeContextValue = useMemo(() => ({ locale, setLocale, supportedLocales: SUPPORTED_LOCALES }), [locale, setLocale]);
 
   return (
-    <LocaleContext.Provider value={{ locale, setLocale, supportedLocales: SUPPORTED_LOCALES }}>
+    <LocaleContext.Provider value={localeContextValue}>
       <ReactIntlProvider
         locale={locale}
         messages={messages}

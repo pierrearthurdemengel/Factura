@@ -23,10 +23,8 @@ WORKDIR /var/www/html
 COPY . .
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader
-
-# Répertoires nécessaires à Symfony + warm-up du cache
-RUN mkdir -p var/cache var/log \
+RUN composer install --no-dev --optimize-autoloader \
+    && mkdir -p var/cache var/log \
     && php bin/console cache:warmup --env=prod --no-debug || true \
     && chown -R www-data:www-data var/
 
@@ -42,13 +40,11 @@ RUN chmod +x /var/www/html/docker/messenger-worker.sh \
     /var/www/html/docker/backup-db.sh \
     /usr/local/bin/entrypoint.sh
 
-# Logs PHP vers stderr pour visibilite dans fly logs
+# Logs PHP vers stderr + OPcache pour la production
 RUN echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/conf.d/zz-logging.ini \
     && echo "log_errors = On" >> /usr/local/etc/php/conf.d/zz-logging.ini \
-    && echo "display_errors = Off" >> /usr/local/etc/php/conf.d/zz-logging.ini
-
-# Optimisation OPcache pour la production (ajuste pour 256 Mo)
-RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "display_errors = Off" >> /usr/local/etc/php/conf.d/zz-logging.ini \
+    && echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
     && echo "opcache.memory_consumption=64" >> /usr/local/etc/php/conf.d/opcache.ini \
     && echo "opcache.max_accelerated_files=10000" >> /usr/local/etc/php/conf.d/opcache.ini \
     && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini

@@ -56,15 +56,22 @@ export default function ClientDataGrid({ clients, onUpdateClient, onDeleteClient
           color: 'var(--text)' 
         }}>
           {['Raison Sociale', 'SIREN', 'Adresse', 'CP', 'Ville', 'Actions'].map((title, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+            <div key={title} style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
               <div style={{ padding: '12px 16px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                 {title}
               </div>
-              <div 
+              <div
                 onMouseDown={(e) => handleResizeStart(e, i)}
                 style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '4px', cursor: 'col-resize', background: 'transparent' }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                role="separator"
+                aria-orientation="vertical"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowLeft') { e.preventDefault(); setColWidths(prev => { const next = [...prev]; next[i] = Math.max(50, next[i] - 10); return next; }); }
+                  if (e.key === 'ArrowRight') { e.preventDefault(); setColWidths(prev => { const next = [...prev]; next[i] = next[i] + 10; return next; }); }
+                }}
               />
             </div>
           ))}

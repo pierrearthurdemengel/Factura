@@ -362,7 +362,7 @@ export default function Guide() {
       {/* ═══════════════════════════════════════════
           HERO
           ═══════════════════════════════════════════ */}
-      <header className="guide-hero">
+      <header className="guide-hero" aria-label="En-tête du guide">
         <div className="guide-hero-inner">
           <span className="guide-hero-badge">
             <IconCalendar /> Mis à jour le <time dateTime="2026-04-11">11 avril 2026</time>
@@ -394,7 +394,7 @@ export default function Guide() {
 
         {/* ─── Sidebar TOC ─── */}
         <aside className={`guide-toc${tocOpen ? ' open' : ''}`} id="guide-toc" aria-label="Sommaire">
-          <nav>
+          <nav aria-label="Sommaire">
             <h2 className="guide-toc-title">Sommaire</h2>
             <ul className="guide-toc-list">
               {tocData.map((partie) => (
@@ -1950,7 +1950,7 @@ export default function Guide() {
       {/* ═══════════════════════════════════════════
           FOOTER
           ═══════════════════════════════════════════ */}
-      <footer className="guide-footer">
+      <footer className="guide-footer" aria-label="Pied de page du guide">
         <div className="guide-footer-inner">
           <div className="guide-footer-grid">
             <div className="guide-footer-brand">

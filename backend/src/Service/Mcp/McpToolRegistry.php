@@ -20,6 +20,21 @@ class McpToolRegistry
      */
     public function getTools(): array
     {
+        return array_merge(
+            $this->getClientTools(),
+            $this->getInvoiceTools(),
+            $this->getInvoiceActionTools(),
+            $this->getDashboardTools(),
+        );
+    }
+
+    /**
+     * Tools de gestion des clients.
+     *
+     * @return list<ToolDefinition>
+     */
+    private function getClientTools(): array
+    {
         return [
             [
                 'name' => 'list_clients',
@@ -60,6 +75,17 @@ class McpToolRegistry
                     'openWorldHint' => false,
                 ],
             ],
+        ];
+    }
+
+    /**
+     * Tools de consultation des factures.
+     *
+     * @return list<ToolDefinition>
+     */
+    private function getInvoiceTools(): array
+    {
+        return [
             [
                 'name' => 'list_invoices',
                 'description' => 'List invoices of the user\'s company. Can filter by status.',
@@ -134,6 +160,33 @@ class McpToolRegistry
                 ],
             ],
             [
+                'name' => 'get_invoice_pdf_url',
+                'description' => 'Get the download URL for a Factur-X PDF of an invoice.',
+                'inputSchema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => ['type' => 'string', 'description' => self::DESC_INVOICE_UUID],
+                        'number' => ['type' => 'string', 'description' => self::DESC_INVOICE_NUMBER_ALT],
+                    ],
+                ],
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'openWorldHint' => false,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Tools d'actions sur les factures (envoi, paiement, annulation).
+     *
+     * @return list<ToolDefinition>
+     */
+    private function getInvoiceActionTools(): array
+    {
+        return [
+            [
                 'name' => 'send_invoice',
                 'description' => 'Send a DRAFT invoice. This generates the sequential number (FA-YYYY-NNNN), transmits to the PDP, and archives the invoice. This action is irreversible.',
                 'inputSchema' => [
@@ -181,22 +234,17 @@ class McpToolRegistry
                     'openWorldHint' => false,
                 ],
             ],
-            [
-                'name' => 'get_invoice_pdf_url',
-                'description' => 'Get the download URL for a Factur-X PDF of an invoice.',
-                'inputSchema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'id' => ['type' => 'string', 'description' => self::DESC_INVOICE_UUID],
-                        'number' => ['type' => 'string', 'description' => self::DESC_INVOICE_NUMBER_ALT],
-                    ],
-                ],
-                'annotations' => [
-                    'readOnlyHint' => true,
-                    'destructiveHint' => false,
-                    'openWorldHint' => false,
-                ],
-            ],
+        ];
+    }
+
+    /**
+     * Tools de consultation du tableau de bord.
+     *
+     * @return list<ToolDefinition>
+     */
+    private function getDashboardTools(): array
+    {
+        return [
             [
                 'name' => 'get_dashboard_stats',
                 'description' => 'Get billing statistics for the current month: number of invoices, total revenue excl. tax, pending invoices, paid invoices.',

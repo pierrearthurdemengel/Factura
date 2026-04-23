@@ -17,7 +17,7 @@ export default function FloatingActionButton({ onOpenSearch }: Readonly<FABProps
 
   return (
     <div className="fab-container">
-      <div className={`fab-overlay ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(false)} />
+      <div className={`fab-overlay ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(false)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsOpen(false); } }} role="button" tabIndex={0} />
       
       <div className={`fab-menu ${isOpen ? 'open' : ''}`}>
         <button className="fab-item" onClick={() => handleAction(() => navigate('/invoices/new'))}>

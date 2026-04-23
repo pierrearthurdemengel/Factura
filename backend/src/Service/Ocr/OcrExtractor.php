@@ -46,23 +46,14 @@ class OcrExtractor
      */
     private function extractTextWithTesseract(string $filePath, string $mimeType): string
     {
-        // Pour les images, appel direct a Tesseract
-        if (str_starts_with($mimeType, 'image/')) {
-            $output = [];
-            $returnCode = 0;
-            exec(sprintf('tesseract %s stdout -l fra 2>/dev/null', escapeshellarg($filePath)), $output, $returnCode);
+        // Pour les images, appel direct a Tesseract ; pour les PDF, extraction via pdftotext
+        $command = str_starts_with($mimeType, 'image/')
+            ? sprintf('tesseract %s stdout -l fra 2>/dev/null', escapeshellarg($filePath))
+            : sprintf('pdftotext %s - 2>/dev/null', escapeshellarg($filePath));
 
-            if (0 !== $returnCode) {
-                return '';
-            }
-
-            return implode("\n", $output);
-        }
-
-        // Pour les PDF, extraction directe du texte via pdftotext
         $output = [];
         $returnCode = 0;
-        exec(sprintf('pdftotext %s - 2>/dev/null', escapeshellarg($filePath)), $output, $returnCode);
+        exec($command, $output, $returnCode);
 
         if (0 !== $returnCode) {
             return '';

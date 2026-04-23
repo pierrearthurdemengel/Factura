@@ -29,11 +29,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class Product
 {
+    private const GROUP_READ = 'product:read';
+    private const GROUP_WRITE = 'product:write';
+
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(['product:read'])]
+    #[Groups([self::GROUP_READ])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne]
@@ -42,25 +45,25 @@ class Product
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['product:read', 'product:write'])]
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
     private string $name;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['product:read', 'product:write'])]
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
     private ?string $description = null;
 
     #[ORM\Column(type: 'decimal', precision: 15, scale: 4)]
     #[Assert\NotNull]
     #[Assert\Positive]
-    #[Groups(['product:read', 'product:write'])]
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
     private string $unitPriceExcludingTax;
 
     #[ORM\Column(length: 10)]
-    #[Groups(['product:read', 'product:write'])]
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
     private string $unit = 'EA';
 
     #[ORM\Column(length: 5)]
-    #[Groups(['product:read', 'product:write'])]
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
     private string $vatRate = '20';
 
     #[ORM\Column]

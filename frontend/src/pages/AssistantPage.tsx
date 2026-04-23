@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type FormEvent } from 'react';
+import { useState, useRef, useEffect, type FormEvent, type ReactNode } from 'react';
 import api from '../api/factura';
 import './AppLayout.css';
 import './AssistantPage.css';
@@ -36,7 +36,7 @@ const quickActions = [
 ];
 
 // Formate le contenu d'un message en mettant en gras les montants et pourcentages
-function formatContent(content: string): React.ReactNode[] {
+function formatContent(content: string): ReactNode[] {
   // Decoupe le texte pour mettre en evidence les montants (ex: 1 234,56 EUR, 20%, etc.)
   const parts = content.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => {
@@ -190,9 +190,9 @@ export default function AssistantPage() {
               {/* Sources juridiques affichees sous forme de badges cliquables */}
               {msg.sources && msg.sources.length > 0 && (
                 <div className="assistant-sources">
-                  {msg.sources.map((source, i) => (
+                  {msg.sources.map((source) => (
                     <a
-                      key={i}
+                      key={source.label}
                       href={source.url || '#'}
                       target={source.url ? '_blank' : undefined}
                       rel={source.url ? 'noopener noreferrer' : undefined}
@@ -207,9 +207,9 @@ export default function AssistantPage() {
               {/* Boutons d'action proposes par l'assistant */}
               {msg.actions && msg.actions.length > 0 && (
                 <div className="assistant-actions">
-                  {msg.actions.map((action, i) => (
+                  {msg.actions.map((action) => (
                     <a
-                      key={i}
+                      key={action.label}
                       href={action.url || '#'}
                       className="assistant-action-link"
                     >

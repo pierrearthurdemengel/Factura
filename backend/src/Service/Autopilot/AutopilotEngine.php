@@ -56,9 +56,9 @@ class AutopilotEngine
      *
      * @return array{activeRules: int, totalRules: int, lastEvaluation: string|null, pendingActions: int}
      */
-    public function getStatus(Company $company, int $activeRules = 0, int $totalRules = 0): array
+    public function getStatus(Company $_company, int $activeRules = 0, int $totalRules = 0): array
     {
-        // $company intentionally unused — will be used to fetch last evaluation timestamp from DB
+        // $_company will be used to fetch last evaluation timestamp from DB
         return [
             'activeRules' => $activeRules,
             'totalRules' => $totalRules,

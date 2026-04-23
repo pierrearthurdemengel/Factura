@@ -46,6 +46,29 @@ class AssistantController extends AbstractController
         /** @var array{question?: string, company_id?: string, conversation_id?: string, context?: array<string, mixed>} $data */
         $data = json_decode((string) $request->getContent(), true) ?? [];
 
+        $validationError = $this->validateAskRequest($data);
+        if (null !== $validationError) {
+            return $validationError;
+        }
+
+        /** @var Company $company */
+        $company = $this->getCompany($data['company_id'] ?? '');
+        $conversationId = $data['conversation_id'] ?? null;
+        /** @var array<string, mixed> $context */
+        $context = $data['context'] ?? [];
+
+        $result = $this->assistantService->ask($user, $company, $data['question'] ?? '', $conversationId, $context);
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * Valide les donnees de la requete ask.
+     *
+     * @param array<string, mixed> $data
+     */
+    private function validateAskRequest(array $data): ?JsonResponse
+    {
         $question = $data['question'] ?? '';
         if ('' === $question) {
             return new JsonResponse(['error' => 'La question est requise.'], Response::HTTP_BAD_REQUEST);
@@ -56,13 +79,7 @@ class AssistantController extends AbstractController
             return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
         }
 
-        $conversationId = $data['conversation_id'] ?? null;
-        /** @var array<string, mixed> $context */
-        $context = $data['context'] ?? [];
-
-        $result = $this->assistantService->ask($user, $company, $question, $conversationId, $context);
-
-        return new JsonResponse($result);
+        return null;
     }
 
     /**

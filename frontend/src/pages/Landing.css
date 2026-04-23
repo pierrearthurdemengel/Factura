@@ -1030,7 +1030,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.6);
 }
 .lp-demo-placeholder .play-icon {
   width: 64px;
@@ -1043,7 +1043,7 @@
   justify-content: center;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.3s var(--lp-ease), border-color 0.3s ease;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.92); /* contraste WCAG AA : opacité augmentée sur fond sombre */
 }
 .lp-demo-placeholder .play-icon:hover {
   background: rgba(124, 58, 237, 0.4);

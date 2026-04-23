@@ -68,15 +68,7 @@ class ApiKeyManager
             'keyHash' => $hash,
         ]);
 
-        if (null === $apiKey) {
-            return null;
-        }
-
-        if (!$apiKey->isActive()) {
-            return null;
-        }
-
-        if ($apiKey->isExpired()) {
+        if (null === $apiKey || !$apiKey->isActive() || $apiKey->isExpired()) {
             return null;
         }
 

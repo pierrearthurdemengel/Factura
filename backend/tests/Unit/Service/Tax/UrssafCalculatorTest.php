@@ -9,10 +9,12 @@ use App\Service\Tax\UrssafCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use App\Tests\Trait\ReflectionHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 class UrssafCalculatorTest extends TestCase
 {
+    use ReflectionHelperTrait;
     /**
      * Cree un calculator avec des factures mockees.
      *
@@ -54,8 +56,7 @@ class UrssafCalculatorTest extends TestCase
         $invoice->setSeller($company);
 
         // Setter le statut PAID via reflexion
-        $ref = new \ReflectionProperty(Invoice::class, 'status');
-        $ref->setValue($invoice, 'PAID');
+        $this->setPrivateProperty($invoice, 'status', 'PAID');
 
         $line = new InvoiceLine();
         $line->setDescription('Prestation');

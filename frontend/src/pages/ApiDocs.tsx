@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import './AppLayout.css';
 import './ApiDocs.css';
 
@@ -267,7 +267,7 @@ function highlightJson(json: string): React.ReactNode[] {
         parts.push(<span key={partIndex++}>{keyMatch[1]}</span>);
         parts.push(<span key={partIndex++} className="api-json-key">"{keyMatch[2]}"</span>);
         parts.push(<span key={partIndex++}>{keyMatch[3]}</span>);
-        remaining = remaining.slice(keyMatch[0].length);
+        remaining = remaining.slice(keyMatch.at(0)!.length);
         continue;
       }
 
@@ -275,7 +275,7 @@ function highlightJson(json: string): React.ReactNode[] {
       const stringMatch = remaining.match(/^"([^"]*)"/);
       if (stringMatch) {
         parts.push(<span key={partIndex++} className="api-json-string">"{stringMatch[1]}"</span>);
-        remaining = remaining.slice(stringMatch[0].length);
+        remaining = remaining.slice(stringMatch.at(0)!.length);
         continue;
       }
 
@@ -283,7 +283,7 @@ function highlightJson(json: string): React.ReactNode[] {
       const numberMatch = remaining.match(/^(-?\d+\.?\d*)/);
       if (numberMatch) {
         parts.push(<span key={partIndex++} className="api-json-number">{numberMatch[1]}</span>);
-        remaining = remaining.slice(numberMatch[0].length);
+        remaining = remaining.slice(numberMatch.at(0)!.length);
         continue;
       }
 
@@ -291,12 +291,12 @@ function highlightJson(json: string): React.ReactNode[] {
       const boolMatch = remaining.match(/^(true|false|null)/);
       if (boolMatch) {
         parts.push(<span key={partIndex++} className="api-json-bool">{boolMatch[1]}</span>);
-        remaining = remaining.slice(boolMatch[0].length);
+        remaining = remaining.slice(boolMatch.at(0)!.length);
         continue;
       }
 
       // Caractere suivant (accolades, crochets, virgules, espaces)
-      parts.push(<span key={partIndex++}>{remaining[0]}</span>);
+      parts.push(<span key={partIndex++}>{remaining.at(0)}</span>);
       remaining = remaining.slice(1);
     }
 
@@ -312,13 +312,27 @@ function highlightJson(json: string): React.ReactNode[] {
 // Bloc de code avec coloration syntaxique et bouton "Copier"
 function CodeBlock({ code, label }: { code: string; label: string }) {
   const [copied, setCopied] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  const highlighted = useMemo(() => highlightJson(code), [code]);
 
   // Copie le contenu dans le presse-papier avec retour visuel
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      timerRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback silencieux si le presse-papier n'est pas disponible
     }
@@ -338,7 +352,7 @@ function CodeBlock({ code, label }: { code: string; label: string }) {
         </button>
       </div>
       <pre className="api-code-block">
-        <code>{highlightJson(code)}</code>
+        <code>{highlighted}</code>
       </pre>
     </div>
   );
@@ -458,13 +472,13 @@ export default function ApiDocs() {
   const [activeGroup, setActiveGroup] = useState<EndpointGroup>('invoices');
 
   // Groupes de navigation
-  const groups: { key: EndpointGroup; label: string; count: number }[] = (
+  const groups = useMemo<{ key: EndpointGroup; label: string; count: number }[]>(() => (
     Object.keys(GROUP_LABELS) as EndpointGroup[]
   ).map((key) => ({
     key,
     label: GROUP_LABELS[key],
     count: ENDPOINTS[key].length,
-  }));
+  })), []);
 
   return (
     <div className="app-container">

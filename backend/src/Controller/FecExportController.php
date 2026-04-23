@@ -35,14 +35,13 @@ class FecExportController extends AbstractController
     #[Route('/api/exports/fec', methods: ['GET'])]
     public function exportFec(Request $request): Response
     {
-        $companyId = $request->query->getString('company_id');
-        if ('' === $companyId) {
-            return new JsonResponse(['error' => 'Parametre company_id requis.'], Response::HTTP_BAD_REQUEST);
-        }
+        $company = $this->resolveCompany($request);
+        if (null === $company) {
+            $companyId = $request->query->getString('company_id');
 
-        $company = $this->em->getRepository(Company::class)->find($companyId);
-        if (!$company instanceof Company) {
-            return new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
+            return '' === $companyId
+                ? new JsonResponse(['error' => 'Parametre company_id requis.'], Response::HTTP_BAD_REQUEST)
+                : new JsonResponse(['error' => 'Entreprise non trouvee.'], Response::HTTP_NOT_FOUND);
         }
 
         $year = $request->query->getInt('year', (int) date('Y'));
@@ -68,5 +67,20 @@ class FecExportController extends AbstractController
         $response->headers->set('X-FEC-Entries', (string) $validation['entryCount']);
 
         return $response;
+    }
+
+    /**
+     * Resout l'entreprise depuis le parametre company_id de la requete.
+     */
+    private function resolveCompany(Request $request): ?Company
+    {
+        $companyId = $request->query->getString('company_id');
+        if ('' === $companyId) {
+            return null;
+        }
+
+        $company = $this->em->getRepository(Company::class)->find($companyId);
+
+        return $company instanceof Company ? $company : null;
     }
 }

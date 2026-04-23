@@ -67,6 +67,44 @@ class OAuthController extends AbstractController
         $codeChallengeMethod = $request->query->getString('code_challenge_method', 'S256');
 
         // Validation des parametres
+        $validationError = $this->validateAuthorizeParams($responseType, $clientId, $redirectUri);
+        if (null !== $validationError) {
+            return $validationError;
+        }
+
+        /** @var \App\Entity\OAuthClient $client */
+        $client = $this->oauthService->findClient($clientId);
+
+        // Verifier que l'utilisateur est connecte
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            $request->getSession()->set('_security.main.target_path', $request->getUri());
+
+            return $this->redirectToRoute('app_login');
+        }
+
+        // POST = l'utilisateur a clique "Autoriser"
+        if ($request->isMethod('POST')) {
+            return $this->handleAuthorizeDecision($request, $client, $user, $redirectUri, $scope, $state, $codeChallenge, $codeChallengeMethod);
+        }
+
+        // GET = afficher la page de consentement
+        return $this->render('oauth/authorize.html.twig', [
+            'client' => $client,
+            'scope' => $scope,
+            'state' => $state,
+            'redirect_uri' => $redirectUri,
+            'code_challenge' => $codeChallenge,
+            'code_challenge_method' => $codeChallengeMethod,
+            'query_string' => $request->getQueryString(),
+        ]);
+    }
+
+    /**
+     * Valide les parametres de la requete d'autorisation OAuth.
+     */
+    private function validateAuthorizeParams(string $responseType, string $clientId, string $redirectUri): ?JsonResponse
+    {
         if ('code' !== $responseType) {
             return new JsonResponse(['error' => 'unsupported_response_type'], Response::HTTP_BAD_REQUEST);
         }
@@ -80,52 +118,44 @@ class OAuthController extends AbstractController
             return new JsonResponse(['error' => 'invalid_redirect_uri'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Verifier que l'utilisateur est connecte
-        $user = $this->getUser();
-        if (!$user instanceof User) {
-            // Stocker l'URL OAuth complete pour y revenir apres le login
-            $request->getSession()->set('_security.main.target_path', $request->getUri());
+        return null;
+    }
 
-            return $this->redirectToRoute('app_login');
+    /**
+     * Gere la decision de l'utilisateur (autoriser ou refuser).
+     */
+    private function handleAuthorizeDecision(
+        Request $request,
+        \App\Entity\OAuthClient $client,
+        User $user,
+        string $redirectUri,
+        string $scope,
+        string $state,
+        string $codeChallenge,
+        string $codeChallengeMethod,
+    ): Response {
+        $decision = $request->request->getString('decision', '');
+
+        if ('deny' === $decision) {
+            return $this->redirect($redirectUri . '?error=access_denied&state=' . urlencode($state));
         }
 
-        // POST = l'utilisateur a clique "Autoriser"
-        if ($request->isMethod('POST')) {
-            $decision = $request->request->getString('decision', '');
+        $authCode = $this->oauthService->createAuthorizationCode(
+            $client,
+            $user,
+            $redirectUri,
+            $scope,
+            '' !== $codeChallenge ? $codeChallenge : null,
+            '' !== $codeChallenge ? $codeChallengeMethod : null,
+        );
 
-            if ('deny' === $decision) {
-                return $this->redirect($redirectUri . '?error=access_denied&state=' . urlencode($state));
-            }
-
-            // Creer le code d'autorisation
-            $authCode = $this->oauthService->createAuthorizationCode(
-                $client,
-                $user,
-                $redirectUri,
-                $scope,
-                '' !== $codeChallenge ? $codeChallenge : null,
-                '' !== $codeChallenge ? $codeChallengeMethod : null,
-            );
-
-            $separator = str_contains($redirectUri, '?') ? '&' : '?';
-            $callbackUrl = $redirectUri . $separator . http_build_query([
-                'code' => $authCode->getCode(),
-                'state' => $state,
-            ]);
-
-            return $this->redirect($callbackUrl);
-        }
-
-        // GET = afficher la page de consentement
-        return $this->render('oauth/authorize.html.twig', [
-            'client' => $client,
-            'scope' => $scope,
+        $separator = str_contains($redirectUri, '?') ? '&' : '?';
+        $callbackUrl = $redirectUri . $separator . http_build_query([
+            'code' => $authCode->getCode(),
             'state' => $state,
-            'redirect_uri' => $redirectUri,
-            'code_challenge' => $codeChallenge,
-            'code_challenge_method' => $codeChallengeMethod,
-            'query_string' => $request->getQueryString(),
         ]);
+
+        return $this->redirect($callbackUrl);
     }
 
     /**

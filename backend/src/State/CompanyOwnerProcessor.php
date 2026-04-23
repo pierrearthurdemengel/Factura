@@ -31,38 +31,7 @@ class CompanyOwnerProcessor implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
-        /** @var User|null $user */
-        $user = $this->security->getUser();
-
-        if ($user instanceof User) {
-            $company = $user->getCompany();
-
-            if (null !== $company) {
-                // Entites avec champ "company" (Client, Product, ReminderTemplate...)
-                if (method_exists($data, 'setCompany') && method_exists($data, 'getCompany')) {
-                    try {
-                        $current = $data->getCompany();
-                    } catch (\Error) {
-                        $current = null;
-                    }
-                    if (null === $current) {
-                        $data->setCompany($company);
-                    }
-                }
-
-                // Entites avec champ "seller" (Invoice, Quote)
-                if (method_exists($data, 'setSeller') && method_exists($data, 'getSeller')) {
-                    try {
-                        $current = $data->getSeller();
-                    } catch (\Error) {
-                        $current = null;
-                    }
-                    if (null === $current) {
-                        $data->setSeller($company);
-                    }
-                }
-            }
-        }
+        $this->assignCompanyOwner($data);
 
         // Compute line amounts and totals for Invoice/Quote
         if ($data instanceof Invoice || $data instanceof Quote) {
@@ -73,5 +42,52 @@ class CompanyOwnerProcessor implements ProcessorInterface
         }
 
         return $this->persistProcessor->process($data, $operation, $uriVariables, $context);
+    }
+
+    /**
+     * Assigne l'entreprise de l'utilisateur connecte sur l'entite si applicable.
+     */
+    private function assignCompanyOwner(mixed $data): void
+    {
+        /** @var User|null $user */
+        $user = $this->security->getUser();
+
+        if (!$user instanceof User) {
+            return;
+        }
+
+        $company = $user->getCompany();
+        if (null === $company) {
+            return;
+        }
+
+        // Entites avec champ "company" (Client, Product, ReminderTemplate...)
+        $this->assignIfNull($data, 'Company', $company);
+
+        // Entites avec champ "seller" (Invoice, Quote)
+        $this->assignIfNull($data, 'Seller', $company);
+    }
+
+    /**
+     * Assigne la valeur au setter si le getter retourne null.
+     */
+    private function assignIfNull(mixed $data, string $property, mixed $value): void
+    {
+        $getter = 'get' . $property;
+        $setter = 'set' . $property;
+
+        if (!method_exists($data, $setter) || !method_exists($data, $getter)) {
+            return;
+        }
+
+        try {
+            $current = $data->{$getter}();
+        } catch (\Error) {
+            $current = null;
+        }
+
+        if (null === $current) {
+            $data->{$setter}($value);
+        }
     }
 }

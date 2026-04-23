@@ -12,10 +12,12 @@ use App\Service\Dashboard\ClientPaymentScorer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use App\Tests\Trait\ReflectionHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 class CashFlowPredictorTest extends TestCase
 {
+    use ReflectionHelperTrait;
     /**
      * Cree un predictor avec des resultats mock pour les 3 appels : factures en attente, ecritures, factures en retard.
      *
@@ -73,8 +75,7 @@ class CashFlowPredictorTest extends TestCase
         $invoice->setSeller($company);
         $invoice->setBuyer($client);
 
-        $ref = new \ReflectionProperty(Invoice::class, 'status');
-        $ref->setValue($invoice, $status);
+        $this->setPrivateProperty($invoice, 'status', $status);
 
         // Simuler le TTC directement
         $line = new InvoiceLine();

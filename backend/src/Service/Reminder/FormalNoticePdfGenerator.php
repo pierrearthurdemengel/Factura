@@ -14,6 +14,7 @@ use App\Exception\CompanyNotFoundException;
  */
 class FormalNoticePdfGenerator
 {
+    private const FONT_FAMILY = 'Helvetica';
     /**
      * Genere le contenu PDF d'une mise en demeure pour une facture impayee.
      *
@@ -35,9 +36,9 @@ class FormalNoticePdfGenerator
         $pdf->SetAutoPageBreak(true, 25);
 
         // En-tete : emetteur
-        $pdf->SetFont('Helvetica', 'B', 12);
+        $pdf->SetFont(self::FONT_FAMILY, 'B', 12);
         $pdf->Cell(0, 7, $this->encode($seller->getName()), 0, 1);
-        $pdf->SetFont('Helvetica', '', 10);
+        $pdf->SetFont(self::FONT_FAMILY, '', 10);
         $pdf->Cell(0, 5, $this->encode($seller->getAddressLine1()), 0, 1);
         $pdf->Cell(0, 5, $this->encode($seller->getPostalCode() . ' ' . $seller->getCity()), 0, 1);
         $pdf->Cell(0, 5, 'SIREN : ' . $seller->getSiren(), 0, 1);
@@ -45,7 +46,7 @@ class FormalNoticePdfGenerator
         $pdf->Ln(10);
 
         // Destinataire (a droite)
-        $pdf->SetFont('Helvetica', '', 10);
+        $pdf->SetFont(self::FONT_FAMILY, '', 10);
         $pdf->Cell(100);
         $pdf->Cell(0, 5, $this->encode($buyer->getName()), 0, 1, 'L');
         $pdf->Cell(100);
@@ -61,20 +62,20 @@ class FormalNoticePdfGenerator
         $pdf->Ln(10);
 
         // Objet
-        $pdf->SetFont('Helvetica', 'B', 11);
+        $pdf->SetFont(self::FONT_FAMILY, 'B', 11);
         $invoiceNumber = $invoice->getNumber() ?? 'N/A';
         $pdf->Cell(0, 7, $this->encode('Objet : Mise en demeure de payer - Facture ' . $invoiceNumber), 0, 1);
 
         $pdf->Ln(5);
 
         // Lettre recommandee
-        $pdf->SetFont('Helvetica', 'I', 9);
+        $pdf->SetFont(self::FONT_FAMILY, 'I', 9);
         $pdf->Cell(0, 5, $this->encode('Lettre recommandee avec accuse de reception'), 0, 1);
 
         $pdf->Ln(8);
 
         // Corps
-        $pdf->SetFont('Helvetica', '', 10);
+        $pdf->SetFont(self::FONT_FAMILY, '', 10);
 
         $dueDate = null !== $invoice->getDueDate() ? $invoice->getDueDate()->format('d/m/Y') : 'N/A';
         $amount = $invoice->getTotalIncludingTax() . ' EUR';

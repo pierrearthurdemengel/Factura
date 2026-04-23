@@ -138,9 +138,9 @@ class CashFlowPredictor
      *
      * @return array{count: int, total: numeric-string, weighted: numeric-string, invoices: array<int, array{id: string, amount: string, probability: string, dueDate: string|null}>}
      */
-    private function estimatePendingInflows(Company $company, \DateTimeImmutable $now): array
+    private function estimatePendingInflows(Company $company, \DateTimeImmutable $_now): array
     {
-        // $now intentionally unused — reserved for future due-date proximity weighting
+        // $_now reserved for future due-date proximity weighting
         $qb = $this->em->createQueryBuilder();
         $invoices = $qb->select('i')
             ->from(Invoice::class, 'i')
@@ -246,11 +246,11 @@ class CashFlowPredictor
      *
      * @return array<int, array{date: string, amount: numeric-string, label: string}>
      */
-    private function estimateTaxOutflows(Company $company, \DateTimeImmutable $now): array
+    private function estimateTaxOutflows(Company $_company, \DateTimeImmutable $_now): array
     {
         // Estimation simplifiee basee sur les charges fiscales recentes
         // En production, se baserait sur les declarations reelles
-        // $company and $now intentionally unused — will query tax declaration deadlines in a future iteration
+        // $_company and $_now will query tax declaration deadlines in a future iteration
         return [];
     }
 
@@ -311,10 +311,10 @@ class CashFlowPredictor
     private function generateInvoiceAlerts(
         Company $company,
         \DateTimeImmutable $now,
-        string $currentBalance,
-        string $alertThreshold,
+        string $_currentBalance,
+        string $_alertThreshold,
     ): array {
-        // $currentBalance and $alertThreshold intentionally unused — reserved for balance-weighted overdue alerts
+        // $_currentBalance and $_alertThreshold reserved for balance-weighted overdue alerts
         $alerts = [];
 
         // Factures dont l'echeance est depassee

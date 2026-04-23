@@ -113,12 +113,7 @@ class InvoiceExportController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $company = $user->getCompany();
-
-        if (null === $company) {
-            return null;
-        }
-
-        $invoice = $em->getRepository(Invoice::class)->find($id);
+        $invoice = null !== $company ? $em->getRepository(Invoice::class)->find($id) : null;
 
         if (null === $invoice) {
             return null;
@@ -126,10 +121,9 @@ class InvoiceExportController extends AbstractController
 
         // Verifier que la facture appartient a l'entreprise de l'utilisateur
         $seller = $invoice->getSeller();
-        if (null === $seller || $seller->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
-            return null;
-        }
 
-        return $invoice;
+        return null !== $seller && $seller->getId()?->toRfc4122() === $company?->getId()?->toRfc4122()
+            ? $invoice
+            : null;
     }
 }

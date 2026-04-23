@@ -11,11 +11,13 @@ use App\Service\Factoring\FactoringRequestService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
+use App\Tests\Trait\ReflectionHelperTrait;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 class FactoringRequestServiceTest extends TestCase
 {
+    use ReflectionHelperTrait;
     private FactoringEligibilityChecker&MockObject $eligibilityChecker;
     private EntityManagerInterface&MockObject $em;
     private FactoringRequestService $service;
@@ -243,11 +245,8 @@ class FactoringRequestServiceTest extends TestCase
         $company = new Company();
         $client = new Client();
 
-        $nameRef = new \ReflectionProperty(Client::class, 'name');
-        $nameRef->setValue($client, 'Client Test');
-
-        $companyRef = new \ReflectionProperty(Client::class, 'company');
-        $companyRef->setValue($client, $company);
+        $this->setPrivateProperty($client, 'name', 'Client Test');
+        $this->setPrivateProperty($client, 'company', $company);
 
         $invoice = new Invoice();
         $invoice->setStatus('SENT');

@@ -36,13 +36,6 @@ class ApiKeyManagerTest extends TestCase
         return $company;
     }
 
-    private function createManager(): ApiKeyManager
-    {
-        $em = $this->createMock(EntityManagerInterface::class);
-
-        return new ApiKeyManager($em);
-    }
-
     public function testGenerateReturnsApiKeyAndPlainKey(): void
     {
         $em = $this->createMock(EntityManagerInterface::class);

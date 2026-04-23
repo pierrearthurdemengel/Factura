@@ -114,18 +114,10 @@ class InvoiceShareService
             'siren' => $buyerSiren,
         ]);
 
-        if (null === $matchingCompany) {
-            return null;
-        }
-
         // Verifier que ce n'est pas le vendeur lui-meme
         $sellerId = $invoice->getSeller()?->getId()?->toRfc4122();
-        $matchId = $matchingCompany->getId()?->toRfc4122();
+        $matchId = $matchingCompany?->getId()?->toRfc4122();
 
-        if ($sellerId === $matchId) {
-            return null;
-        }
-
-        return $matchingCompany;
+        return (null !== $matchingCompany && $sellerId !== $matchId) ? $matchingCompany : null;
     }
 }

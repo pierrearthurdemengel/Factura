@@ -113,18 +113,12 @@ class McpServer
         $postalCode = $arguments['postalCode'] ?? null;
         $city = $arguments['city'] ?? null;
 
-        if (!is_string($name) || '' === $name) {
-            return $this->errorResult('Le nom du client est obligatoire.');
+        $validationError = $this->validateCreateClientArgs($name, $addressLine1, $postalCode, $city);
+        if (null !== $validationError) {
+            return $validationError;
         }
-        if (!is_string($addressLine1) || '' === $addressLine1) {
-            return $this->errorResult("L'adresse est obligatoire.");
-        }
-        if (!is_string($postalCode) || '' === $postalCode) {
-            return $this->errorResult('Le code postal est obligatoire.');
-        }
-        if (!is_string($city) || '' === $city) {
-            return $this->errorResult('La ville est obligatoire.');
-        }
+
+        \assert(is_string($name) && is_string($addressLine1) && is_string($postalCode) && is_string($city));
 
         $client = new Client();
         $client->setCompany($company);
@@ -247,26 +241,20 @@ class McpServer
      */
     private function createInvoice(Company $company, array $arguments): array
     {
-        // Resolution du client par nom
-        $clientName = $arguments['clientName'] ?? null;
-        if (!is_string($clientName) || '' === $clientName) {
-            return $this->errorResult('Le nom du client est obligatoire.');
+        $validationError = $this->validateCreateInvoiceArgs($company, $arguments);
+        if (null !== $validationError) {
+            return $validationError;
         }
 
+        $clientName = (string) ($arguments['clientName'] ?? '');
+        /** @var Client $client */
         $client = $this->em->getRepository(Client::class)->findOneBy([
             'company' => $company,
             'name' => $clientName,
         ]);
 
-        if (null === $client) {
-            return $this->errorResult("Client \"{$clientName}\" introuvable. Creez-le d'abord avec create_client.");
-        }
-
-        // Validation des lignes
-        $linesData = $arguments['lines'] ?? null;
-        if (!is_array($linesData) || [] === $linesData) {
-            return $this->errorResult('Au moins une ligne est requise.');
-        }
+        /** @var list<mixed> $linesData */
+        $linesData = $arguments['lines'];
 
         $invoice = new Invoice();
         $invoice->setSeller($company);
@@ -301,6 +289,60 @@ class McpServer
             'linesCount' => $invoice->getLines()->count(),
             'message' => 'Facture creee en brouillon. Utilisez send_invoice pour l\'emettre.',
         ], \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * Valide les arguments de creation de facture MCP.
+     *
+     * @param array<string, mixed> $arguments
+     *
+     * @return ToolResult|null Null si valide, sinon le resultat d'erreur
+     */
+    private function validateCreateInvoiceArgs(Company $company, array $arguments): ?array
+    {
+        $clientName = $arguments['clientName'] ?? null;
+        if (!is_string($clientName) || '' === $clientName) {
+            return $this->errorResult('Le nom du client est obligatoire.');
+        }
+
+        $client = $this->em->getRepository(Client::class)->findOneBy([
+            'company' => $company,
+            'name' => $clientName,
+        ]);
+
+        if (null === $client) {
+            return $this->errorResult("Client \"{$clientName}\" introuvable. Creez-le d'abord avec create_client.");
+        }
+
+        $linesData = $arguments['lines'] ?? null;
+        if (!is_array($linesData) || [] === $linesData) {
+            return $this->errorResult('Au moins une ligne est requise.');
+        }
+
+        return null;
+    }
+
+    /**
+     * Valide les champs obligatoires pour la creation d'un client MCP.
+     *
+     * @return ToolResult|null Null si valide, sinon le resultat d'erreur
+     */
+    private function validateCreateClientArgs(mixed $name, mixed $addressLine1, mixed $postalCode, mixed $city): ?array
+    {
+        $fields = [
+            [$name, 'Le nom du client est obligatoire.'],
+            [$addressLine1, "L'adresse est obligatoire."],
+            [$postalCode, 'Le code postal est obligatoire.'],
+            [$city, 'La ville est obligatoire.'],
+        ];
+
+        foreach ($fields as [$value, $message]) {
+            if (!is_string($value) || '' === $value) {
+                return $this->errorResult($message);
+            }
+        }
+
+        return null;
     }
 
     /**

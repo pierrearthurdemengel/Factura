@@ -60,30 +60,18 @@ class FactoringController extends AbstractController
     #[Route('/api/invoices/{id}/factoring/request', name: 'api_factoring_request', methods: ['POST'])]
     public function request(string $id, Request $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $this->getUser();
-        if (!$user instanceof User) {
-            return new JsonResponse(['error' => 'Non authentifie'], Response::HTTP_UNAUTHORIZED);
+        $validationError = $this->validateFactoringRequest($id, $request);
+        if (null !== $validationError) {
+            return $validationError;
         }
 
+        /** @var Invoice $invoice */
         $invoice = $this->em->getRepository(Invoice::class)->find($id);
-        if (null === $invoice) {
-            return new JsonResponse(['error' => 'Facture introuvable'], Response::HTTP_NOT_FOUND);
-        }
-
-        // Verification d'autorisation : seul le vendeur peut demander
         $this->denyAccessUnlessGranted('EDIT', $invoice);
 
         /** @var array<string, mixed> $data */
         $data = json_decode($request->getContent(), true) ?? [];
-        $partnerId = isset($data['partnerId']) ? (string) $data['partnerId'] : '';
-
-        if ('' === $partnerId) {
-            return new JsonResponse(
-                ['error' => 'Le champ partnerId est obligatoire.'],
-                Response::HTTP_BAD_REQUEST,
-            );
-        }
+        $partnerId = (string) ($data['partnerId'] ?? '');
 
         try {
             $factoringRequest = $this->requestService->requestFinancing($invoice, $partnerId);
@@ -105,5 +93,35 @@ class FactoringController extends AbstractController
                 Response::HTTP_BAD_REQUEST,
             );
         }
+    }
+
+    /**
+     * Valide les preconditions d'une demande d'affacturage.
+     */
+    private function validateFactoringRequest(string $id, Request $request): ?JsonResponse
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new JsonResponse(['error' => 'Non authentifie'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $invoice = $this->em->getRepository(Invoice::class)->find($id);
+        if (null === $invoice) {
+            return new JsonResponse(['error' => 'Facture introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        /** @var array<string, mixed> $data */
+        $data = json_decode($request->getContent(), true) ?? [];
+        $partnerId = isset($data['partnerId']) ? (string) $data['partnerId'] : '';
+
+        if ('' === $partnerId) {
+            return new JsonResponse(
+                ['error' => 'Le champ partnerId est obligatoire.'],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        return null;
     }
 }

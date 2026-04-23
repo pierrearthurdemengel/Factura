@@ -117,6 +117,24 @@ const defaultRules: AutopilotRule[] = [
   },
 ];
 
+// Parse les regles depuis la reponse API ou retourne les regles par defaut
+function parseRulesResponse(res: { data: Record<string, unknown> }): AutopilotRule[] {
+  const data = (res.data['hydra:member'] || res.data) as unknown;
+  if (Array.isArray(data) && data.length > 0) {
+    return data as AutopilotRule[];
+  }
+  return defaultRules;
+}
+
+// Parse l'historique depuis la reponse API
+function parseHistoryResponse(res: { data: Record<string, unknown> }): HistoryEntry[] {
+  const data = (res.data['hydra:member'] || res.data) as unknown;
+  if (Array.isArray(data)) {
+    return data as HistoryEntry[];
+  }
+  return [];
+}
+
 export default function AutopilotConfig() {
   const [rules, setRules] = useState<AutopilotRule[]>([]);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -127,29 +145,15 @@ export default function AutopilotConfig() {
   // Chargement des regles depuis le serveur avec fallback sur les regles par defaut
   useEffect(() => {
     api.get('/autopilot/rules')
-      .then((res) => {
-        const data = res.data['hydra:member'] || res.data;
-        if (Array.isArray(data) && data.length > 0) {
-          setRules(data);
-        } else {
-          setRules(defaultRules);
-        }
-      })
-      .catch(() => {
-        setRules(defaultRules);
-      })
+      .then((res) => setRules(parseRulesResponse(res)))
+      .catch(() => setRules(defaultRules))
       .finally(() => setLoading(false));
   }, []);
 
   // Chargement de l'historique des actions executees
   useEffect(() => {
     api.get('/autopilot/history')
-      .then((res) => {
-        const data = res.data['hydra:member'] || res.data;
-        if (Array.isArray(data)) {
-          setHistory(data);
-        }
-      })
+      .then((res) => setHistory(parseHistoryResponse(res)))
       .catch(() => {/* Pas d'historique disponible */})
       .finally(() => setHistoryLoading(false));
   }, []);

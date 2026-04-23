@@ -25,29 +25,41 @@ class InvoiceEventController extends AbstractController
         EntityManagerInterface $em,
         SerializerInterface $serializer,
     ): JsonResponse {
-        /** @var User $user */
-        $user = $this->getUser();
-        $company = $user->getCompany();
-
-        if (null === $company) {
-            return new JsonResponse(['error' => 'Aucune entreprise associee.'], Response::HTTP_FORBIDDEN);
-        }
-
-        $invoice = $em->getRepository(Invoice::class)->find($id);
-
+        $invoice = $this->findInvoiceForUser($id, $em);
         if (null === $invoice) {
-            return new JsonResponse(['error' => 'Facture introuvable.'], Response::HTTP_NOT_FOUND);
-        }
-
-        // Verifier que la facture appartient a l'entreprise de l'utilisateur
-        $seller = $invoice->getSeller();
-        if (null === $seller || $seller->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
-            return new JsonResponse(['error' => 'Acces interdit.'], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'Facture introuvable ou acces interdit.'], Response::HTTP_NOT_FOUND);
         }
 
         $events = $invoice->getEvents()->toArray();
         $json = $serializer->serialize($events, 'json', ['groups' => ['event:read']]);
 
         return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    /**
+     * Recherche une facture appartenant a l'utilisateur connecte.
+     */
+    private function findInvoiceForUser(string $id, EntityManagerInterface $em): ?Invoice
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $company = $user->getCompany();
+
+        if (null === $company) {
+            return null;
+        }
+
+        $invoice = $em->getRepository(Invoice::class)->find($id);
+
+        if (null === $invoice) {
+            return null;
+        }
+
+        $seller = $invoice->getSeller();
+        if (null === $seller || $seller->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
+            return null;
+        }
+
+        return $invoice;
     }
 }

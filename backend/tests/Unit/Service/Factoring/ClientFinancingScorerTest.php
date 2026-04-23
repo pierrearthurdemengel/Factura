@@ -9,10 +9,12 @@ use App\Service\Factoring\ClientFinancingScorer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
+use App\Tests\Trait\ReflectionHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 class ClientFinancingScorerTest extends TestCase
 {
+    use ReflectionHelperTrait;
     private EntityManagerInterface&MockObject $em;
     private ClientFinancingScorer $scorer;
 
@@ -182,11 +184,8 @@ class ClientFinancingScorerTest extends TestCase
         $client = new Client();
 
         // Utiliser la reflection pour definir la company
-        $ref = new \ReflectionProperty(Client::class, 'company');
-        $ref->setValue($client, $company);
-
-        $nameRef = new \ReflectionProperty(Client::class, 'name');
-        $nameRef->setValue($client, 'Client Test');
+        $this->setPrivateProperty($client, 'company', $company);
+        $this->setPrivateProperty($client, 'name', 'Client Test');
 
         return $client;
     }

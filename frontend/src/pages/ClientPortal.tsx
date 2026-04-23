@@ -302,7 +302,7 @@ export default function ClientPortal() {
             <p className="app-card-text">
               IBAN : <strong>{invoice.seller.iban}</strong>
             </p>
-            {invoice.seller.bic && (
+            {invoice.seller?.bic && (
               <p className="app-card-text">
                 BIC : <strong>{invoice.seller.bic}</strong>
               </p>

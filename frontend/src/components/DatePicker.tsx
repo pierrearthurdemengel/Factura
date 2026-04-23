@@ -40,9 +40,11 @@ export default function DatePicker({ value, onChange, placeholder = "Sélectionn
 
   return (
     <div className={`custom-datepicker-container ${className}`} ref={containerRef}>
-      <div 
+      <div
         className={`custom-datepicker-input ${isOpen ? 'active' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsOpen(!isOpen); } }}
+        role="button"
         tabIndex={0}
       >
         <span className={selectedDate ? 'has-value' : 'placeholder'}>
@@ -66,6 +68,7 @@ export default function DatePicker({ value, onChange, placeholder = "Sélectionn
             weekStartsOn={1}
             showOutsideDays
             className="premium-calendar"
+            aria-label="Calendrier de selection de date"
           />
         </div>
       )}

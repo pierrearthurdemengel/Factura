@@ -23,7 +23,7 @@ export const downloadLocalPdf = async (selector: string, filename: string = 'fac
       format: 'a4'
     });
     
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const imgData = canvas.toDataURL('image/jpeg', 1);
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
     

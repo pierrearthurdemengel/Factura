@@ -99,16 +99,7 @@ class EmbedController extends AbstractController
      */
     private function sanitizeUrl(string $url): string
     {
-        if ('' === $url) {
-            return '';
-        }
-
-        if (!str_starts_with($url, 'https://')) {
-            return '';
-        }
-
-        // Filtrage basique pour eviter les injections
-        if (false === filter_var($url, \FILTER_VALIDATE_URL)) {
+        if ('' === $url || !str_starts_with($url, 'https://') || false === filter_var($url, \FILTER_VALIDATE_URL)) {
             return '';
         }
 

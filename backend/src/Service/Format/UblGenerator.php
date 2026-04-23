@@ -364,19 +364,12 @@ class UblGenerator
      */
     private function getTaxCategoryCode(string $vatRate, ?string $legalMention): string
     {
-        if ('AE' === $vatRate) {
-            return 'AE';
-        }
-
-        if ('E' === $vatRate || (null !== $legalMention && str_contains($legalMention, '293 B'))) {
-            return 'E';
-        }
-
-        if ('Z' === $vatRate || '0' === $vatRate || '0.00' === $vatRate) {
-            return 'Z';
-        }
-
-        return 'S';
+        return match (true) {
+            'AE' === $vatRate => 'AE',
+            'E' === $vatRate || (null !== $legalMention && str_contains($legalMention, '293 B')) => 'E',
+            in_array($vatRate, ['Z', '0', '0.00'], true) => 'Z',
+            default => 'S',
+        };
     }
 
     /**

@@ -225,12 +225,10 @@ class ClientFinancingScorer
      */
     private function getClientInvoices(Client $client): array
     {
-        /** @var Invoice[] $invoices */
-        $invoices = $this->em->getRepository(Invoice::class)->findBy(
+        /** @var Invoice[] */
+        return $this->em->getRepository(Invoice::class)->findBy(
             ['buyer' => $client],
             ['issueDate' => 'DESC'],
         );
-
-        return $invoices;
     }
 }

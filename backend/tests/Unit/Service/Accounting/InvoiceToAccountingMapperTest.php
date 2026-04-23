@@ -9,10 +9,12 @@ use App\Entity\InvoiceLine;
 use App\Service\Accounting\InvoiceToAccountingMapper;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use App\Tests\Trait\ReflectionHelperTrait;
 use PHPUnit\Framework\TestCase;
 
 class InvoiceToAccountingMapperTest extends TestCase
 {
+    use ReflectionHelperTrait;
     private EntityManagerInterface&MockObject $em;
     private InvoiceToAccountingMapper $mapper;
 
@@ -114,11 +116,8 @@ class InvoiceToAccountingMapperTest extends TestCase
         $company = new Company();
         $client = new Client();
 
-        $nameRef = new \ReflectionProperty(Client::class, 'name');
-        $nameRef->setValue($client, 'Client Test');
-
-        $companyRef = new \ReflectionProperty(Client::class, 'company');
-        $companyRef->setValue($client, $company);
+        $this->setPrivateProperty($client, 'name', 'Client Test');
+        $this->setPrivateProperty($client, 'company', $company);
 
         $invoice = new Invoice();
         $invoice->setStatus('SENT');

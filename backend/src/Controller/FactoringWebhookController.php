@@ -31,22 +31,15 @@ class FactoringWebhookController extends AbstractController
     #[Route('/api/webhooks/factoring/{partnerId}', name: 'api_factoring_webhook', methods: ['POST'])]
     public function handleWebhook(string $partnerId, Request $request): JsonResponse
     {
-        // Verification que le partenaire est valide
         if (!in_array($partnerId, FactoringRequestService::getAllowedPartners(), true)) {
-            return new JsonResponse(
-                ['error' => 'Partenaire inconnu'],
-                Response::HTTP_NOT_FOUND,
-            );
+            return new JsonResponse(['error' => 'Partenaire inconnu'], Response::HTTP_NOT_FOUND);
         }
 
         /** @var array<string, mixed> $payload */
         $payload = json_decode($request->getContent(), true) ?? [];
 
         if ([] === $payload) {
-            return new JsonResponse(
-                ['error' => 'Payload invalide'],
-                Response::HTTP_BAD_REQUEST,
-            );
+            return new JsonResponse(['error' => 'Payload invalide'], Response::HTTP_BAD_REQUEST);
         }
 
         $this->logger->info('Webhook affacturage recu.', [
@@ -54,6 +47,16 @@ class FactoringWebhookController extends AbstractController
             'event' => $payload['event'] ?? 'unknown',
         ]);
 
+        return $this->processWebhook($partnerId, $payload);
+    }
+
+    /**
+     * Traite le webhook et retourne la reponse appropriee.
+     *
+     * @param array<string, mixed> $payload
+     */
+    private function processWebhook(string $partnerId, array $payload): JsonResponse
+    {
         try {
             $this->requestService->handleWebhook($partnerId, $payload);
 

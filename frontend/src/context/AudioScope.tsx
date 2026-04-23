@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 
 declare global {
   interface Window {
@@ -32,7 +32,7 @@ export function AudioProvider({ children }: Readonly<{ children: React.ReactNode
     };
   }, []);
 
-  const playPop = () => {
+  const playPop = useCallback(() => {
     if (!audioCtx.current) return;
     const ctx = audioCtx.current;
     if (ctx.state === 'suspended') ctx.resume();
@@ -52,9 +52,9 @@ export function AudioProvider({ children }: Readonly<{ children: React.ReactNode
     
     osc.start();
     osc.stop(ctx.currentTime + 0.15);
-  };
+  }, []);
 
-  const playTick = () => {
+  const playTick = useCallback(() => {
     if (!audioCtx.current) return;
     const ctx = audioCtx.current;
     if (ctx.state === 'suspended') ctx.resume();
@@ -74,9 +74,9 @@ export function AudioProvider({ children }: Readonly<{ children: React.ReactNode
     
     osc.start();
     osc.stop(ctx.currentTime + 0.05);
-  };
+  }, []);
 
-  const playArpeggio = () => {
+  const playArpeggio = useCallback(() => {
     if (!audioCtx.current) return;
     const ctx = audioCtx.current;
     if (ctx.state === 'suspended') ctx.resume();
@@ -102,11 +102,13 @@ export function AudioProvider({ children }: Readonly<{ children: React.ReactNode
     playNote(523.25, now);
     playNote(659.25, now + 0.1);
     playNote(783.99, now + 0.2);
-    playNote(1046.50, now + 0.35); // Slight ritardando effect
-  };
+    playNote(1046.5, now + 0.35); // Slight ritardando effect
+  }, []);
+
+  const contextValue = useMemo(() => ({ playPop, playTick, playArpeggio }), [playPop, playTick, playArpeggio]);
 
   return (
-    <AudioScopeContext.Provider value={{ playPop, playTick, playArpeggio }}>
+    <AudioScopeContext.Provider value={contextValue}>
       {children}
     </AudioScopeContext.Provider>
   );

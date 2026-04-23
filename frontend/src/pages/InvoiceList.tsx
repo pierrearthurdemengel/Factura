@@ -60,7 +60,7 @@ export default function InvoiceList() {
     [fetchParams]
   );
 
-  const statusBadge = (status: string) => (
+  const statusBadge = (status: string): JSX.Element => (
     <span className={`app-badge ${STATUS_CLASSES[status] || 'app-badge-draft'}`}>
       {intl.formatMessage({ id: STATUS_INTL_KEYS[status] || 'invoice.draft', defaultMessage: STATUS_DEFAULTS[status] || status })}
     </span>
@@ -133,11 +133,13 @@ export default function InvoiceList() {
   };
 
   // SWR: derive display data from cache while fresh data loads
-  const displayInvoices = !loading ? invoices : (cachedResult?.['hydra:member'] ?? invoices);
+  const displayInvoices = loading ? (cachedResult?.['hydra:member'] ?? invoices) : invoices;
   const cachedTotal = cachedResult?.['hydra:totalItems'];
   const displayTotal = (() => {
-    if (!loading) return totalItems;
-    if (typeof cachedTotal === 'number') return cachedTotal;
+    if (loading) {
+      if (typeof cachedTotal === 'number') return cachedTotal;
+      return totalItems;
+    }
     return totalItems;
   })();
   const refreshing = loading && !!cachedResult;

@@ -92,7 +92,7 @@ function StarRating() {
   return (
     <div className="lp-testimonial-stars" aria-label="5 étoiles sur 5">
       {Array.from({ length: 5 }, (_, i) => (
-        <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+        <svg key={`star-${i}`} width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
       ))}
     </div>
   );
@@ -481,7 +481,7 @@ export default function Landing() {
             <div className="lp-tabs reveal reveal-d1" role="tablist">
               {tabsData.map((tab, i) => (
                 <button
-                  key={i}
+                  key={tab.label}
                   role="tab"
                   aria-selected={activeTab === i}
                   className={`lp-tab${activeTab === i ? ' active' : ''}`}
@@ -495,7 +495,7 @@ export default function Landing() {
               <div className="lp-tab-text">
                 <h3>{tabsData[activeTab].title}</h3>
                 <ul className="lp-tab-list">
-                  {tabsData[activeTab].items.map((item, i) => <li key={i}>{item}</li>)}
+                  {tabsData[activeTab].items.map((item) => <li key={item}>{item}</li>)}
                 </ul>
                 <Link to="/register" className="lp-btn lp-btn-primary">{tabsData[activeTab].cta}</Link>
               </div>
@@ -559,7 +559,7 @@ export default function Landing() {
             <h2 className="reveal">Connecté en toute situation</h2>
             <div className="lp-profiles-grid">
               {profiles.map((p, i) => (
-                <Link to="/register" key={i} className={`lp-profile-card reveal reveal-d${Math.min(i + 1, 5)}`}>
+                <Link to="/register" key={p.title} className={`lp-profile-card reveal reveal-d${Math.min(i + 1, 5)}`}>
                   <div className="lp-profile-icon">{p.icon}</div>
                   <h3>{p.title}</h3>
                   <p>{p.sub}</p>
@@ -780,11 +780,11 @@ export default function Landing() {
             <h2 className="reveal">Vos questions, nos réponses</h2>
             <div className="lp-faq-grid">
               {[faqItems.slice(0, Math.ceil(faqItems.length / 2)), faqItems.slice(Math.ceil(faqItems.length / 2))].map((col, colIdx) => (
-                <div key={colIdx} className="lp-faq-col">
+                <div key={colIdx === 0 ? 'faq-left' : 'faq-right'} className="lp-faq-col">
                   {col.map((item, i) => {
                     const idx = colIdx * Math.ceil(faqItems.length / 2) + i;
                     return (
-                      <div key={idx} className={`lp-faq-item${openFaq === idx ? ' open' : ''}`}>
+                      <div key={item.q} className={`lp-faq-item${openFaq === idx ? ' open' : ''}`}>
                         <button className="lp-faq-q" onClick={() => setOpenFaq(openFaq === idx ? null : idx)} aria-expanded={openFaq === idx}>
                           <span>{item.q}</span>
                           <svg className="lp-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>

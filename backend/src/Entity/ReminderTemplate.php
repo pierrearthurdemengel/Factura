@@ -37,6 +37,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class ReminderTemplate
 {
+    // Serialization groups
+    private const GROUP_READ = 'reminder_template:read';
+    private const GROUP_WRITE = 'reminder_template:write';
+
     // Types de relance
     public const TYPE_BEFORE_DUE = 'BEFORE_DUE';
     public const TYPE_FIRST_REMINDER = 'FIRST_REMINDER';
@@ -47,7 +51,7 @@ class ReminderTemplate
     #[ORM\Column(type: 'uuid')]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(['reminder_template:read'])]
+    #[Groups([self::GROUP_READ])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne]
@@ -58,17 +62,17 @@ class ReminderTemplate
     #[ORM\Column(length: 30)]
     #[Assert\NotBlank]
     #[Assert\Choice(choices: [self::TYPE_BEFORE_DUE, self::TYPE_FIRST_REMINDER, self::TYPE_SECOND_REMINDER, self::TYPE_FORMAL_NOTICE])]
-    #[Groups(['reminder_template:read', 'reminder_template:write'])]
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
     private string $type;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['reminder_template:read', 'reminder_template:write'])]
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
     private string $subject;
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank]
-    #[Groups(['reminder_template:read', 'reminder_template:write'])]
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
     private string $body;
 
     #[ORM\Column]
