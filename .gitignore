@@ -47,6 +47,14 @@ config/jwt/public.pem
 .DS_Store
 Thumbs.db
 
+# Graphify
+.graphify*
+graphify-out/
+
+# SonarCloud temp
+sonar_*.json
+sonarcloud-issues.md
+
 # Logs
 *.log
 /var/log/
