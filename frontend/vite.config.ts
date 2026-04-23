@@ -62,4 +62,19 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes('node_modules/react-dom')) return 'vendor-react';
+          if (id.includes('node_modules/react/')) return 'vendor-react';
+          if (id.includes('node_modules/react-router')) return 'vendor-router';
+          if (id.includes('node_modules/framer-motion')) return 'vendor-motion';
+          if (id.includes('node_modules/react-intl') || id.includes('node_modules/@formatjs')) return 'vendor-intl';
+          if (id.includes('node_modules/axios')) return 'vendor-axios';
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+  },
 })

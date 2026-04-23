@@ -1,0 +1,36 @@
+import type { Messages } from '../messages';
+
+const de: Messages = {
+  'nav.invoices': 'Rechnungen',
+  'nav.quotes': 'Angebote',
+  'nav.clients': 'Kunden',
+  'nav.settings': 'Einstellungen',
+  'nav.dashboard': 'Dashboard',
+  'nav.search': 'Suchen...',
+  'dashboard.title': 'Dashboard',
+  'dashboard.invoicesThisMonth': 'Rechnungen diesen Monat',
+  'dashboard.revenueHt': 'Nettoumsatz diesen Monat',
+  'dashboard.pending': 'Ausstehend',
+  'dashboard.treasury': 'Prognostizierte Liquiditat',
+  'dashboard.recentInvoices': 'Neueste Rechnungen',
+  'dashboard.activityFeed': 'Aktivitaten',
+  'dashboard.suggestions': 'Vorschlage',
+  'invoice.draft': 'Entwurf',
+  'invoice.sent': 'Gesendet',
+  'invoice.acknowledged': 'Akzeptiert',
+  'invoice.rejected': 'Abgelehnt',
+  'invoice.paid': 'Bezahlt',
+  'invoice.cancelled': 'Storniert',
+  'invoice.expired': 'Abgelaufen',
+  'invoice.invoiced': 'In Rechnung gestellt',
+  'invoice.create': 'Rechnung erstellen',
+  'client.name': 'Firmenname',
+  'client.new': 'Neuer Kunde',
+  'settings.title': 'Einstellungen',
+  'settings.save': 'Speichern',
+  'common.all': 'Alle',
+  'common.cancel': 'Abbrechen',
+  'common.loading': 'Laden...',
+};
+
+export default de;

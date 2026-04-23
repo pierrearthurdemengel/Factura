@@ -18,7 +18,6 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { type Invoice } from '../api/factura';
 import { useAudio } from '../context/AudioScope';
-import confetti from 'canvas-confetti';
 import './InvoiceKanbanBoard.css';
 
 interface InvoiceKanbanBoardProps {
@@ -119,13 +118,15 @@ export default function InvoiceKanbanBoard({ invoices, onStateChange, disabled }
 
     if (targetStatus === 'PAID') {
       audio.playArpeggio();
-      // Gamification: Jubilation
-      confetti({
-        particleCount: 150,
-        spread: 80,
-        origin: { y: 0.6 },
-        colors: ['#A855F7', '#3B82F6', '#10B981', '#F59E0B'],
-        disableForReducedMotion: true
+      // Gamification: Jubilation — charge dynamiquement (~12 KB)
+      import('canvas-confetti').then(({ default: confetti }) => {
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#A855F7', '#3B82F6', '#10B981', '#F59E0B'],
+          disableForReducedMotion: true
+        });
       });
     } else {
       audio.playTick();

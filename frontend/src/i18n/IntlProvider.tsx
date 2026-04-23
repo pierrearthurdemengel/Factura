@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef, type ReactNode } from 'react';
 import { IntlProvider as ReactIntlProvider } from 'react-intl';
-import { allMessages, fr, SUPPORTED_LOCALES } from './messages';
+import { fr, loadLocaleMessages, SUPPORTED_LOCALES } from './messages';
 
 // Contexte pour le changement de langue
 interface LocaleContextType {
@@ -34,13 +34,29 @@ export function AppIntlProvider({ children }: Readonly<{ children: ReactNode }>)
     return saved || detectBrowserLocale();
   });
 
+  const [localeMessages, setLocaleMessages] = useState<Record<string, string>>(fr);
+  const prevLocaleRef = useRef(locale);
+
+  // Charger dynamiquement la locale si != fr
+  useEffect(() => {
+    // Ne rien faire si la locale n'a pas change
+    if (prevLocaleRef.current === locale) return;
+    prevLocaleRef.current = locale;
+
+    if (locale === 'fr') {
+      setLocaleMessages(fr); // eslint-disable-line react-hooks/set-state-in-effect
+      return;
+    }
+    loadLocaleMessages(locale).then(setLocaleMessages);
+  }, [locale]);
+
   const setLocale = useCallback((newLocale: string) => {
     setLocaleState(newLocale);
     localStorage.setItem('factura-locale', newLocale);
   }, []);
 
   // Fallback sur le francais si des cles manquent
-  const messages = useMemo(() => ({ ...fr, ...allMessages[locale] }), [locale]);
+  const messages = useMemo(() => ({ ...fr, ...localeMessages }), [localeMessages]);
 
   const localeContextValue = useMemo(() => ({ locale, setLocale, supportedLocales: SUPPORTED_LOCALES }), [locale, setLocale]);
 

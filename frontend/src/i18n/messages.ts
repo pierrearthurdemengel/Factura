@@ -1,11 +1,12 @@
 // Fichiers de traduction pour l'internationalisation.
 // Chaque cle correspond a un identifiant utilise dans les composants via FormattedMessage ou useIntl.
+// Les locales non-francaises sont chargees dynamiquement pour reduire le bundle initial.
 
 export interface Messages {
   [key: string]: string;
 }
 
-// Francais (langue par defaut)
+// Francais (langue par defaut) — toujours bundle
 export const fr: Messages = {
   'nav.invoices': 'Factures',
   'nav.quotes': 'Devis',
@@ -76,183 +77,33 @@ export const fr: Messages = {
   'format.currency': '{value, number, ::currency/EUR}',
 };
 
-// Italien
-export const it: Messages = {
-  'nav.invoices': 'Fatture',
-  'nav.quotes': 'Preventivi',
-  'nav.clients': 'Clienti',
-  'nav.settings': 'Impostazioni',
-  'nav.dashboard': 'Pannello di controllo',
-  'nav.search': 'Cerca...',
-  'dashboard.title': 'Pannello di controllo',
-  'dashboard.invoicesThisMonth': 'Fatture del mese',
-  'dashboard.revenueHt': 'Fatturato netto del mese',
-  'dashboard.pending': 'In attesa',
-  'dashboard.treasury': 'Tesoreria previsionale',
-  'dashboard.recentInvoices': 'Ultime fatture',
-  'dashboard.activityFeed': 'Attivita recenti',
-  'dashboard.suggestions': 'Suggerimenti',
-  'dashboard.consolidated': 'Vista consolidata',
-  'dashboard.activeCompany': 'Azienda attiva',
-  'invoice.number': 'Numero',
-  'invoice.client': 'Cliente',
-  'invoice.date': 'Data',
-  'invoice.amount': 'Importo IVA inclusa',
-  'invoice.status': 'Stato',
-  'invoice.draft': 'Bozza',
-  'invoice.sent': 'Inviata',
-  'invoice.acknowledged': 'Accettata',
-  'invoice.rejected': 'Rifiutata',
-  'invoice.paid': 'Pagata',
-  'invoice.cancelled': 'Annullata',
-  'invoice.expired': 'Scaduto',
-  'invoice.invoiced': 'Fatturato',
-  'invoice.create': 'Crea fattura',
-  'client.name': 'Ragione sociale',
-  'client.new': 'Nuovo cliente',
-  'client.delete': 'Elimina',
-  'settings.title': 'Impostazioni',
-  'settings.save': 'Salva',
-  'common.all': 'Tutti',
-  'common.cancel': 'Annulla',
-  'common.confirm': 'Conferma',
-  'common.loading': 'Caricamento...',
+// Imports dynamiques pour les locales non-francaises
+const localeLoaders: Record<string, () => Promise<{ default: Messages }>> = {
+  it: () => import('./locales/it'),
+  de: () => import('./locales/de'),
+  es: () => import('./locales/es'),
+  pl: () => import('./locales/pl'),
+  nl: () => import('./locales/nl'),
 };
 
-// Allemand
-export const de: Messages = {
-  'nav.invoices': 'Rechnungen',
-  'nav.quotes': 'Angebote',
-  'nav.clients': 'Kunden',
-  'nav.settings': 'Einstellungen',
-  'nav.dashboard': 'Dashboard',
-  'nav.search': 'Suchen...',
-  'dashboard.title': 'Dashboard',
-  'dashboard.invoicesThisMonth': 'Rechnungen diesen Monat',
-  'dashboard.revenueHt': 'Nettoumsatz diesen Monat',
-  'dashboard.pending': 'Ausstehend',
-  'dashboard.treasury': 'Prognostizierte Liquiditat',
-  'dashboard.recentInvoices': 'Neueste Rechnungen',
-  'dashboard.activityFeed': 'Aktivitaten',
-  'dashboard.suggestions': 'Vorschlage',
-  'invoice.draft': 'Entwurf',
-  'invoice.sent': 'Gesendet',
-  'invoice.acknowledged': 'Akzeptiert',
-  'invoice.rejected': 'Abgelehnt',
-  'invoice.paid': 'Bezahlt',
-  'invoice.cancelled': 'Storniert',
-  'invoice.expired': 'Abgelaufen',
-  'invoice.invoiced': 'In Rechnung gestellt',
-  'invoice.create': 'Rechnung erstellen',
-  'client.name': 'Firmenname',
-  'client.new': 'Neuer Kunde',
-  'settings.title': 'Einstellungen',
-  'settings.save': 'Speichern',
-  'common.all': 'Alle',
-  'common.cancel': 'Abbrechen',
-  'common.loading': 'Laden...',
-};
+// Cache des locales deja chargees
+const loadedLocales: Record<string, Messages> = { fr };
 
-// Espagnol
-export const es: Messages = {
-  'nav.invoices': 'Facturas',
-  'nav.quotes': 'Presupuestos',
-  'nav.clients': 'Clientes',
-  'nav.settings': 'Configuracion',
-  'nav.dashboard': 'Panel de control',
-  'nav.search': 'Buscar...',
-  'dashboard.title': 'Panel de control',
-  'dashboard.invoicesThisMonth': 'Facturas del mes',
-  'dashboard.revenueHt': 'Facturacion neta del mes',
-  'dashboard.pending': 'Pendientes',
-  'dashboard.treasury': 'Tesoreria previsional',
-  'invoice.draft': 'Borrador',
-  'invoice.sent': 'Enviada',
-  'invoice.acknowledged': 'Aceptada',
-  'invoice.rejected': 'Rechazada',
-  'invoice.paid': 'Pagada',
-  'invoice.cancelled': 'Cancelada',
-  'invoice.expired': 'Expirado',
-  'invoice.invoiced': 'Facturado',
-  'invoice.create': 'Crear factura',
-  'client.name': 'Razon social',
-  'client.new': 'Nuevo cliente',
-  'settings.title': 'Configuracion',
-  'settings.save': 'Guardar',
-  'common.all': 'Todos',
-  'common.cancel': 'Cancelar',
-  'common.loading': 'Cargando...',
-};
-
-// Polonais
-export const pl: Messages = {
-  'nav.invoices': 'Faktury',
-  'nav.quotes': 'Oferty',
-  'nav.clients': 'Klienci',
-  'nav.settings': 'Ustawienia',
-  'nav.dashboard': 'Panel',
-  'nav.search': 'Szukaj...',
-  'dashboard.title': 'Panel',
-  'dashboard.invoicesThisMonth': 'Faktury w tym miesiacu',
-  'dashboard.revenueHt': 'Przychod netto w tym miesiacu',
-  'dashboard.pending': 'Oczekujace',
-  'invoice.draft': 'Wersja robocza',
-  'invoice.sent': 'Wyslana',
-  'invoice.acknowledged': 'Zaakceptowana',
-  'invoice.rejected': 'Odrzucona',
-  'invoice.paid': 'Oplacona',
-  'invoice.cancelled': 'Anulowana',
-  'invoice.expired': 'Wygasla',
-  'invoice.invoiced': 'Zafakturowana',
-  'invoice.create': 'Utworz fakture',
-  'client.name': 'Nazwa firmy',
-  'client.new': 'Nowy klient',
-  'settings.title': 'Ustawienia',
-  'settings.save': 'Zapisz',
-  'common.all': 'Wszystkie',
-  'common.cancel': 'Anuluj',
-  'common.loading': 'Ladowanie...',
-};
-
-// Neerlandais
-export const nl: Messages = {
-  'nav.invoices': 'Facturen',
-  'nav.quotes': 'Offertes',
-  'nav.clients': 'Klanten',
-  'nav.settings': 'Instellingen',
-  'nav.dashboard': 'Dashboard',
-  'nav.search': 'Zoeken...',
-  'dashboard.title': 'Dashboard',
-  'dashboard.invoicesThisMonth': 'Facturen deze maand',
-  'dashboard.revenueHt': 'Netto-omzet deze maand',
-  'dashboard.pending': 'In afwachting',
-  'invoice.draft': 'Concept',
-  'invoice.sent': 'Verzonden',
-  'invoice.acknowledged': 'Geaccepteerd',
-  'invoice.rejected': 'Afgewezen',
-  'invoice.paid': 'Betaald',
-  'invoice.cancelled': 'Geannuleerd',
-  'invoice.expired': 'Verlopen',
-  'invoice.invoiced': 'Gefactureerd',
-  'invoice.create': 'Factuur aanmaken',
-  'client.name': 'Bedrijfsnaam',
-  'client.new': 'Nieuwe klant',
-  'settings.title': 'Instellingen',
-  'settings.save': 'Opslaan',
-  'common.all': 'Alle',
-  'common.cancel': 'Annuleren',
-  'common.loading': 'Laden...',
-};
+export async function loadLocaleMessages(locale: string): Promise<Messages> {
+  if (loadedLocales[locale]) return loadedLocales[locale];
+  const loader = localeLoaders[locale];
+  if (!loader) return fr;
+  const mod = await loader();
+  loadedLocales[locale] = mod.default;
+  return mod.default;
+}
 
 // Langues supportees avec libelles
 export const SUPPORTED_LOCALES = [
-  { code: 'fr', label: 'Francais', flag: '🇫🇷' },
-  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { code: 'es', label: 'Espanol', flag: '🇪🇸' },
-  { code: 'pl', label: 'Polski', flag: '🇵🇱' },
-  { code: 'nl', label: 'Nederlands', flag: '🇳🇱' },
+  { code: 'fr', label: 'Francais', flag: '\u{1F1EB}\u{1F1F7}' },
+  { code: 'it', label: 'Italiano', flag: '\u{1F1EE}\u{1F1F9}' },
+  { code: 'de', label: 'Deutsch', flag: '\u{1F1E9}\u{1F1EA}' },
+  { code: 'es', label: 'Espanol', flag: '\u{1F1EA}\u{1F1F8}' },
+  { code: 'pl', label: 'Polski', flag: '\u{1F1F5}\u{1F1F1}' },
+  { code: 'nl', label: 'Nederlands', flag: '\u{1F1F3}\u{1F1F1}' },
 ] as const;
-
-// Map code langue → messages
-export const allMessages: Record<string, Messages> = { fr, it, de, es, pl, nl };

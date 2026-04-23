@@ -9,10 +9,6 @@ import { AudioProvider } from './context/AudioScope';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { AppIntlProvider, useLocale } from './i18n/IntlProvider';
 import PageTransition from './components/PageTransition';
-import CommandMenu from './components/CommandMenu';
-import FloatingActionButton from './components/FloatingActionButton';
-import VoiceAssistant from './components/VoiceAssistant';
-import AmbientBackground from './components/AmbientBackground';
 import ErrorBoundary from './components/ErrorBoundary';
 import { startProgress, doneProgress } from './utils/progress';
 
@@ -20,9 +16,17 @@ import './components/NavBar.css';
 
 // Pages critiques chargees immediatement (parcours principal)
 import Landing from './pages/Landing';
-import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
+
+// Dashboard lazy — pas besoin au chargement de /login
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+
+// Composants lourds differes — pas charges tant que l'utilisateur n'est pas authentifie
+const CommandMenu = lazy(() => import('./components/CommandMenu'));
+const FloatingActionButton = lazy(() => import('./components/FloatingActionButton'));
+const VoiceAssistant = lazy(() => import('./components/VoiceAssistant'));
+const AmbientBackground = lazy(() => import('./components/AmbientBackground'));
 
 // Pages secondaires chargees a la demande (code splitting)
 // Les imports sont stockes pour permettre le prefetch on-hover
@@ -290,7 +294,7 @@ function NavBar({ onOpenCommand }: Readonly<{ onOpenCommand: () => void }>) {
           title="Langue"
           style={{ fontSize: '0.85rem', fontWeight: 600 }}
         >
-          {supportedLocales.find(l => l.code === locale)?.flag || '🌐'}
+          {supportedLocales.find(l => l.code === locale)?.flag || '\u{1F310}'}
         </button>
         {localeSelectorOpen && (
           <div style={{
@@ -354,8 +358,29 @@ function NavBar({ onOpenCommand }: Readonly<{ onOpenCommand: () => void }>) {
   );
 }
 
+// Composants authentifies charges uniquement apres login
+function AuthenticatedShell({ cmdOpen, setCmdOpen }: { cmdOpen: boolean; setCmdOpen: (v: boolean) => void }) {
+  const location = useLocation();
+  const showChrome = location.pathname !== '/invoices/new' && location.pathname !== '/login' && location.pathname !== '/register';
+
+  return (
+    <Suspense fallback={null}>
+      <AmbientBackground />
+      <VoiceAssistant />
+      {showChrome && (
+        <>
+          <NavBar onOpenCommand={() => setCmdOpen(true)} />
+          <FloatingActionButton onOpenSearch={() => setCmdOpen(true)} />
+        </>
+      )}
+      <CommandMenu isOpen={cmdOpen} onClose={() => setCmdOpen(false)} />
+    </Suspense>
+  );
+}
+
 function AnimatedAppCore() {
   const [cmdOpen, setCmdOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -370,7 +395,7 @@ function AnimatedAppCore() {
         e.preventDefault();
         setCmdOpen((o) => !o);
       }
-      
+
       // 2. Prevent Default sur Cmd+S pour eviter d'enregistrer la page native
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {
         e.preventDefault();
@@ -389,15 +414,11 @@ function AnimatedAppCore() {
 
   return (
     <>
-      <AmbientBackground />
-      <VoiceAssistant />
-      {location.pathname !== '/invoices/new' && location.pathname !== '/login' && location.pathname !== '/register' && (
-        <>
-          <NavBar onOpenCommand={() => setCmdOpen(true)} />
-          <FloatingActionButton onOpenSearch={() => setCmdOpen(true)} />
-        </>
+      {/* Shell authentifie: AmbientBg, Voice, CommandMenu, NavBar, FAB */}
+      {isAuthenticated && (
+        <AuthenticatedShell cmdOpen={cmdOpen} setCmdOpen={setCmdOpen} />
       )}
-      <CommandMenu isOpen={cmdOpen} onClose={() => setCmdOpen(false)} />
+
       <Suspense fallback={<LazyFallback />}>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
