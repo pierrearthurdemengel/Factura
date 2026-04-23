@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AuthController extends AbstractController
 {
-    private const COOKIE_PATH_AUTH = self::COOKIE_PATH_AUTH;
+    private const COOKIE_PATH_AUTH = '/api/auth';
 
     public function __construct(
         private readonly AuthTokenService $authTokenService,

@@ -21,7 +21,7 @@ export function AudioProvider({ children }: Readonly<{ children: React.ReactNode
     // Initialize AudioContext on first user interaction to bypass autoplay policies
     const initAudio = () => {
       if (!audioCtx.current) {
-        audioCtx.current = new (globalThis.AudioContext || globalThis.webkitAudioContext!)();
+        audioCtx.current = new (globalThis.AudioContext || (window as Window).webkitAudioContext!)();
       }
     };
     globalThis.addEventListener('mousedown', initAudio, { once: true });

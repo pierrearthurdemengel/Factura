@@ -128,7 +128,7 @@ function KpiCard({
 // Page de benchmarks sectoriels : compare les metriques de l'utilisateur
 // aux moyennes anonymisees de son secteur d'activite.
 export default function Benchmarks() {
-  const [sector, setSector] = useState(SECTORS[0].code);
+  const [sector, setSector] = useState<string>(SECTORS[0].code);
   const [data, setData] = useState<BenchmarkData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

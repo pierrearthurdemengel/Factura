@@ -51,7 +51,7 @@ interface InseeResult {
   etatAdministratif: string;
 }
 
-export default function AdminHub(): JSX.Element {
+export default function AdminHub() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<InseeResult[]>([]);
   const [searching, setSearching] = useState(false);

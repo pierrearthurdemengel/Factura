@@ -91,7 +91,7 @@ export default function EmbedWrapper({ children }: Readonly<{ children: React.Re
  * Utilise par les composants embarques pour signaler les actions.
  */
 export function notifyParent(eventType: string, data: Record<string, unknown> = {}): void {
-  if (globalThis.parent !== globalThis) {
+  if (window.parent !== window) {
     const targetOrigin = document.referrer ? new URL(document.referrer).origin : globalThis.location.origin;
     globalThis.parent.postMessage({ type: `mfp:${eventType}`, ...data }, targetOrigin);
   }

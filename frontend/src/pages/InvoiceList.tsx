@@ -60,7 +60,7 @@ export default function InvoiceList() {
     [fetchParams]
   );
 
-  const statusBadge = (status: string): JSX.Element => (
+  const statusBadge = (status: string) => (
     <span className={`app-badge ${STATUS_CLASSES[status] || 'app-badge-draft'}`}>
       {intl.formatMessage({ id: STATUS_INTL_KEYS[status] || 'invoice.draft', defaultMessage: STATUS_DEFAULTS[status] || status })}
     </span>

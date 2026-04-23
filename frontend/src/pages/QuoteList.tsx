@@ -27,7 +27,7 @@ const STATUS_CONFIG: Record<string, { intlId: string; defaultMessage: string; co
   CONVERTED: { intlId: 'quote.converted', defaultMessage: 'Converti', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
 };
 
-export default function QuoteList(): JSX.Element {
+export default function QuoteList() {
   const intl = useIntl();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
