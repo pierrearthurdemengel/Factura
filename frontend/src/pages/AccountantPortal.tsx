@@ -398,7 +398,7 @@ export default function AccountantPortal() {
                       <input
                         type="checkbox"
                         checked={
-                          entries.filter((e) => !e.validated).length > 0 &&
+                          entries.some((e) => !e.validated) &&
                           selectedEntryIds.size === entries.filter((e) => !e.validated).length
                         }
                         onChange={toggleSelectAll}

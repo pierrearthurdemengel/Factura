@@ -262,17 +262,21 @@ function highlightJson(json: string): React.ReactNode[] {
 
     // Colore les cles JSON (texte entre guillemets suivi de ":")
     while (remaining.length > 0) {
-      const keyMatch = remaining.match(/^(\s*)"([^"]+)"(\s*:\s*)/);
+      const keyRegex = /^(\s*)"([^"]+)"(\s*:\s*)/;
+      const keyMatch = keyRegex.exec(remaining);
       if (keyMatch) {
-        parts.push(<span key={partIndex++}>{keyMatch[1]}</span>);
-        parts.push(<span key={partIndex++} className="api-json-key">"{keyMatch[2]}"</span>);
-        parts.push(<span key={partIndex++}>{keyMatch[3]}</span>);
+        parts.push(
+          <span key={partIndex++}>{keyMatch[1]}</span>,
+          <span key={partIndex++} className="api-json-key">"{keyMatch[2]}"</span>,
+          <span key={partIndex++}>{keyMatch[3]}</span>,
+        );
         remaining = remaining.slice(keyMatch.at(0)!.length);
         continue;
       }
 
       // Colore les valeurs chaunes de caracteres
-      const stringMatch = remaining.match(/^"([^"]*)"/);
+      const stringRegex = /^"([^"]*)"/;
+      const stringMatch = stringRegex.exec(remaining);
       if (stringMatch) {
         parts.push(<span key={partIndex++} className="api-json-string">"{stringMatch[1]}"</span>);
         remaining = remaining.slice(stringMatch.at(0)!.length);
@@ -280,7 +284,8 @@ function highlightJson(json: string): React.ReactNode[] {
       }
 
       // Colore les nombres
-      const numberMatch = remaining.match(/^(-?\d+\.?\d*)/);
+      const numberRegex = /^(-?\d+\.?\d*)/;
+      const numberMatch = numberRegex.exec(remaining);
       if (numberMatch) {
         parts.push(<span key={partIndex++} className="api-json-number">{numberMatch[1]}</span>);
         remaining = remaining.slice(numberMatch.at(0)!.length);
@@ -288,7 +293,8 @@ function highlightJson(json: string): React.ReactNode[] {
       }
 
       // Colore les booleens et null
-      const boolMatch = remaining.match(/^(true|false|null)/);
+      const boolRegex = /^(true|false|null)/;
+      const boolMatch = boolRegex.exec(remaining);
       if (boolMatch) {
         parts.push(<span key={partIndex++} className="api-json-bool">{boolMatch[1]}</span>);
         remaining = remaining.slice(boolMatch.at(0)!.length);
@@ -310,7 +316,7 @@ function highlightJson(json: string): React.ReactNode[] {
 }
 
 // Bloc de code avec coloration syntaxique et bouton "Copier"
-function CodeBlock({ code, label }: { code: string; label: string }) {
+function CodeBlock({ code, label }: Readonly<{ code: string; label: string }>) {
   const [copied, setCopied] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
@@ -359,7 +365,7 @@ function CodeBlock({ code, label }: { code: string; label: string }) {
 }
 
 // Badge affichant la methode HTTP avec la couleur correspondante
-function MethodBadge({ method }: { method: HttpMethod }) {
+function MethodBadge({ method }: Readonly<{ method: HttpMethod }>) {
   return (
     <span className={`app-status-pill api-method-badge api-method-badge--${method.toLowerCase()}`}>
       {method}
@@ -368,7 +374,7 @@ function MethodBadge({ method }: { method: HttpMethod }) {
 }
 
 // Carte detaillee d'un endpoint avec exemples et section "Essayer"
-function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
+function EndpointCard({ endpoint }: Readonly<{ endpoint: Endpoint }>) {
   const [expanded, setExpanded] = useState(false);
   const [tryValues, setTryValues] = useState<Record<string, string>>({});
 

@@ -196,7 +196,7 @@ export default function AssistantPage() {
                       href={source.url || '#'}
                       target={source.url ? '_blank' : undefined}
                       rel={source.url ? 'noopener noreferrer' : undefined}
-                      className={`assistant-source-link ${!source.url ? 'assistant-source-link--static' : ''}`}
+                      className={`assistant-source-link ${source.url ? '' : 'assistant-source-link--static'}`}
                     >
                       {source.label}
                     </a>

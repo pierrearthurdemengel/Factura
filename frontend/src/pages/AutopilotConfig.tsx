@@ -160,21 +160,22 @@ export default function AutopilotConfig() {
 
   // Bascule l'etat actif/inactif d'une regle
   const toggleRule = (ruleId: string) => {
+    const rule = rules.find((r) => r.id === ruleId);
+    if (!rule) return;
+    const newActive = !rule.active;
+
     setRules((prev) =>
-      prev.map((r) => {
-        if (r.id !== ruleId) return r;
-        const updated = { ...r, active: !r.active };
-        // Tentative de persistance cote serveur
-        api.put(`/autopilot/rules/${ruleId}`, { active: updated.active })
-          .then(() => {
-            toast.success(updated.active ? 'Regle activee.' : 'Regle desactivee.');
-          })
-          .catch(() => {
-            toast.info(updated.active ? 'Regle activee (mode local).' : 'Regle desactivee (mode local).');
-          });
-        return updated;
-      }),
+      prev.map((r) => r.id === ruleId ? { ...r, active: newActive } : r),
     );
+
+    // Tentative de persistance cote serveur
+    api.put(`/autopilot/rules/${ruleId}`, { active: newActive })
+      .then(() => {
+        toast.success(newActive ? 'Regle activee.' : 'Regle desactivee.');
+      })
+      .catch(() => {
+        toast.info(newActive ? 'Regle activee (mode local).' : 'Regle desactivee (mode local).');
+      });
   };
 
   // Nombre de regles actives pour le compteur

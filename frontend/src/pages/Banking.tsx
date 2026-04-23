@@ -170,10 +170,10 @@ export default function Banking() {
         <>
           <div className="app-pills">
             {([
-              { key: 'all', label: `Toutes (${transactions.length})` },
-              { key: 'unreconciled', label: `Non reconciliees (${unreconciledCount})` },
-              { key: 'reconciled', label: `Reconciliees (${transactions.length - unreconciledCount})` },
-            ] as const).map((f) => (
+              { key: 'all' as const, label: `Toutes (${transactions.length})` },
+              { key: 'unreconciled' as const, label: `Non reconciliees (${unreconciledCount})` },
+              { key: 'reconciled' as const, label: `Reconciliees (${transactions.length - unreconciledCount})` },
+            ]).map((f) => (
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}

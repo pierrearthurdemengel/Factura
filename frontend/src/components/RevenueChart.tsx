@@ -38,9 +38,9 @@ export default function RevenueChart({ invoices }: Readonly<RevenueChartProps>) 
       months[key] = { name: finalLabel, total: 0, sortKey: monthDate.getTime() };
     }
 
-    const validStatuses = ['SENT', 'ACKNOWLEDGED', 'PAID'];
+    const validStatuses = new Set(['SENT', 'ACKNOWLEDGED', 'PAID']);
     invoices.forEach((inv) => {
-      if (!validStatuses.includes(inv.status)) return;
+      if (!validStatuses.has(inv.status)) return;
       const invD = new Date(inv.issueDate);
       const key = `${invD.getFullYear()}-${invD.getMonth()}`;
       if (months[key]) {

@@ -235,7 +235,7 @@ export default function Landing() {
       </nav>
 
       {menuOpen && (
-        <div className="lp-mobile-menu" role="dialog" aria-label="Menu de navigation">
+        <dialog className="lp-mobile-menu" open aria-label="Menu de navigation">
           <a href="#fonctionnalites" className="lp-mobile-link" onClick={closeMenu}>Fonctionnalités</a>
           <a href="#tarifs" className="lp-mobile-link" onClick={closeMenu}>Tarifs</a>
           <a href="#conformite" className="lp-mobile-link" onClick={closeMenu}>Conformité</a>
@@ -244,7 +244,7 @@ export default function Landing() {
           <div className="lp-mobile-cta">
             <Link to="/register" className="lp-btn lp-btn-primary" style={{ width: '100%' }} onClick={closeMenu}>Créer mon compte gratuit</Link>
           </div>
-        </div>
+        </dialog>
       )}
 
       <main id="main-content">
@@ -438,8 +438,7 @@ export default function Landing() {
               </div>
             </div>
             <div className="lp-callout reveal reveal-d4">
-              <strong><IconLightbulb /> Qui est concerné ?</strong>
-              Toutes les entreprises françaises : freelances, auto-entrepreneurs, TPE, PME, professions libérales, artisans, SCI, LMNP. Environ 8 millions d'acteurs économiques.
+              <strong><IconLightbulb />{' '}Qui est concerné ?</strong>{' '}Toutes les entreprises françaises : freelances, auto-entrepreneurs, TPE, PME, professions libérales, artisans, SCI, LMNP. Environ 8 millions d'acteurs économiques.
             </div>
             <div style={{ textAlign: 'center', marginTop: '1.5rem' }} className="reveal reveal-d5">
               <Link to="/register" className="lp-btn lp-btn-primary">Vérifier si mon outil actuel est conforme →</Link>
@@ -513,7 +512,7 @@ export default function Landing() {
             <p className="lp-demo-sub reveal reveal-d1">Pas de formation. Pas de paramétrage. Vous renseignez, on génère, Chorus Pro reçoit.</p>
             <div className="lp-demo-visual reveal reveal-d2">
               <div className="lp-demo-placeholder">
-                <div className="play-icon" role="button" aria-label="Lancer la démo" tabIndex={0}><IconPlay /></div>
+                <button className="play-icon" aria-label="Lancer la démo"><IconPlay /></button>
                 <span>Démo interactive — bientôt disponible</span>
               </div>
             </div>
@@ -789,7 +788,7 @@ export default function Landing() {
                           <span>{item.q}</span>
                           <svg className="lp-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                         </button>
-                        <div className="lp-faq-a" role="region"><p>{item.a}</p></div>
+                        <section className="lp-faq-a" aria-label={item.q}><p>{item.a}</p></section>
                       </div>
                     );
                   })}

@@ -50,16 +50,9 @@ class InvoiceEventController extends AbstractController
         }
 
         $invoice = $em->getRepository(Invoice::class)->find($id);
+        $seller = $invoice?->getSeller();
+        $isOwner = null !== $seller && $seller->getId()?->toRfc4122() === $company->getId()?->toRfc4122();
 
-        if (null === $invoice) {
-            return null;
-        }
-
-        $seller = $invoice->getSeller();
-        if (null === $seller || $seller->getId()?->toRfc4122() !== $company->getId()?->toRfc4122()) {
-            return null;
-        }
-
-        return $invoice;
+        return $isOwner ? $invoice : null;
     }
 }

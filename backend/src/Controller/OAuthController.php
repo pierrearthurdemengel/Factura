@@ -83,6 +83,22 @@ class OAuthController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        return $this->processAuthorizeRequest($request, $client, $user, $redirectUri, $scope, $state, $codeChallenge, $codeChallengeMethod);
+    }
+
+    /**
+     * Traite la requete d'autorisation OAuth selon la methode HTTP.
+     */
+    private function processAuthorizeRequest(
+        Request $request,
+        \App\Entity\OAuthClient $client,
+        User $user,
+        string $redirectUri,
+        string $scope,
+        string $state,
+        string $codeChallenge,
+        string $codeChallengeMethod,
+    ): Response {
         // POST = l'utilisateur a clique "Autoriser"
         if ($request->isMethod('POST')) {
             return $this->handleAuthorizeDecision($request, $client, $user, $redirectUri, $scope, $state, $codeChallenge, $codeChallengeMethod);
@@ -110,12 +126,10 @@ class OAuthController extends AbstractController
         }
 
         $client = $this->oauthService->findClient($clientId);
-        if (null === $client) {
-            return new JsonResponse(['error' => 'invalid_client'], Response::HTTP_BAD_REQUEST);
-        }
+        if (null === $client || ('' !== $redirectUri && !$client->isRedirectUriAllowed($redirectUri))) {
+            $error = null === $client ? 'invalid_client' : 'invalid_redirect_uri';
 
-        if ('' !== $redirectUri && !$client->isRedirectUriAllowed($redirectUri)) {
-            return new JsonResponse(['error' => 'invalid_redirect_uri'], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => $error], Response::HTTP_BAD_REQUEST);
         }
 
         return null;

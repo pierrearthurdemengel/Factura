@@ -43,8 +43,6 @@ class YapilyProviderTest extends TestCase
             ],
         ], JSON_THROW_ON_ERROR);
 
-        $provider = $this->createProvider(new MockResponse($responseBody));
-
         // Le cache doit appeler le callback directement
         $cache = $this->createMock(CacheInterface::class);
         $cache->method('get')->willReturnCallback(

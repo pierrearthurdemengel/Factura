@@ -302,9 +302,9 @@ export default function OnboardingWizard() {
 
           {/* Regime de TVA */}
           <div className="app-form-group app-mb-2">
-            <label className="app-label">
+            <span className="app-label">
               Regime de TVA
-            </label>
+            </span>
             <div className="onboarding-vat-list">
               {VAT_REGIMES.map((regime) => (
                 <div
@@ -332,9 +332,9 @@ export default function OnboardingWizard() {
 
           {/* Dates d'exercice comptable */}
           <div className="onboarding-exercise-group">
-            <label className="app-label">
+            <span className="app-label">
               Exercice comptable
-            </label>
+            </span>
             <div className="app-form-row">
               <div className="app-form-group">
                 <label htmlFor="onboarding-exercise-start" className="app-label">Debut</label>
@@ -384,7 +384,7 @@ export default function OnboardingWizard() {
 
           {/* Upload du logo */}
           <div className="app-form-group app-mb-2">
-            <label className="app-label">Logo de l'entreprise (optionnel)</label>
+            <span className="app-label">Logo de l'entreprise (optionnel)</span>
             <div className="onboarding-logo-row">
               <div
                 onClick={() => fileInputRef.current?.click()}

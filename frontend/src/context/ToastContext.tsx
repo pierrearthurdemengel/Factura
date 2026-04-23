@@ -22,15 +22,17 @@ export function ToastProvider({ children }: Readonly<{ children: React.ReactNode
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const audio = useAudio();
 
+  const removeToastById = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   const addToast = useCallback((message: string, type: ToastType) => {
     const id = Math.random().toString(36).substring(2, 11);
     setToasts((prev) => [...prev, { id, message, type }]);
 
     // Auto remove after 4s
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
-  }, []);
+    setTimeout(() => removeToastById(id), 4000);
+  }, [removeToastById]);
 
   const success = useCallback((msg: string) => {
     addToast(msg, 'success');
@@ -39,10 +41,6 @@ export function ToastProvider({ children }: Readonly<{ children: React.ReactNode
   
   const error = useCallback((msg: string) => addToast(msg, 'error'), [addToast]);
   const info = useCallback((msg: string) => addToast(msg, 'info'), [addToast]);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
 
   const contextValue = useMemo(() => ({ success, error, info }), [success, error, info]);
 
@@ -58,7 +56,7 @@ export function ToastProvider({ children }: Readonly<{ children: React.ReactNode
               {toast.type === 'info' && <span className="toast-icon">ℹ</span>}
               <p>{toast.message}</p>
             </div>
-            <button className="toast-close" onClick={() => removeToast(toast.id)}>✕</button>
+            <button className="toast-close" onClick={() => removeToastById(toast.id)}>✕</button>
             <div className="toast-progress" />
           </div>
         ))}

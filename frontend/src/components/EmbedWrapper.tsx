@@ -45,7 +45,8 @@ export default function EmbedWrapper({ children }: Readonly<{ children: React.Re
     if (!isEmbed) return;
 
     // Notifier le parent que l'iframe est prete
-    globalThis.parent.postMessage({ type: 'mfp:ready' }, '*');
+    const targetOrigin = document.referrer ? new URL(document.referrer).origin : globalThis.location.origin;
+    globalThis.parent.postMessage({ type: 'mfp:ready' }, targetOrigin);
 
     // Ecouter les messages du parent pour le theming dynamique
     // Derive allowed origin from the parent referrer (the embedding page)
@@ -90,7 +91,8 @@ export default function EmbedWrapper({ children }: Readonly<{ children: React.Re
  * Utilise par les composants embarques pour signaler les actions.
  */
 export function notifyParent(eventType: string, data: Record<string, unknown> = {}): void {
-  if (globalThis.parent !== window) {
-    globalThis.parent.postMessage({ type: `mfp:${eventType}`, ...data }, '*');
+  if (globalThis.parent !== globalThis) {
+    const targetOrigin = document.referrer ? new URL(document.referrer).origin : globalThis.location.origin;
+    globalThis.parent.postMessage({ type: `mfp:${eventType}`, ...data }, targetOrigin);
   }
 }

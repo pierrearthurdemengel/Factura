@@ -30,9 +30,9 @@ export function ThemeProvider({ children }: Readonly<{ children: React.ReactNode
       }
 
       if (resolvedDark) {
-        root.setAttribute('data-theme', 'dark');
+        root.dataset.theme = 'dark';
       } else {
-        root.removeAttribute('data-theme');
+        delete root.dataset.theme;
       }
       setIsDark(resolvedDark);
 

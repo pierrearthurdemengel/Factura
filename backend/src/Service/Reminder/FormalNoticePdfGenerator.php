@@ -15,6 +15,7 @@ use App\Exception\CompanyNotFoundException;
 class FormalNoticePdfGenerator
 {
     private const FONT_FAMILY = 'Helvetica';
+    private const DATE_FORMAT_FR = 'd/m/Y';
     /**
      * Genere le contenu PDF d'une mise en demeure pour une facture impayee.
      *
@@ -57,7 +58,7 @@ class FormalNoticePdfGenerator
         $pdf->Ln(10);
 
         // Date et lieu
-        $pdf->Cell(0, 5, $this->encode($seller->getCity() . ', le ' . $today->format('d/m/Y')), 0, 1, 'R');
+        $pdf->Cell(0, 5, $this->encode($seller->getCity() . ', le ' . $today->format(self::DATE_FORMAT_FR)), 0, 1, 'R');
 
         $pdf->Ln(10);
 
@@ -77,13 +78,13 @@ class FormalNoticePdfGenerator
         // Corps
         $pdf->SetFont(self::FONT_FAMILY, '', 10);
 
-        $dueDate = null !== $invoice->getDueDate() ? $invoice->getDueDate()->format('d/m/Y') : 'N/A';
+        $dueDate = null !== $invoice->getDueDate() ? $invoice->getDueDate()->format(self::DATE_FORMAT_FR) : 'N/A';
         $amount = $invoice->getTotalIncludingTax() . ' EUR';
 
         $text = "Madame, Monsieur,\n\n"
             . 'Malgre nos precedentes relances restees sans effet, nous constatons que '
             . 'la facture n° ' . $invoiceNumber . " d'un montant de " . $amount . ', '
-            . 'emise le ' . $invoice->getIssueDate()->format('d/m/Y') . ' et echue le ' . $dueDate . ', '
+            . 'emise le ' . $invoice->getIssueDate()->format(self::DATE_FORMAT_FR) . ' et echue le ' . $dueDate . ', '
             . "demeure impayee a ce jour.\n\n"
             . 'Par la presente, et conformement aux dispositions des articles L.441-10 '
             . 'et L.441-6 du Code de commerce, nous vous mettons formellement en demeure '

@@ -310,13 +310,13 @@ class McpServer
             'name' => $clientName,
         ]);
 
-        if (null === $client) {
-            return $this->errorResult("Client \"{$clientName}\" introuvable. Creez-le d'abord avec create_client.");
-        }
-
         $linesData = $arguments['lines'] ?? null;
-        if (!is_array($linesData) || [] === $linesData) {
-            return $this->errorResult('Au moins une ligne est requise.');
+        if (null === $client || !is_array($linesData) || [] === $linesData) {
+            $error = null === $client
+                ? "Client \"{$clientName}\" introuvable. Creez-le d'abord avec create_client."
+                : 'Au moins une ligne est requise.';
+
+            return $this->errorResult($error);
         }
 
         return null;
@@ -415,19 +415,17 @@ class McpServer
      */
     private function validateLineData(array $lineData, int $position): ?array
     {
-        $description = $lineData['description'] ?? null;
-        if (!is_string($description) || '' === $description) {
-            return $this->errorResult("Ligne {$position} : description obligatoire.");
-        }
+        $requiredFields = [
+            ['description', 'description obligatoire'],
+            ['quantity', 'quantite obligatoire'],
+            ['unitPriceExcludingTax', 'prix unitaire HT obligatoire'],
+        ];
 
-        $quantity = $lineData['quantity'] ?? null;
-        if (!is_string($quantity) || '' === $quantity) {
-            return $this->errorResult("Ligne {$position} : quantite obligatoire.");
-        }
-
-        $unitPrice = $lineData['unitPriceExcludingTax'] ?? null;
-        if (!is_string($unitPrice) || '' === $unitPrice) {
-            return $this->errorResult("Ligne {$position} : prix unitaire HT obligatoire.");
+        foreach ($requiredFields as [$field, $label]) {
+            $value = $lineData[$field] ?? null;
+            if (!is_string($value) || '' === $value) {
+                return $this->errorResult("Ligne {$position} : {$label}.");
+            }
         }
 
         return null;

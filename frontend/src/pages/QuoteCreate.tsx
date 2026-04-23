@@ -123,11 +123,11 @@ export default function QuoteCreate() {
 
         <div className="app-form-row">
           <div className="app-form-group">
-            <label className="app-label">Date d'emission</label>
+            <span className="app-label">Date d'emission</span>
             <DatePicker value={issueDate} onChange={setIssueDate} />
           </div>
           <div className="app-form-group">
-            <label className="app-label">Valide jusqu'au</label>
+            <span className="app-label">Valide jusqu'au</span>
             <DatePicker value={validUntil} onChange={setValidUntil} />
           </div>
         </div>
@@ -215,13 +215,13 @@ export default function QuoteCreate() {
                 </select>
               </div>
               <div className="app-form-group">
-                <label className="app-label">Montant de l'acompte TTC</label>
+                <span className="app-label">Montant de l'acompte TTC</span>
                 <p className="app-card-value" style={{ margin: 0 }}>
                   {(totals.ttc * (Number.parseFloat(depositPercent) || 0) / 100).toFixed(2)} €
                 </p>
               </div>
               <div className="app-form-group">
-                <label className="app-label">Solde restant TTC</label>
+                <span className="app-label">Solde restant TTC</span>
                 <p className="app-card-value" style={{ margin: 0 }}>
                   {(totals.ttc - totals.ttc * (Number.parseFloat(depositPercent) || 0) / 100).toFixed(2)} €
                 </p>

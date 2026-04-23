@@ -86,10 +86,10 @@
   background: none;
   border: none;
   color: var(--text);
-  font-size: 0.9rem;
   cursor: pointer;
   text-decoration: underline;
   font: inherit;
+  font-size: 0.9rem;
 }
 
 .cc-back:hover {

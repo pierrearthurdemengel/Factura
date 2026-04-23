@@ -62,13 +62,15 @@ class InvoiceOwnerExtension implements QueryCollectionExtensionInterface, QueryI
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
 
-        if (Invoice::class === $resourceClass || Quote::class === $resourceClass) {
+        $field = match ($resourceClass) {
+            Invoice::class, Quote::class => 'seller',
+            Client::class, Product::class, ReminderTemplate::class => 'company',
+            default => null,
+        };
+
+        if (null !== $field) {
             $queryBuilder
-                ->andWhere(sprintf('%s.seller = :company', $rootAlias))
-                ->setParameter('company', $company);
-        } elseif (Client::class === $resourceClass || Product::class === $resourceClass || ReminderTemplate::class === $resourceClass) {
-            $queryBuilder
-                ->andWhere(sprintf('%s.company = :company', $rootAlias))
+                ->andWhere(sprintf('%s.%s = :company', $rootAlias, $field))
                 ->setParameter('company', $company);
         }
     }

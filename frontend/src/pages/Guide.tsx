@@ -301,7 +301,7 @@ export default function Guide() {
         if (visible.length > 0) {
           const topMost = visible.reduce((prev, curr) =>
             prev.boundingClientRect.top < curr.boundingClientRect.top ? prev : curr
-          );
+          , visible[0]);
           setActiveSection(topMost.target.id);
         }
       },
@@ -347,7 +347,7 @@ export default function Guide() {
       </nav>
 
       {menuOpen && (
-        <div className="lp-mobile-menu" role="dialog" aria-label="Menu de navigation">
+        <dialog className="lp-mobile-menu" open aria-label="Menu de navigation">
           <Link to="/" className="lp-mobile-link" onClick={() => setMenuOpen(false)}>Accueil</Link>
           <a href="#partie-1" className="lp-mobile-link" onClick={() => setMenuOpen(false)}>La réforme</a>
           <a href="#partie-2" className="lp-mobile-link" onClick={() => setMenuOpen(false)}>Les formats</a>
@@ -356,7 +356,7 @@ export default function Guide() {
           <div className="lp-mobile-cta">
             <Link to="/register" className="lp-btn lp-btn-primary" style={{ width: '100%' }} onClick={() => setMenuOpen(false)}>Créer mon compte gratuit</Link>
           </div>
-        </div>
+        </dialog>
       )}
 
       {/* ═══════════════════════════════════════════
@@ -1976,9 +1976,9 @@ export default function Guide() {
             <div className="guide-footer-col">
               <h4>Légal</h4>
               <ul>
-                <li><a href="#">Mentions légales</a></li>
-                <li><a href="#">Politique de confidentialité</a></li>
-                <li><a href="#">CGU</a></li>
+                <li><Link to="/mentions-legales">Mentions légales</Link></li>
+                <li><Link to="/confidentialite">Politique de confidentialité</Link></li>
+                <li><Link to="/cgu">CGU</Link></li>
               </ul>
             </div>
           </div>

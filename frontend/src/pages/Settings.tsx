@@ -332,7 +332,7 @@ export default function Settings() {
 
           {/* Upload logo */}
           <div className="app-form-group app-mb-2">
-            <label className="app-label">Logo de l'entreprise</label>
+            <span className="app-label">Logo de l'entreprise</span>
             <div className="app-logo-upload-row">
               <div
                 onClick={() => fileInputRef.current?.click()}
@@ -421,7 +421,7 @@ export default function Settings() {
 
           {/* Previsualisation */}
           <div className="app-mb-2">
-            <label className="app-label">Previsualisation</label>
+            <span className="app-label">Previsualisation</span>
             <div className="app-invoice-preview">
               <div className="app-invoice-preview-header">
                 <div>
@@ -555,7 +555,7 @@ export default function Settings() {
 
               {/* Apercu chronologique */}
               <div className="app-mb-2">
-                <label className="app-label">Chronologie des relances</label>
+                <span className="app-label">Chronologie des relances</span>
                 <div className="app-reminder-timeline">
                   <span className="app-reminder-pill app-reminder-pill--due">
                     Echeance

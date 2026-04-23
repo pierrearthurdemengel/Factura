@@ -58,11 +58,13 @@ function getDefaultDeadlines(year: number): Deadline[] {
     });
   });
   // CFE (15 juin et 15 decembre) + IR (declaration de revenus, debut juin)
-  deadlines.push(
-    { id: 'cfe-1', type: 'cfe', label: 'Acompte CFE', dueDate: `${year}-06-15`, status: new Date(`${year}-06-15`) < now ? 'done' : 'pending', amount: null },
-    { id: 'cfe-2', type: 'cfe', label: 'Solde CFE', dueDate: `${year}-12-15`, status: new Date(`${year}-12-15`) < now ? 'done' : 'pending', amount: null },
-    { id: 'ir-1', type: 'ir', label: 'Declaration de revenus', dueDate: `${year}-06-08`, status: new Date(`${year}-06-08`) < now ? 'done' : 'pending', amount: null },
-  );
+  deadlines.push({
+    id: 'cfe-1', type: 'cfe', label: 'Acompte CFE', dueDate: `${year}-06-15`, status: new Date(`${year}-06-15`) < now ? 'done' : 'pending', amount: null,
+  }, {
+    id: 'cfe-2', type: 'cfe', label: 'Solde CFE', dueDate: `${year}-12-15`, status: new Date(`${year}-12-15`) < now ? 'done' : 'pending', amount: null,
+  }, {
+    id: 'ir-1', type: 'ir', label: 'Declaration de revenus', dueDate: `${year}-06-08`, status: new Date(`${year}-06-08`) < now ? 'done' : 'pending', amount: null,
+  });
   return deadlines;
 }
 

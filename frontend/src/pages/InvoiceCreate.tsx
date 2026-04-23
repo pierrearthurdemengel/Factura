@@ -107,10 +107,10 @@ export default function InvoiceCreate() {
   }, []);
 
   const computeLineTotal = (line: LineForm) => {
-    const qty = parseFloat(line.quantity) || 0;
-    const price = parseFloat(line.unitPriceExcludingTax) || 0;
+    const qty = Number.parseFloat(line.quantity) || 0;
+    const price = Number.parseFloat(line.unitPriceExcludingTax) || 0;
     const ht = qty * price;
-    const vat = isNaN(parseFloat(line.vatRate)) ? 0 : ht * parseFloat(line.vatRate) / 100;
+    const vat = Number.isNaN(Number.parseFloat(line.vatRate)) ? 0 : ht * Number.parseFloat(line.vatRate) / 100;
     return { ht, vat, ttc: ht + vat };
   };
 
@@ -210,11 +210,11 @@ export default function InvoiceCreate() {
 
             <div className="app-form-row">
               <div className="app-form-group">
-                <label className="app-label">Date d'emission</label>
+                <span className="app-label">Date d'emission</span>
                 <DatePicker value={issueDate} onChange={setIssueDate} />
               </div>
               <div className="app-form-group">
-                <label className="app-label">Date d'echeance</label>
+                <span className="app-label">Date d'echeance</span>
                 <DatePicker value={dueDate} onChange={setDueDate} placeholder="Facultatif" />
               </div>
             </div>
@@ -412,7 +412,7 @@ export default function InvoiceCreate() {
                         <td>{line.description || '—'}</td>
                         <td className="text-right">{line.quantity}</td>
                         <td className="text-center">{line.unit}</td>
-                        <td className="text-right">{parseFloat(line.unitPriceExcludingTax || '0').toFixed(2)} €</td>
+                        <td className="text-right">{Number.parseFloat(line.unitPriceExcludingTax || '0').toFixed(2)} €</td>
                         <td className="text-right">{line.vatRate}%</td>
                         <td className="text-right">{t.ht.toFixed(2)} €</td>
                       </tr>

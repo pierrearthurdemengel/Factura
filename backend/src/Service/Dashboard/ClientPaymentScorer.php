@@ -85,7 +85,7 @@ class ClientPaymentScorer
             $delays[] = $delay;
         }
 
-        if ([] === $delays) {
+        if (empty($delays)) {
             return null;
         }
 
@@ -252,7 +252,7 @@ class ClientPaymentScorer
             $delays[] = max(0, $delay);
         }
 
-        if (0 === \count($delays)) {
+        if (empty($delays)) {
             return 15; // Score neutre
         }
 

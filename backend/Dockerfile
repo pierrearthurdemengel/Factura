@@ -26,10 +26,10 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-dev --optimize-autoloader \
     && mkdir -p var/cache var/log \
     && php bin/console cache:warmup --env=prod --no-debug || true \
-    && chown -R www-data:www-data var/
+    && chown -R www-data:www-data var/ \
+    && mkdir -p /run/nginx
 
 # Configuration Nginx pour servir Symfony
-RUN mkdir -p /run/nginx
 COPY docker/nginx/fly.conf /etc/nginx/http.d/default.conf
 
 # Configuration supervisord (Nginx + PHP-FPM + Messenger dans un seul container)
@@ -38,10 +38,8 @@ COPY docker/messenger-worker.sh /var/www/html/docker/messenger-worker.sh
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /var/www/html/docker/messenger-worker.sh \
     /var/www/html/docker/backup-db.sh \
-    /usr/local/bin/entrypoint.sh
-
-# Logs PHP vers stderr + OPcache pour la production
-RUN echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/conf.d/zz-logging.ini \
+    /usr/local/bin/entrypoint.sh \
+    && echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/conf.d/zz-logging.ini \
     && echo "log_errors = On" >> /usr/local/etc/php/conf.d/zz-logging.ini \
     && echo "display_errors = Off" >> /usr/local/etc/php/conf.d/zz-logging.ini \
     && echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \

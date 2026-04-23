@@ -345,7 +345,7 @@ export default function ApiSettings() {
                   </div>
 
                   <div className="app-form-group">
-                    <label className="app-label">Portees (scopes)</label>
+                    <span className="app-label">Portees (scopes)</span>
                     <div className="app-list">
                       {AVAILABLE_SCOPES.map((scope) => (
                         <label
@@ -493,7 +493,7 @@ export default function ApiSettings() {
               </div>
 
               <div className="app-form-group">
-                <label className="app-label">Evenements</label>
+                <span className="app-label">Evenements</span>
                 <div className="app-list">
                   {AVAILABLE_EVENTS.map((event) => (
                     <label

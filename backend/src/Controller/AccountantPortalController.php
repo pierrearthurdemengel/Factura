@@ -69,25 +69,9 @@ class AccountantPortalController extends AbstractController
         $data = json_decode($request->getContent(), true) ?? [];
         $email = isset($data['email']) ? (string) $data['email'] : '';
 
-        if ('' === $email || !filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-            return new JsonResponse(
-                ['error' => 'Adresse email invalide.'],
-                Response::HTTP_BAD_REQUEST,
-            );
-        }
-
-        // Verifier qu'une invitation n'est pas deja en attente pour cet email
-        $existing = $this->em->getRepository(AccountantInvitation::class)->findOneBy([
-            'accountantProfile' => $profile,
-            'email' => $email,
-            'status' => AccountantInvitation::STATUS_PENDING,
-        ]);
-
-        if (null !== $existing && !$existing->isExpired()) {
-            return new JsonResponse(
-                ['error' => 'Une invitation est deja en attente pour cette adresse.'],
-                Response::HTTP_CONFLICT,
-            );
+        $validationError = $this->validateInvite($profile, $email);
+        if (null !== $validationError) {
+            return $validationError;
         }
 
         $invitation = new AccountantInvitation();
@@ -103,6 +87,34 @@ class AccountantPortalController extends AbstractController
             'token' => $invitation->getToken(),
             'expiresAt' => $invitation->getExpiresAt()->format('c'),
         ], Response::HTTP_CREATED);
+    }
+
+    /**
+     * Valide les preconditions d'une invitation comptable.
+     */
+    private function validateInvite(AccountantProfile $profile, string $email): ?JsonResponse
+    {
+        if ('' === $email || !filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+            return new JsonResponse(
+                ['error' => 'Adresse email invalide.'],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $existing = $this->em->getRepository(AccountantInvitation::class)->findOneBy([
+            'accountantProfile' => $profile,
+            'email' => $email,
+            'status' => AccountantInvitation::STATUS_PENDING,
+        ]);
+
+        if (null !== $existing && !$existing->isExpired()) {
+            return new JsonResponse(
+                ['error' => 'Une invitation est deja en attente pour cette adresse.'],
+                Response::HTTP_CONFLICT,
+            );
+        }
+
+        return null;
     }
 
     /**

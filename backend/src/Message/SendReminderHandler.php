@@ -132,6 +132,14 @@ class SendReminderHandler
             return false;
         }
 
+        return $this->hasValidReminderPrerequisites($invoice, $message);
+    }
+
+    /**
+     * Verifie les prerequis d'envoi de relance (statut, email destinataire, vendeur).
+     */
+    private function hasValidReminderPrerequisites(Invoice $invoice, SendReminderMessage $message): bool
+    {
         if ('SENT' !== $invoice->getStatus()) {
             $this->logger->info('Relance ignoree : facture non en statut SENT.', [
                 'invoiceNumber' => $invoice->getNumber(),
@@ -142,24 +150,30 @@ class SendReminderHandler
         }
 
         $recipientEmail = $invoice->getBuyer()->getEmail();
-        if (null === $recipientEmail || '' === $recipientEmail) {
-            $this->logger->warning('Relance impossible : pas d\'email pour le client.', [
-                'invoiceNumber' => $invoice->getNumber(),
-                'clientName' => $invoice->getBuyer()->getName(),
-            ]);
-
-            return false;
-        }
-
-        if (null === $invoice->getSeller()) {
-            $this->logger->error('Relance impossible : facture sans vendeur.', [
-                'invoiceId' => $message->getInvoiceId(),
-            ]);
+        if ((null === $recipientEmail || '' === $recipientEmail) || null === $invoice->getSeller()) {
+            $this->logMissingPrerequisite($invoice, $message, $recipientEmail);
 
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Journalise le prerequis manquant (email ou vendeur).
+     */
+    private function logMissingPrerequisite(Invoice $invoice, SendReminderMessage $message, ?string $recipientEmail): void
+    {
+        if (null === $recipientEmail || '' === $recipientEmail) {
+            $this->logger->warning('Relance impossible : pas d\'email pour le client.', [
+                'invoiceNumber' => $invoice->getNumber(),
+                'clientName' => $invoice->getBuyer()->getName(),
+            ]);
+        } else {
+            $this->logger->error('Relance impossible : facture sans vendeur.', [
+                'invoiceId' => $message->getInvoiceId(),
+            ]);
+        }
     }
 
     /**

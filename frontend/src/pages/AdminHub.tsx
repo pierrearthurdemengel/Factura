@@ -146,7 +146,7 @@ export default function AdminHub(): JSX.Element {
       <div className="app-pills">
         <button
           onClick={() => setCategoryFilter('')}
-          className={`app-pill ${!categoryFilter ? 'app-pill--active' : ''}`}
+          className={`app-pill ${categoryFilter ? '' : 'app-pill--active'}`}
         >
           Tous
         </button>
